@@ -1,0 +1,7 @@
+name: Duel
+version: '${project.version}'
+main: com.meteoritegames.duel.Main
+api-version: 1.8
+authors: [ GioSDA ]
+description: Gios MeteoriteGames testing plugin.
+depend: [MeteoriteAPI]
