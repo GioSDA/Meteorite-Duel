@@ -20,7 +20,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 @DefaultCommand
 public class Duel implements CommandClass {
@@ -38,7 +37,9 @@ public class Duel implements CommandClass {
 			return;
 		}
 
-		createDuelGui(p,d);
+		DuelObject duel = new DuelObject(p,d);
+
+		createDuelGui(duel);
 	}
 
 	@Command(description="Toggle duel invites from other players",
@@ -76,8 +77,7 @@ public class Duel implements CommandClass {
 		page.setItem(slot, item);
 	}
 
-	private void createDuelGui(Player p, Player d) {
-		DuelObject duel = new DuelObject(p, d);
+	private void createDuelGui(DuelObject duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Duel Settings", 9, 3, true);
@@ -94,11 +94,11 @@ public class Duel implements CommandClass {
 			setGuiElement(e.getSlot(), page, duelArgs);
 
 			inventory.applyPage(page);
-			inventory.show(p);
+			inventory.show(duel.getDueler());
 		});
 
 		inventory.applyPage(page);
 
-		inventory.show(p);
+		inventory.show(duel.getDueler());
 	}
 }

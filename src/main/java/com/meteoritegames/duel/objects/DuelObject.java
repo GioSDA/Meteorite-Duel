@@ -6,11 +6,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class DuelObject {
-	private ArrayList<DuelArg> duelArgs = new ArrayList<DuelArg>();
+	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
 
 	private Player dueler;
 	private Player dueler2;
-
+	private DuelMap map;
 
 	public DuelObject(Player dueler, Player dueler2) {
 		this.dueler = dueler;
@@ -53,5 +53,13 @@ public class DuelObject {
 
 	public ArrayList<DuelArg> getDuelArgs() {
 		return duelArgs;
+	}
+
+	public DuelMap getMap() {
+		return map;
+	}
+
+	public void setMap(DuelMap map) {
+		this.map = map;
 	}
 }
