@@ -1,15 +1,14 @@
 package com.meteoritegames.duel.commands;
 
-import com.avaje.ebean.Page;
 import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.DuelArg;
+import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.DuelObject;
 import com.meteoritepvp.api.command.Command;
 import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
 import com.meteoritepvp.api.inventory.MeteoriteInventory;
 import com.meteoritepvp.api.inventory.presets.BasicInventory;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 
 @DefaultCommand
 public class Duel implements CommandClass {
-
 	@Command(description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(CommandSender sender, String[] params) {
@@ -84,7 +82,7 @@ public class Duel implements CommandClass {
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(Material.STAINED_GLASS_PANE);
 
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < duelArgs.size(); i++) {
 			setGuiElement(i, page, duelArgs);
 		}
 
@@ -99,6 +97,24 @@ public class Duel implements CommandClass {
 
 		inventory.applyPage(page);
 
+		inventory.show(duel.getDueler());
+	}
+
+	private void createMapGui(DuelObject duel) {
+		ArrayList<DuelMap> maps = Main.getMaps();
+
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Map Settings", 9, 3, true);
+		BasicInventory page = new BasicInventory(9, 3);
+		page.fill(Material.STAINED_GLASS_PANE);
+
+		for (DuelMap map : maps) {
+			ItemStack item = new ItemStack(map.getIcon());
+			item.getItemMeta().setDisplayName("§e§l" + map.getName());
+		}
+
+		page.setOnSlotClickListener(e -> duel.setMap(maps.get(e.getSlot())));
+
+		inventory.applyPage(page);
 		inventory.show(duel.getDueler());
 	}
 }
