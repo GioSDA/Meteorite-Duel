@@ -121,6 +121,8 @@ public class Duel implements CommandClass {
 		}
 
 		page.setOnSlotClickListener(e -> {
+			if (maps.size() <= e.getSlot()) return;
+
 			duel.setMap(maps.get(e.getSlot()));
 			duel.getDueler().closeInventory();
 		});

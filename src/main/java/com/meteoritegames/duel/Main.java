@@ -4,11 +4,10 @@ import com.meteoritegames.duel.commands.Duel;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritepvp.api.MeteoritePlugin;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
@@ -21,6 +20,8 @@ public class Main extends MeteoritePlugin {
 		plugin = this;
 
 		try {
+			saveDefaultConfig();
+
 			initMaps();
 			print("Duel plugin enabled.");
 
@@ -32,12 +33,14 @@ public class Main extends MeteoritePlugin {
 	}
 
 	private void initMaps() throws IllegalArgumentException {
-		ConfigurationSection maps1 = this.getConfig().getConfigurationSection("maps");
-		Set<String> keys = maps1.getKeys(false);
+		print(getConfig().getConfigurationSection("maps").getKeys(false));
+		for (String key : getConfig().getConfigurationSection("maps").getKeys(false)) {
+			print(key);
+			List<String> o = getConfig().getStringList("maps." + key);
+			print(getConfig().getStringList("maps.default"));
+			//this is the line that isn't working
 
-		for (String key : keys) {
-			List<String> o = maps1.getStringList(key);
-			maps.add(new DuelMap(o.get(0), Material.valueOf(o.get(1)),Integer.parseInt(o.get(2)),Integer.parseInt(o.get(3))));
+			maps.add(new DuelMap(o.get(0), Material.valueOf(o.get(1).toUpperCase(Locale.ROOT)),Integer.parseInt(o.get(2)),Integer.parseInt(o.get(3)), Integer.parseInt(o.get(4))));
 		}
 	}
 
