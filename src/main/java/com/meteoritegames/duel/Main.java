@@ -6,7 +6,6 @@ import com.meteoritepvp.api.MeteoritePlugin;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class Main extends MeteoritePlugin {
@@ -33,14 +32,18 @@ public class Main extends MeteoritePlugin {
 	}
 
 	private void initMaps() throws IllegalArgumentException {
-		print(getConfig().getConfigurationSection("maps").getKeys(false));
 		for (String key : getConfig().getConfigurationSection("maps").getKeys(false)) {
-			print(key);
-			List<String> o = getConfig().getStringList("maps." + key);
-			print(getConfig().getStringList("maps.default"));
+			String mapkey = "maps." + key + ".";
 			//this is the line that isn't working
 
-			maps.add(new DuelMap(o.get(0), Material.valueOf(o.get(1).toUpperCase(Locale.ROOT)),Integer.parseInt(o.get(2)),Integer.parseInt(o.get(3)), Integer.parseInt(o.get(4))));
+			String name = getConfig().getString(mapkey + "name");
+			print(name);
+			Material material = Material.valueOf(getConfig().getString(mapkey + "icon").toUpperCase(Locale.ROOT));
+			double x = getConfig().getDouble(mapkey + "xpos");
+			double y = getConfig().getDouble(mapkey + "ypos");
+			double z = getConfig().getDouble(mapkey + "zpos");
+
+			maps.add(new DuelMap(name, material, x, y, z));
 		}
 	}
 
