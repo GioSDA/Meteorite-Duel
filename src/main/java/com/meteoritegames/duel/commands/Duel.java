@@ -9,6 +9,7 @@ import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
 import com.meteoritepvp.api.inventory.MeteoriteInventory;
 import com.meteoritepvp.api.inventory.presets.BasicInventory;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -115,9 +116,14 @@ public class Duel implements CommandClass {
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(Material.STAINED_GLASS_PANE);
 
-		for (DuelMap map : maps) {
-			ItemStack item = new ItemStack(map.getIcon());
-			item.getItemMeta().setDisplayName("§e§l" + map.getName());
+		for (int i = 0; i < maps.size(); i++) {
+			ItemStack item = new ItemStack(maps.get(i).getIcon());
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', maps.get(i).getName()));
+
+			item.setItemMeta(meta);
+
+			page.setItem(i, item);
 		}
 
 		page.setOnSlotClickListener(e -> {

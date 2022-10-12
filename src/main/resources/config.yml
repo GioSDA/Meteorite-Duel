@@ -1,7 +1,7 @@
 maps:
   default:
-    name: "update the config.yml"
-    icon: "stained_glass_pane"
+    name: "&e&lupdate the config.yml"
+    icon: "glass"
     #The x, y, and z positions of the map that players will be teleported to
     xpos: 0
     ypos: 0
