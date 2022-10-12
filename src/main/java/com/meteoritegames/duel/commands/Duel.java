@@ -86,7 +86,15 @@ public class Duel implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
+		page.setItem(26, Material.ARROW, "§a§lContinue to map select");
+
 		page.setOnSlotClickListener(e -> {
+			if (e.getSlot() == 26) {
+				duel.getDueler().closeInventory();
+				createMapGui(duel);
+			}
+
+			if (duelArgs.size() <= e.getSlot()) return;
 			duelArgs.get(e.getSlot()).setEnabled(!duelArgs.get(e.getSlot()).isEnabled());
 
 			setGuiElement(e.getSlot(), page, duelArgs);
@@ -112,7 +120,10 @@ public class Duel implements CommandClass {
 			item.getItemMeta().setDisplayName("§e§l" + map.getName());
 		}
 
-		page.setOnSlotClickListener(e -> duel.setMap(maps.get(e.getSlot())));
+		page.setOnSlotClickListener(e -> {
+			duel.setMap(maps.get(e.getSlot()));
+			duel.getDueler().closeInventory();
+		});
 
 		inventory.applyPage(page);
 		inventory.show(duel.getDueler());
