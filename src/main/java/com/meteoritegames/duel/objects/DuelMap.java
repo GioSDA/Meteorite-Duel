@@ -3,12 +3,13 @@ package com.meteoritegames.duel.objects;
 import org.bukkit.Material;
 
 public class DuelMap {
-	public DuelMap(String name, Material icon, double x, double y, double z) {
+	public DuelMap(String name, Material icon, double x, double y, double z, boolean active) {
 		this.name = name;
 		this.icon = icon;
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.active = active;
 	}
 
 	private String name;
@@ -16,6 +17,7 @@ public class DuelMap {
 	private double x;
 	private double y;
 	private double z;
+	private boolean active;
 
 	public String getName() {
 		return name;
@@ -57,5 +59,11 @@ public class DuelMap {
 		this.z = z;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
 
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 }

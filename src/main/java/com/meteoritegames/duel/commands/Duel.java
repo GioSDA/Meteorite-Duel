@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 @DefaultCommand
 public class Duel implements CommandClass {
@@ -127,6 +128,7 @@ public class Duel implements CommandClass {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', maps.get(i).getName()));
+			if (!maps.get(i).isActive()) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
 
 			item.setItemMeta(meta);
 
@@ -135,11 +137,17 @@ public class Duel implements CommandClass {
 
 		page.setOnSlotClickListener(e -> {
 			if (maps.size() <= e.getSlot()) return;
+			if (!maps.get(e.getSlot()).isActive()) {
+				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
+				return;
+			}
 
 			duel.setMap(maps.get(e.getSlot()));
 			duel.getDueler().closeInventory();
 
-			e.getEvent().getWhoClicked().sendMessage("Your duel request has been sent.");
+			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
+			Main.addDuel(duel);
+			Main.mapActive(e.getSlot(), false);
 		});
 
 		inventory.applyPage(page);
