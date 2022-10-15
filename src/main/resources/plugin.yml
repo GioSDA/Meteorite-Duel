@@ -1,4 +1,4 @@
-name: Duel
+name: MeteoriteDuel
 version: '${project.version}'
 main: com.meteoritegames.duel.Main
 api-version: 1.8

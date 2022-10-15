@@ -27,7 +27,7 @@ public class Duel implements CommandClass {
 			params="@player")
 	public void duelPlayer(CommandSender sender, String[] params) {
 		if (!(sender instanceof Player)) return;
-
+//		ADD LINE MAKING SURE THEY DONT DO THEMSELVES
 		Player p = (Player) sender;
 		Player d = sender.getServer().getPlayer(params[0]);
 
@@ -57,6 +57,13 @@ public class Duel implements CommandClass {
 			args="spectate",
 			params="@player")
 	public void duelSpectate() {
+
+	}
+
+	@Command(description="Accept a duel invitation",
+			args="accept",
+			params="@player")
+	public void duelAccept() {
 
 	}
 
@@ -131,6 +138,8 @@ public class Duel implements CommandClass {
 
 			duel.setMap(maps.get(e.getSlot()));
 			duel.getDueler().closeInventory();
+
+			e.getEvent().getWhoClicked().sendMessage("Your duel request has been sent.");
 		});
 
 		inventory.applyPage(page);
