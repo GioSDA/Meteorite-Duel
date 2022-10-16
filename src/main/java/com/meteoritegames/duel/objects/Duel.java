@@ -5,16 +5,18 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class DuelObject {
+public class Duel {
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
 
 	private Player dueler;
 	private Player dueler2;
 	private DuelMap map;
+	private boolean active;
 
-	public DuelObject(Player dueler, Player dueler2) {
+	public Duel(Player dueler, Player dueler2) {
 		this.dueler = dueler;
 		this.dueler2 = dueler2;
+		this.active = false;
 
 		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
 		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
@@ -62,4 +64,13 @@ public class DuelObject {
 	public void setMap(DuelMap map) {
 		this.map = map;
 	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 }

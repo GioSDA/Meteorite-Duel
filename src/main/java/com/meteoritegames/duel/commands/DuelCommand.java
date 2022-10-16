@@ -3,7 +3,7 @@ package com.meteoritegames.duel.commands;
 import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.DuelArg;
 import com.meteoritegames.duel.objects.DuelMap;
-import com.meteoritegames.duel.objects.DuelObject;
+import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.command.Command;
 import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @DefaultCommand
-public class Duel implements CommandClass {
+public class DuelCommand implements CommandClass {
 	@Command(description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(CommandSender sender, String[] params) {
@@ -37,9 +37,25 @@ public class Duel implements CommandClass {
 			return;
 		}
 
-		DuelObject duel = new DuelObject(p,d);
+		if (Main.playerIsInDuel(d)) {
+			sender.sendMessage("§cThat player is already in a duel!");
+			return;
+		}
 
-		createDuelGui(duel);
+		if (Main.playerIsInDuel(p)) {
+			sender.sendMessage("§cYou are already in a duel!");
+			return;
+		}
+
+		if (Main.getDuel(p) != null) {
+			//TODO: come up with way to make it so that duel requests expire/end
+			sender.sendMessage("§cYou can only have 1 duel request active at once!");
+			return;
+		}
+
+		Duel duel = new Duel(p,d);
+
+		createArgsGui(duel);
 	}
 
 	@Command(description="Toggle duel invites from other players",
@@ -64,8 +80,18 @@ public class Duel implements CommandClass {
 	@Command(description="Accept a duel invitation",
 			args="accept",
 			params="@player")
-	public void duelAccept() {
+	public void duelAccept(CommandSender sender, String[] params) {
+		if (!(sender instanceof Player)) return;
+		Player p = sender.getServer().getPlayer(params[0]);
 
+		if (p == null) {
+			sender.sendMessage("§cThat player is not online!");
+			return;
+		}
+
+		Duel duel = Main.getDuel(p);
+
+		createAcceptGui(duel);
 	}
 
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
@@ -84,7 +110,7 @@ public class Duel implements CommandClass {
 		page.setItem(slot, item);
 	}
 
-	private void createDuelGui(DuelObject duel) {
+	private void createArgsGui(Duel duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Duel Settings", 9, 3, true);
@@ -117,7 +143,7 @@ public class Duel implements CommandClass {
 		inventory.show(duel.getDueler());
 	}
 
-	private void createMapGui(DuelObject duel) {
+	private void createMapGui(Duel duel) {
 		ArrayList<DuelMap> maps = Main.getMaps();
 
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Map Settings", 9, 3, true);
@@ -152,5 +178,9 @@ public class Duel implements CommandClass {
 
 		inventory.applyPage(page);
 		inventory.show(duel.getDueler());
+	}
+
+	public void createAcceptGui(Duel duel) {
+
 	}
 }

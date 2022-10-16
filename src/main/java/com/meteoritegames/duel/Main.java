@@ -1,8 +1,8 @@
 package com.meteoritegames.duel;
 
-import com.meteoritegames.duel.commands.Duel;
+import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.objects.DuelMap;
-import com.meteoritegames.duel.objects.DuelObject;
+import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import java.util.Locale;
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
 
-	public static ArrayList<DuelObject> duels = new ArrayList<>();
+	public static ArrayList<Duel> duels = new ArrayList<>();
 	private static ArrayList<DuelMap> maps = new ArrayList<>();
 
 	@Override
@@ -27,7 +27,7 @@ public class Main extends MeteoritePlugin {
 			initMaps();
 			print("Duel plugin enabled.");
 
-			registerCommandClass(Duel.class);
+			registerCommandClass(DuelCommand.class);
 		} catch (Exception e) {
 			print("Error enabling duel maps! Make sure your icons are correct?");
 			e.printStackTrace();
@@ -56,19 +56,27 @@ public class Main extends MeteoritePlugin {
 		return maps;
 	}
 
-	public static void addDuel(DuelObject d) {
+	public static void addDuel(Duel d) {
 		duels.add(d);
 	}
 
-	public static DuelObject getDuel(Player p) {
-		for (DuelObject duel : duels) {
+	public static Duel getDuel(Player p) {
+		for (Duel duel : duels) {
 			if (duel.getDueler().equals(p)) return duel;
 		}
 
 		return null;
 	}
 
-	public static void removeDuel(DuelObject d) {
+	public static boolean playerIsInDuel(Player p) {
+		for (Duel duel : duels) {
+			if ((duel.getDueler().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return true;
+		}
+
+		return false;
+	}
+
+	public static void removeDuel(Duel d) {
 		duels.remove(d);
 	}
 }
