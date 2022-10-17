@@ -187,17 +187,36 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 5, true);
+		BasicInventory page = new BasicInventory(9, 5);
+		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(40, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(43, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(44, new ItemStack(Material.STAINED_GLASS_PANE));
 
+		Player duelist = p.getPlayer().equals(duel.getDueler()) ? duel.getDueler2() : duel.getDueler();
 
+		for (int i = 0; i < 9; i++) {
+			page.setItem(27 + i, duelist.getInventory().getItem(i));
+		}
+
+		for (int i = 9; i < 36; i++) {
+			page.setItem(i - 9, duelist.getInventory().getItem(i));
+		}
+
+		page.setItem(38, duelist.getInventory().getItem(100));
+		page.setItem(39, duelist.getInventory().getItem(101));
+		page.setItem(41, duelist.getInventory().getItem(102));
+		page.setItem(42, duelist.getInventory().getItem(103));
 	}
 
 	public void createWagerGui(Player p, Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, duel.getDueler().getName() + " vs. " + duel.getDueler2().getName(), 9, 3, true);
-		BasicInventory page = new BasicInventory(9, 4);
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 3, true);
+		BasicInventory page = new BasicInventory(9, 3);
 		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
-		for (int i = 28; i < 36; i++) page.setItem(i, new ItemStack(Material.STAINED_GLASS_PANE));
 
 		for (int i = 0; i < 12; i++) {
 			if (i > duel.getWager1().size()) return;
@@ -208,5 +227,10 @@ public class DuelCommand implements CommandClass {
 			if (i > duel.getWager1().size()) return;
 			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager1().get(i));
 		}
+
+		inventory.show(p);
+
+		//TODO: MAKE UPDATE EVERY TIME NEW ITEM IS ADDED TO WAGER
+		inventory.update();
 	}
 }
