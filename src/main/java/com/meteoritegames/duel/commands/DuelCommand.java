@@ -91,7 +91,13 @@ public class DuelCommand implements CommandClass {
 
 		Duel duel = Main.getDuel(p);
 
-		createAcceptGui(duel);
+		if (duel == null || duel.isActive()) {
+			sender.sendMessage("§cThat duel request is not active!");
+			return;
+		}
+
+		createWagerGui(duel.getDueler(), duel);
+		createWagerGui(duel.getDueler2(), duel);
 	}
 
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
@@ -180,7 +186,27 @@ public class DuelCommand implements CommandClass {
 		inventory.show(duel.getDueler());
 	}
 
-	public void createAcceptGui(Duel duel) {
+	public void createInventoryGui(Player p, Duel duel) {
 
+
+	}
+
+	public void createWagerGui(Player p, Duel duel) {
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, duel.getDueler().getName() + " vs. " + duel.getDueler2().getName(), 9, 3, true);
+		BasicInventory page = new BasicInventory(9, 4);
+		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
+		for (int i = 28; i < 36; i++) page.setItem(i, new ItemStack(Material.STAINED_GLASS_PANE));
+
+		for (int i = 0; i < 12; i++) {
+			if (i > duel.getWager1().size()) return;
+			page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+		}
+
+		for (int i = 0; i < 12; i++) {
+			if (i > duel.getWager1().size()) return;
+			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager1().get(i));
+		}
 	}
 }

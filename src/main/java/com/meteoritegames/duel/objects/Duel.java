@@ -2,6 +2,7 @@ package com.meteoritegames.duel.objects;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
@@ -12,11 +13,15 @@ public class Duel {
 	private Player dueler2;
 	private DuelMap map;
 	private boolean active;
+	private ArrayList<ItemStack> wager1;
+	private ArrayList<ItemStack> wager2;
 
 	public Duel(Player dueler, Player dueler2) {
 		this.dueler = dueler;
 		this.dueler2 = dueler2;
 		this.active = false;
+		this.wager1 = new ArrayList<>();
+		this.wager2 = new ArrayList<>();
 
 		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
 		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
@@ -71,6 +76,21 @@ public class Duel {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	public ArrayList<ItemStack> getWager1() {
+		return wager1;
+	}
+
+	public void setWager1(ArrayList<ItemStack> wager1) {
+		this.wager1 = wager1;
+	}
+
+	public ArrayList<ItemStack> getWager2() {
+		return wager2;
+	}
+
+	public void setWager2(ArrayList<ItemStack> wager2) {
+		this.wager2 = wager2;
 	}
 
 }
