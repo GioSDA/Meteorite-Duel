@@ -187,7 +187,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 5, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Inventory view", 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
 		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE));
@@ -205,10 +205,10 @@ public class DuelCommand implements CommandClass {
 			page.setItem(i - 9, duelist.getInventory().getItem(i));
 		}
 
-		page.setItem(38, duelist.getInventory().getItem(100));
-		page.setItem(39, duelist.getInventory().getItem(101));
-		page.setItem(41, duelist.getInventory().getItem(102));
-		page.setItem(42, duelist.getInventory().getItem(103));
+		page.setItem(38, duelist.getInventory().getHelmet());
+		page.setItem(39, duelist.getInventory().getChestplate());
+		page.setItem(41, duelist.getInventory().getLeggings());
+		page.setItem(42, duelist.getInventory().getBoots());
 
 		page.setItem(44, new ItemStack(Material.ARROW));
 
@@ -233,12 +233,12 @@ public class DuelCommand implements CommandClass {
 		page.setItem(26, new ItemStack(Material.ARROW));
 
 		for (int i = 0; i < 12; i++) {
-			if (i > duel.getWager1().size()) return;
+			if (i >= duel.getWager1().size()) continue;
 			page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
 		}
 
 		for (int i = 0; i < 12; i++) {
-			if (i > duel.getWager1().size()) return;
+			if (i >= duel.getWager1().size()) continue;
 			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager1().get(i));
 		}
 
@@ -249,6 +249,7 @@ public class DuelCommand implements CommandClass {
 			}
 		});
 
+		inventory.setPage(page);
 		inventory.show(p);
 
 		//TODO: MAKE UPDATE EVERY TIME NEW ITEM IS ADDED TO WAGER
