@@ -209,6 +209,18 @@ public class DuelCommand implements CommandClass {
 		page.setItem(39, duelist.getInventory().getItem(101));
 		page.setItem(41, duelist.getInventory().getItem(102));
 		page.setItem(42, duelist.getInventory().getItem(103));
+
+		page.setItem(44, new ItemStack(Material.ARROW));
+
+		page.setOnSlotClickListener(e -> {
+			if (e.getSlot() == 44) {
+				e.getEvent().getWhoClicked().closeInventory();
+				createWagerGui((Player) e.getEvent().getWhoClicked(), duel);
+			}
+		});
+
+		inventory.applyPage(page);
+		inventory.show(p);
 	}
 
 	public void createWagerGui(Player p, Duel duel) {
@@ -217,6 +229,8 @@ public class DuelCommand implements CommandClass {
 		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
+
+		page.setItem(26, new ItemStack(Material.ARROW));
 
 		for (int i = 0; i < 12; i++) {
 			if (i > duel.getWager1().size()) return;
@@ -227,6 +241,13 @@ public class DuelCommand implements CommandClass {
 			if (i > duel.getWager1().size()) return;
 			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager1().get(i));
 		}
+
+		page.setOnSlotClickListener(e -> {
+			if (e.getSlot() == 26) {
+				e.getEvent().getWhoClicked().closeInventory();
+				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
+			}
+		});
 
 		inventory.show(p);
 
