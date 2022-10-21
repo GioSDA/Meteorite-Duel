@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -130,15 +131,17 @@ public class DuelCommand implements CommandClass {
 		page.setItem(26, Material.ARROW, "§a§lContinue to map select");
 
 		page.setOnSlotClickListener(e -> {
-			if (e.getSlot() == 26) {
+			e.getEvent().getWhoClicked().sendMessage(String.valueOf(e.getEvent().getRawSlot()));
+
+			if (e.getEvent().getRawSlot() == 26) {
 				duel.getDueler().closeInventory();
 				createMapGui(duel);
 			}
 
-			if (duelArgs.size() <= e.getSlot()) return;
-			duelArgs.get(e.getSlot()).setEnabled(!duelArgs.get(e.getSlot()).isEnabled());
+			if (duelArgs.size() <= e.getEvent().getRawSlot()) return;
+			duelArgs.get(e.getEvent().getRawSlot()).setEnabled(!duelArgs.get(e.getEvent().getRawSlot()).isEnabled());
 
-			setGuiElement(e.getSlot(), page, duelArgs);
+			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler());
@@ -168,18 +171,18 @@ public class DuelCommand implements CommandClass {
 		}
 
 		page.setOnSlotClickListener(e -> {
-			if (maps.size() <= e.getSlot()) return;
-			if (!maps.get(e.getSlot()).isActive()) {
+			if (maps.size() <= e.getEvent().getRawSlot()) return;
+			if (!maps.get(e.getEvent().getRawSlot()).isActive()) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
 				return;
 			}
 
-			duel.setMap(maps.get(e.getSlot()));
+			duel.setMap(maps.get(e.getEvent().getRawSlot()));
 			duel.getDueler().closeInventory();
 
 			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
 			Main.addDuel(duel);
-			Main.mapActive(e.getSlot(), false);
+			Main.mapActive(e.getEvent().getRawSlot(), false);
 		});
 
 		inventory.applyPage(page);
@@ -213,7 +216,7 @@ public class DuelCommand implements CommandClass {
 		page.setItem(44, new ItemStack(Material.ARROW));
 
 		page.setOnSlotClickListener(e -> {
-			if (e.getSlot() == 44) {
+			if (e.getEvent().getRawSlot() == 44) {
 				e.getEvent().getWhoClicked().closeInventory();
 				createWagerGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
@@ -243,7 +246,7 @@ public class DuelCommand implements CommandClass {
 		}
 
 		page.setOnSlotClickListener(e -> {
-			if (e.getSlot() == 26) {
+			if (e.getEvent().getRawSlot() == 26) {
 				e.getEvent().getWhoClicked().closeInventory();
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
