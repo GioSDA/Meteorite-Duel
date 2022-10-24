@@ -14,7 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -97,8 +97,8 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		createWagerGui(duel.getDueler(), duel);
-		createWagerGui(duel.getDueler2(), duel);
+		createWagerGui(duel.getDueler1(), duel, true);
+		createWagerGui(duel.getDueler2(), duel, true);
 	}
 
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
@@ -131,10 +131,10 @@ public class DuelCommand implements CommandClass {
 		page.setItem(26, Material.ARROW, "§a§lContinue to map select");
 
 		page.setOnSlotClickListener(e -> {
-			e.getEvent().getWhoClicked().sendMessage(String.valueOf(e.getEvent().getRawSlot()));
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
 			if (e.getEvent().getRawSlot() == 26) {
-				duel.getDueler().closeInventory();
+				duel.getDueler1().closeInventory();
 				createMapGui(duel);
 			}
 
@@ -144,12 +144,12 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
 			inventory.applyPage(page);
-			inventory.show(duel.getDueler());
+			inventory.show(duel.getDueler1());
 		});
 
 		inventory.applyPage(page);
 
-		inventory.show(duel.getDueler());
+		inventory.show(duel.getDueler1());
 	}
 
 	private void createMapGui(Duel duel) {
@@ -171,6 +171,8 @@ public class DuelCommand implements CommandClass {
 		}
 
 		page.setOnSlotClickListener(e -> {
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+
 			if (maps.size() <= e.getEvent().getRawSlot()) return;
 			if (!maps.get(e.getEvent().getRawSlot()).isActive()) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
@@ -178,7 +180,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			duel.setMap(maps.get(e.getEvent().getRawSlot()));
-			duel.getDueler().closeInventory();
+			duel.getDueler1().closeInventory();
 
 			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
 			Main.addDuel(duel);
@@ -186,7 +188,7 @@ public class DuelCommand implements CommandClass {
 		});
 
 		inventory.applyPage(page);
-		inventory.show(duel.getDueler());
+		inventory.show(duel.getDueler1());
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
@@ -198,7 +200,7 @@ public class DuelCommand implements CommandClass {
 		page.setItem(43, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(44, new ItemStack(Material.STAINED_GLASS_PANE));
 
-		Player duelist = p.getPlayer().equals(duel.getDueler()) ? duel.getDueler2() : duel.getDueler();
+		Player duelist = p.getPlayer().equals(duel.getDueler1()) ? duel.getDueler2() : duel.getDueler1();
 
 		for (int i = 0; i < 9; i++) {
 			page.setItem(27 + i, duelist.getInventory().getItem(i));
@@ -216,9 +218,11 @@ public class DuelCommand implements CommandClass {
 		page.setItem(44, new ItemStack(Material.ARROW));
 
 		page.setOnSlotClickListener(e -> {
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+
 			if (e.getEvent().getRawSlot() == 44) {
 				e.getEvent().getWhoClicked().closeInventory();
-				createWagerGui((Player) e.getEvent().getWhoClicked(), duel);
+				createWagerGui((Player) e.getEvent().getWhoClicked(), duel, true);
 			}
 		});
 
@@ -226,7 +230,9 @@ public class DuelCommand implements CommandClass {
 		inventory.show(p);
 	}
 
-	public void createWagerGui(Player p, Duel duel) {
+	public void createWagerGui(Player p, Duel duel, boolean forced) {
+		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
+
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
@@ -246,16 +252,61 @@ public class DuelCommand implements CommandClass {
 		}
 
 		page.setOnSlotClickListener(e -> {
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+
 			if (e.getEvent().getRawSlot() == 26) {
 				e.getEvent().getWhoClicked().closeInventory();
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
+
+			if (duel.getDueler1().equals(p)) {
+				System.out.println(e.getEvent().getRawSlot());
+				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9);
+					if (index > duel.getWager1().size()) return;
+
+					duel.getDueler1().getInventory().addItem(duel.getWager1().get(index));
+					duel.getWager1().remove(index);
+
+					createWagerGui(duel.getDueler1(), duel, false);
+					createWagerGui(duel.getDueler2(), duel, false);
+				}
+			} else if (duel.getDueler2().equals(p)) {
+				if (e.getSlotX() > 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9) - 5;
+					if (index > duel.getWager2().size()) return;
+
+					duel.getDueler2().getInventory().addItem(duel.getWager2().get(index));
+					duel.getWager2().remove(index);
+
+					createWagerGui(duel.getDueler1(), duel, false);
+					createWagerGui(duel.getDueler2(), duel, false);
+				}
+			}
+
+			if (e.getEvent().getRawSlot() > 27) {
+				System.out.println("a");
+				if (duel.getDueler1().equals(p)) {
+					duel.getWager1().add(p.getInventory().getItem(e.getSlot()));
+					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
+
+					createWagerGui(duel.getDueler1(), duel, false);
+					createWagerGui(duel.getDueler2(), duel, false);
+				} else if (duel.getDueler2().equals(p)) {
+					duel.getWager2().add(p.getInventory().getItem(e.getSlot()));
+					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
+
+					createWagerGui(duel.getDueler1(), duel, false);
+					createWagerGui(duel.getDueler2(), duel, false);
+				}
+			}
+
+			p.updateInventory();
 		});
 
 		inventory.setPage(page);
 		inventory.show(p);
 
-		//TODO: MAKE UPDATE EVERY TIME NEW ITEM IS ADDED TO WAGER
 		inventory.update();
 	}
 }

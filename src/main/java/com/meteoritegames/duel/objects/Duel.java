@@ -9,15 +9,15 @@ import java.util.ArrayList;
 public class Duel {
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
 
-	private Player dueler;
+	private Player dueler1;
 	private Player dueler2;
 	private DuelMap map;
 	private boolean active;
 	private ArrayList<ItemStack> wager1;
 	private ArrayList<ItemStack> wager2;
 
-	public Duel(Player dueler, Player dueler2) {
-		this.dueler = dueler;
+	public Duel(Player dueler1, Player dueler2) {
+		this.dueler1 = dueler1;
 		this.dueler2 = dueler2;
 		this.active = false;
 		this.wager1 = new ArrayList<>();
@@ -42,12 +42,12 @@ public class Duel {
 	}
 
 
-	public Player getDueler() {
-		return dueler;
+	public Player getDueler1() {
+		return dueler1;
 	}
 
-	public void setDueler(Player dueler) {
-		this.dueler = dueler;
+	public void setDueler1(Player dueler) {
+		this.dueler1 = dueler;
 	}
 
 	public Player getDueler2() {

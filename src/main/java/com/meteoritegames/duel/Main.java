@@ -62,7 +62,7 @@ public class Main extends MeteoritePlugin {
 
 	public static Duel getDuel(Player p) {
 		for (Duel duel : duels) {
-			if (duel.getDueler().equals(p)) return duel;
+			if (duel.getDueler1().equals(p)) return duel;
 		}
 
 		return null;
@@ -70,7 +70,7 @@ public class Main extends MeteoritePlugin {
 
 	public static boolean playerIsInDuel(Player p) {
 		for (Duel duel : duels) {
-			if ((duel.getDueler().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return true;
+			if ((duel.getDueler1().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return true;
 		}
 
 		return false;
