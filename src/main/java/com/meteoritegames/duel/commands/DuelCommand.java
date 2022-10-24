@@ -9,7 +9,11 @@ import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
 import com.meteoritepvp.api.inventory.MeteoriteInventory;
 import com.meteoritepvp.api.inventory.presets.BasicInventory;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -182,6 +186,13 @@ public class DuelCommand implements CommandClass {
 			duel.setMap(maps.get(e.getEvent().getRawSlot()));
 			duel.getDueler1().closeInventory();
 
+			BaseComponent[] message =
+					new ComponentBuilder(duel.getDueler1().getName()).color(ChatColor.BLUE)
+							.append(" has invited you to a duel!").color(ChatColor.AQUA)
+							.append(" Click here to accept.").color(ChatColor.GOLD).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel accept " + duel.getDueler1().getName())).create();
+
+			duel.getDueler2().spigot().sendMessage(message);
+
 			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
 			Main.addDuel(duel);
 			Main.mapActive(e.getEvent().getRawSlot(), false);
@@ -260,7 +271,6 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.getDueler1().equals(p)) {
-				System.out.println(e.getEvent().getRawSlot());
 				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
 					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9);
 					if (index > duel.getWager1().size()) return;
@@ -285,7 +295,6 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (e.getEvent().getRawSlot() > 27) {
-				System.out.println("a");
 				if (duel.getDueler1().equals(p)) {
 					duel.getWager1().add(p.getInventory().getItem(e.getSlot()));
 					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
