@@ -3,6 +3,9 @@ maps:
     name: "&e&lupdate the config.yml"
     icon: "glass"
     #The x, y, and z positions of the map that players will be teleported to
-    xpos: 0
-    ypos: 0
-    zpos: 0
+    spawn1x: 0
+    spawn1y: 0
+    spawn1z: 0
+    spawn2x: 0
+    spawn2y: 0
+    spawn2z: 0

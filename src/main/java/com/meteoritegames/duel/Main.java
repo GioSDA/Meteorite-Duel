@@ -44,11 +44,14 @@ public class Main extends MeteoritePlugin {
 
 			String name = getConfig().getString(mapkey + "name");
 			Material material = Material.valueOf(getConfig().getString(mapkey + "icon").toUpperCase(Locale.ROOT));
-			double x = getConfig().getDouble(mapkey + "xpos");
-			double y = getConfig().getDouble(mapkey + "ypos");
-			double z = getConfig().getDouble(mapkey + "zpos");
+			double x1 = getConfig().getDouble(mapkey + "spawn1x");
+			double y1 = getConfig().getDouble(mapkey + "spawn1y");
+			double z1 = getConfig().getDouble(mapkey + "spawn1z");
+			double x2 = getConfig().getDouble(mapkey + "spawn2x");
+			double y2 = getConfig().getDouble(mapkey + "spawn2y");
+			double z2 = getConfig().getDouble(mapkey + "spawn2z");
 
-			maps.add(new DuelMap(name, material, x, y, z, true));
+			maps.add(new DuelMap(name, material, x1, y1, z1, x2, y2, z2, true));
 		}
 	}
 
