@@ -226,7 +226,7 @@ public class DuelCommand implements CommandClass {
 		page.setItem(41, duelist.getInventory().getLeggings());
 		page.setItem(42, duelist.getInventory().getBoots());
 
-		page.setItem(44, new ItemStack(Material.ARROW));
+		page.setItem(44, Material.ARROW, "§a§lWagering");
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -244,13 +244,20 @@ public class DuelCommand implements CommandClass {
 	public void createWagerGui(Player p, Duel duel, boolean forced) {
 		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
 
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 3, true);
-		BasicInventory page = new BasicInventory(9, 3);
+		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 4, true);
+		BasicInventory page = new BasicInventory(9, 4);
 		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
-
-		page.setItem(26, new ItemStack(Material.ARROW));
+		page.setItem(27, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(28, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(29, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(30, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(31, Material.ARROW, "§a§lInventory View");
+		page.setItem(32, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(33, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(34, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(35, new ItemStack(Material.STAINED_GLASS_PANE));
 
 		for (int i = 0; i < 12; i++) {
 			if (i >= duel.getWager1().size()) continue;
@@ -265,7 +272,7 @@ public class DuelCommand implements CommandClass {
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
-			if (e.getEvent().getRawSlot() == 26) {
+			if (e.getEvent().getRawSlot() == 31) {
 				e.getEvent().getWhoClicked().closeInventory();
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
@@ -294,7 +301,7 @@ public class DuelCommand implements CommandClass {
 				}
 			}
 
-			if (e.getEvent().getRawSlot() > 27) {
+			if (e.getEvent().getRawSlot() > 36) {
 				if (duel.getDueler1().equals(p)) {
 					duel.getWager1().add(p.getInventory().getItem(e.getSlot()));
 					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
