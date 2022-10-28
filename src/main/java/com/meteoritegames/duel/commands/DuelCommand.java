@@ -13,8 +13,10 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.Instrument;
 import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,10 +24,14 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @DefaultCommand
 public class DuelCommand implements CommandClass {
@@ -246,18 +252,59 @@ public class DuelCommand implements CommandClass {
 
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 4, true);
 		BasicInventory page = new BasicInventory(9, 4);
-		page.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE));
+
+		ItemStack rules = new ItemStack(Material.BOOK);
+		ItemMeta rulesMeta = rules.getItemMeta();
+		rulesMeta.setDisplayName("§6Rules");
+
+		ArrayList<String> rulesLore = new ArrayList<>();
+
+		for (DuelArg arg : duel.getDuelArgs()) {
+			if (arg.isEnabled()) rulesLore.add("§e" + arg.getName() + ": §a§lON");
+			else rulesLore.add("§e" + arg.getName() + ": §c§lOFF");
+		}
+
+		rulesMeta.setLore(rulesLore);
+		rules.setItemMeta(rulesMeta);
+
+		page.setItem(4, rules);
 		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(27, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(28, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(29, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(30, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(31, Material.ARROW, "§a§lInventory View");
-		page.setItem(32, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(33, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(34, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(35, new ItemStack(Material.STAINED_GLASS_PANE));
+
+		ItemStack item;
+		if (duel.isAccepted1()) {
+			item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§a§l Has accepted!");
+			item.setItemMeta(meta);
+		} else {
+			item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+			item.setItemMeta(meta);
+		}
+		page.setItem(30, item);
+
+		ItemStack item2;
+		if (duel.isAccepted2()) {
+			item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+			ItemMeta meta = item2.getItemMeta();
+			meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§a§l Has accepted!");
+			item2.setItemMeta(meta);
+		} else {
+			item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta meta = item2.getItemMeta();
+			meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+			item2.setItemMeta(meta);
+		}
+		page.setItem(32, item2);
 
 		for (int i = 0; i < 12; i++) {
 			if (i >= duel.getWager1().size()) continue;
@@ -301,6 +348,52 @@ public class DuelCommand implements CommandClass {
 				}
 			}
 
+			if (e.getEvent().getRawSlot() == 30 && duel.getDueler1().equals(p)) {
+				if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted1(true);
+				else if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted1(false);
+			}
+
+			if (e.getEvent().getRawSlot() == 32 && duel.getDueler2().equals(p)) {
+				if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted2(true);
+				else if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted2(false);
+			}
+
+			if (duel.isAccepted1() && duel.isAccepted2()) {
+
+				BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+				scheduler.runTaskTimer((Plugin) this, new BukkitRunnable() {
+					int count = 3;
+					final Player p1 = duel.getDueler1();
+					final Player p2 = duel.getDueler2();
+
+					@Override
+					public void run() {
+						if(count == 3) {
+							p1.sendTitle(" \t§a3", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(5, Note.Tone.C));
+							p2.sendTitle(" \t§a3", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(5, Note.Tone.C));
+						} else if(count == 2) {
+							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							p1.sendTitle(" \t§62", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(4, Note.Tone.C));
+							p2.sendTitle(" \t§62", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(4, Note.Tone.C));
+						} else if(count == 1) {
+							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							p1.sendTitle(" \t§c1", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(3, Note.Tone.C));
+							p2.sendTitle(" \t§c1", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(3, Note.Tone.C));
+						} else if (count == 0) {
+							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							else setUpDuel();
+						}
+						count--;
+					}
+				}, 0L, 20);
+			}
+
 			if (e.getEvent().getRawSlot() > 36) {
 				if (duel.getDueler1().equals(p)) {
 					duel.getWager1().add(p.getInventory().getItem(e.getSlot()));
@@ -324,5 +417,9 @@ public class DuelCommand implements CommandClass {
 		inventory.show(p);
 
 		inventory.update();
+	}
+
+	public void setUpDuel() {
+
 	}
 }

@@ -13,6 +13,8 @@ public class Duel {
 	private Player dueler2;
 	private DuelMap map;
 	private boolean active;
+	private boolean accepted1;
+	private boolean accepted2;
 	private ArrayList<ItemStack> wager1;
 	private ArrayList<ItemStack> wager2;
 
@@ -22,9 +24,11 @@ public class Duel {
 		this.active = false;
 		this.wager1 = new ArrayList<>();
 		this.wager2 = new ArrayList<>();
+		this.accepted1 = false;
+		this.accepted2 = false;
 
 		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
-		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
+//		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
 		duelArgs.add(new DuelArg(Material.BREWING_STAND_ITEM, "Potions", true));
 		duelArgs.add(new DuelArg(Material.BOW, "Bows", true));
 		duelArgs.add(new DuelArg(Material.GHAST_TEAR, "Healing", true));
@@ -91,6 +95,23 @@ public class Duel {
 
 	public void setWager2(ArrayList<ItemStack> wager2) {
 		this.wager2 = wager2;
+	}
+
+
+	public boolean isAccepted1() {
+		return accepted1;
+	}
+
+	public void setAccepted1(boolean accepted1) {
+		this.accepted1 = accepted1;
+	}
+
+	public boolean isAccepted2() {
+		return accepted2;
+	}
+
+	public void setAccepted2(boolean accepted2) {
+		this.accepted2 = accepted2;
 	}
 
 }
