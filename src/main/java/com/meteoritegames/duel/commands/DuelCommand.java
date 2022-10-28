@@ -13,10 +13,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.Instrument;
-import org.bukkit.Material;
-import org.bukkit.Note;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -378,25 +375,25 @@ public class DuelCommand implements CommandClass {
 						p2.closeInventory();
 						if(count == 3) {
 							p1.sendTitle("§a3", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§a3", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if(count == 2) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
 							p1.sendTitle("§62", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§62", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if(count == 1) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
 							p1.sendTitle("§c1", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§c1", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if (count == 0) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
 							//play a cool sound :)
-							else setUpDuel();
+							else setUpDuel(duel);
 						}
 						count--;
 					}
@@ -428,7 +425,13 @@ public class DuelCommand implements CommandClass {
 		inventory.update();
 	}
 
-	public void setUpDuel() {
+	public void setUpDuel(Duel duel) {
+		Player p1 = duel.getDueler1();
+		Player p2 = duel.getDueler2();
 
+		p1.teleport(new Location(p1.getServer().getWorlds().get(0), duel.getMap().getX1(), duel.getMap().getY1(), duel.getMap().getZ1()));
+		p2.teleport(new Location(p2.getServer().getWorlds().get(0), duel.getMap().getX2(), duel.getMap().getY2(), duel.getMap().getZ2()));
+		p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
+		p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 	}
 }
