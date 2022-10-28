@@ -351,47 +351,56 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getRawSlot() == 30 && duel.getDueler1().equals(p)) {
 				if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted1(true);
 				else if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted1(false);
+
+				createWagerGui(duel.getDueler1(), duel, false);
+				createWagerGui(duel.getDueler2(), duel, false);
 			}
 
 			if (e.getEvent().getRawSlot() == 32 && duel.getDueler2().equals(p)) {
 				if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted2(true);
 				else if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted2(false);
+
+				createWagerGui(duel.getDueler1(), duel, false);
+				createWagerGui(duel.getDueler2(), duel, false);
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
 
 				BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-				scheduler.runTaskTimer((Plugin) this, new BukkitRunnable() {
+				scheduler.runTaskTimerAsynchronously(Main.plugin, new BukkitRunnable() {
 					int count = 3;
 					final Player p1 = duel.getDueler1();
 					final Player p2 = duel.getDueler2();
 
 					@Override
 					public void run() {
+						p1.closeInventory();
+						p2.closeInventory();
 						if(count == 3) {
-							p1.sendTitle(" \t§a3", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(5, Note.Tone.C));
-							p2.sendTitle(" \t§a3", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(5, Note.Tone.C));
+							p1.sendTitle("§a3", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.sendTitle("§a3", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
 						} else if(count == 2) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
-							p1.sendTitle(" \t§62", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(4, Note.Tone.C));
-							p2.sendTitle(" \t§62", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(4, Note.Tone.C));
+							p1.sendTitle("§62", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.sendTitle("§62", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
 						} else if(count == 1) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
-							p1.sendTitle(" \t§c1", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(3, Note.Tone.C));
-							p2.sendTitle(" \t§c1", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(3, Note.Tone.C));
+							p1.sendTitle("§c1", "");
+							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
+							p2.sendTitle("§c1", "");
+							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
 						} else if (count == 0) {
 							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							//play a cool sound :)
 							else setUpDuel();
 						}
 						count--;
 					}
-				}, 0L, 20);
+				}, 0L, 30);
 			}
 
 			if (e.getEvent().getRawSlot() > 36) {
