@@ -71,12 +71,12 @@ public class Main extends MeteoritePlugin {
 		return null;
 	}
 
-	public static boolean playerIsInDuel(Player p) {
+	public static Duel playerIsInDuel(Player p) {
 		for (Duel duel : duels) {
-			if ((duel.getDueler1().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return true;
+			if ((duel.getDueler1().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return duel;
 		}
 
-		return false;
+		return null;
 	}
 
 	public static void removeDuel(Duel d) {

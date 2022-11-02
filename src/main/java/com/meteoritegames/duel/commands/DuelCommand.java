@@ -73,12 +73,12 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		if (Main.playerIsInDuel(d)) {
+		if (Main.playerIsInDuel(d) != null) {
 			sender.sendMessage("§cThat player is already in a duel!");
 			return;
 		}
 
-		if (Main.playerIsInDuel(p)) {
+		if (Main.playerIsInDuel(p) != null) {
 			sender.sendMessage("§cYou are already in a duel!");
 			return;
 		}
@@ -498,5 +498,13 @@ public class DuelCommand implements CommandClass {
 				p2.getInventory().remove(e);
 			});
 		}
+
+		p1.setHealth(20.0);
+		p2.setHealth(20.0);
+
+		p1.setFoodLevel(20);
+		p2.setFoodLevel(20);
 	}
+
+
 }

@@ -1,18 +1,38 @@
 package com.meteoritegames.duel.listeners;
 
+import com.meteoritegames.duel.Main;
+import com.meteoritegames.duel.objects.Duel;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class DuelListener implements Listener {
 
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getOpenInventory().getTitle().contains("Wagering")) return;
+	public void onHealEvent(EntityRegainHealthEvent e) {
+		if (!e.getEntityType().equals(EntityType.PLAYER)) return;
 
-		Player player = (Player) event.getWhoClicked();
-		event.setCancelled(true);
+		Duel d = Main.playerIsInDuel((Player)e.getEntity());
+		if (d == null) return;
+
+		if (d.isActive()) {
+			if (d.getDuelArgs().get(3).isEnabled()) e.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onFoodChangeEvent(FoodLevelChangeEvent e) {
+		if (!e.getEntityType().equals(EntityType.PLAYER)) return;
+
+		Duel d = Main.playerIsInDuel((Player)e.getEntity());
+		if (d == null) return;
+
+		if (d.isActive()) {
+			if (d.getDuelArgs().get(4).isEnabled()) e.setCancelled(true);
+		}
 	}
 
 }
