@@ -25,13 +25,41 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 @DefaultCommand
 public class DuelCommand implements CommandClass {
+	private static final Set<Material> ARMORTYPES = EnumSet.of(
+			Material.LEATHER_HELMET,
+			Material.LEATHER_CHESTPLATE,
+			Material.LEATHER_LEGGINGS,
+			Material.LEATHER_BOOTS,
+			Material.CHAINMAIL_HELMET,
+			Material.CHAINMAIL_CHESTPLATE,
+			Material.CHAINMAIL_LEGGINGS,
+			Material.CHAINMAIL_BOOTS,
+			Material.GOLD_HELMET,
+			Material.GOLD_CHESTPLATE,
+			Material.GOLD_LEGGINGS,
+			Material.GOLD_BOOTS,
+			Material.IRON_HELMET,
+			Material.IRON_CHESTPLATE,
+			Material.IRON_LEGGINGS,
+			Material.IRON_BOOTS,
+			Material.DIAMOND_HELMET,
+			Material.DIAMOND_CHESTPLATE,
+			Material.DIAMOND_LEGGINGS,
+			Material.DIAMOND_BOOTS
+	);
+
+	private static final Set<Material> SWORDTYPES = EnumSet.of(
+			Material.DIAMOND_SWORD,
+			Material.GOLD_SWORD,
+			Material.STONE_SWORD,
+			Material.WOOD_SWORD,
+			Material.IRON_SWORD
+	);
+
 	@Command(description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(CommandSender sender, String[] params) {
@@ -433,5 +461,42 @@ public class DuelCommand implements CommandClass {
 		p2.teleport(new Location(p2.getServer().getWorlds().get(0), duel.getMap().getX2(), duel.getMap().getY2(), duel.getMap().getZ2()));
 		p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 		p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
+
+		duel.setInventory1(p1.getInventory());
+		duel.setInventory2(p2.getInventory());
+
+		if (!duel.getDuelArgs().get(0).isEnabled()) { //Golden Apples
+			p1.getInventory().remove(Material.GOLDEN_APPLE);
+			p2.getInventory().remove(Material.GOLDEN_APPLE);
+		}
+
+		if (!duel.getDuelArgs().get(1).isEnabled()) { //Potions
+			p1.getInventory().remove(Material.POTION);
+			p2.getInventory().remove(Material.POTION);
+		}
+
+		if (!duel.getDuelArgs().get(2).isEnabled()) { //Bows
+			p1.getInventory().remove(Material.BOW);
+			p2.getInventory().remove(Material.BOW);
+		}
+
+		if (!duel.getDuelArgs().get(5).isEnabled()) { //Ender Pearls
+			p1.getInventory().remove(Material.ENDER_PEARL);
+			p2.getInventory().remove(Material.ENDER_PEARL);
+		}
+
+		if (!duel.getDuelArgs().get(7).isEnabled()) { //Armor
+			ARMORTYPES.forEach(e -> {
+				p1.getInventory().remove(e);
+				p2.getInventory().remove(e);
+			});
+		}
+
+		if (!duel.getDuelArgs().get(8).isEnabled()) { //Swords
+			SWORDTYPES.forEach(e -> {
+				p1.getInventory().remove(e);
+				p2.getInventory().remove(e);
+			});
+		}
 	}
 }

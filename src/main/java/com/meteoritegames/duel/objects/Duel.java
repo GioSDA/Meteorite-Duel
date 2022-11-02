@@ -2,6 +2,7 @@ package com.meteoritegames.duel.objects;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class Duel {
 	private boolean accepted2;
 	private ArrayList<ItemStack> wager1;
 	private ArrayList<ItemStack> wager2;
+	private Inventory inventory1;
+	private Inventory inventory2;
 
 	public Duel(Player dueler1, Player dueler2) {
 		this.dueler1 = dueler1;
@@ -40,7 +43,6 @@ public class Duel {
 		duelArgs.add(new DuelArg(Material.ANVIL, "/fix", true));
 		duelArgs.add(new DuelArg(Material.ANVIL, "/fix all", true));
 		duelArgs.add(new DuelArg(Material.FEATHER, "/fly", false));
-		duelArgs.add(new DuelArg(Material.FIREWORK, "Cosmic Envoy", false));
 		duelArgs.add(new DuelArg(Material.PAPER, "Death Certificates", true));
 		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
 	}
@@ -113,5 +115,23 @@ public class Duel {
 	public void setAccepted2(boolean accepted2) {
 		this.accepted2 = accepted2;
 	}
+
+
+	public Inventory getInventory1() {
+		return inventory1;
+	}
+
+	public void setInventory1(Inventory inventory1) {
+		this.inventory1 = inventory1;
+	}
+
+	public Inventory getInventory2() {
+		return inventory2;
+	}
+
+	public void setInventory2(Inventory inventory2) {
+		this.inventory2 = inventory2;
+	}
+
 
 }
