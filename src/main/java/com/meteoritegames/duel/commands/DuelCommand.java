@@ -21,7 +21,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -499,11 +498,24 @@ public class DuelCommand implements CommandClass {
 			});
 		}
 
+		if (duel.getDuelArgs().get(12).isEnabled()) {
+			p1.setAllowFlight(true);
+			p2.setAllowFlight(true);
+		}
+
 		p1.setHealth(20.0);
 		p2.setHealth(20.0);
 
 		p1.setFoodLevel(20);
 		p2.setFoodLevel(20);
+	}
+
+	public void endDuel(Duel duel) {
+		Player p1 = duel.getDueler1();
+		Player p2 = duel.getDueler2();
+
+		p1.setAllowFlight(false);
+		p2.setAllowFlight(false);
 	}
 
 

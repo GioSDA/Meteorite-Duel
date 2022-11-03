@@ -1,6 +1,7 @@
 package com.meteoritegames.duel;
 
 import com.meteoritegames.duel.commands.DuelCommand;
+import com.meteoritegames.duel.commands.FixFlyCommand;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
@@ -28,6 +29,7 @@ public class Main extends MeteoritePlugin {
 			print("Duel plugin enabled.");
 
 			registerCommandClass(DuelCommand.class);
+			registerCommandClass(FixFlyCommand.class);
 		} catch (Exception e) {
 			print("Error enabling duel maps! Make sure your icons are correct?");
 			e.printStackTrace();
