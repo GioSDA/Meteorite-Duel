@@ -1,11 +1,16 @@
 package com.meteoritegames.duel.objects;
 
+import org.bukkit.Instrument;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Set;
 
 public class Duel {
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
@@ -20,6 +25,37 @@ public class Duel {
 	private ArrayList<ItemStack> wager2;
 	private Inventory inventory1;
 	private Inventory inventory2;
+
+	private static final Set<Material> ARMORTYPES = EnumSet.of(
+			Material.LEATHER_HELMET,
+			Material.LEATHER_CHESTPLATE,
+			Material.LEATHER_LEGGINGS,
+			Material.LEATHER_BOOTS,
+			Material.CHAINMAIL_HELMET,
+			Material.CHAINMAIL_CHESTPLATE,
+			Material.CHAINMAIL_LEGGINGS,
+			Material.CHAINMAIL_BOOTS,
+			Material.GOLD_HELMET,
+			Material.GOLD_CHESTPLATE,
+			Material.GOLD_LEGGINGS,
+			Material.GOLD_BOOTS,
+			Material.IRON_HELMET,
+			Material.IRON_CHESTPLATE,
+			Material.IRON_LEGGINGS,
+			Material.IRON_BOOTS,
+			Material.DIAMOND_HELMET,
+			Material.DIAMOND_CHESTPLATE,
+			Material.DIAMOND_LEGGINGS,
+			Material.DIAMOND_BOOTS
+	);
+
+	private static final Set<Material> SWORDTYPES = EnumSet.of(
+			Material.DIAMOND_SWORD,
+			Material.GOLD_SWORD,
+			Material.STONE_SWORD,
+			Material.WOOD_SWORD,
+			Material.IRON_SWORD
+	);
 
 	public Duel(Player dueler1, Player dueler2) {
 		this.dueler1 = dueler1;
@@ -133,5 +169,63 @@ public class Duel {
 		this.inventory2 = inventory2;
 	}
 
+	public void startDuel() {
+		dueler1.teleport(new Location(dueler1.getServer().getWorlds().get(0), this.getMap().getX1(), this.getMap().getY1(), this.getMap().getZ1()));
+		dueler2.teleport(new Location(dueler2.getServer().getWorlds().get(0), this.getMap().getX2(), this.getMap().getY2(), this.getMap().getZ2()));
+		dueler1.playNote(dueler1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
+		dueler2.playNote(dueler2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 
+		this.inventory1 = dueler1.getInventory();
+		this.inventory2 = dueler2.getInventory();
+
+		if (!this.getDuelArgs().get(0).isEnabled()) { //Golden Apples
+			dueler1.getInventory().remove(Material.GOLDEN_APPLE);
+			dueler2.getInventory().remove(Material.GOLDEN_APPLE);
+		}
+
+		if (!this.getDuelArgs().get(1).isEnabled()) { //Potions
+			dueler1.getInventory().remove(Material.POTION);
+			dueler2.getInventory().remove(Material.POTION);
+		}
+
+		if (!this.getDuelArgs().get(2).isEnabled()) { //Bows
+			dueler1.getInventory().remove(Material.BOW);
+			dueler2.getInventory().remove(Material.BOW);
+		}
+
+		if (!this.getDuelArgs().get(5).isEnabled()) { //Ender Pearls
+			dueler1.getInventory().remove(Material.ENDER_PEARL);
+			dueler2.getInventory().remove(Material.ENDER_PEARL);
+		}
+
+		if (!this.getDuelArgs().get(7).isEnabled()) { //Armor
+			ARMORTYPES.forEach(e -> {
+				dueler1.getInventory().remove(e);
+				dueler2.getInventory().remove(e);
+			});
+		}
+
+		if (!this.getDuelArgs().get(8).isEnabled()) { //Swords
+			SWORDTYPES.forEach(e -> {
+				dueler1.getInventory().remove(e);
+				dueler2.getInventory().remove(e);
+			});
+		}
+
+		if (this.getDuelArgs().get(12).isEnabled()) {
+			dueler1.setAllowFlight(true);
+			dueler2.setAllowFlight(true);
+		}
+
+		dueler1.setHealth(20.0);
+		dueler2.setHealth(20.0);
+
+		dueler1.setFoodLevel(20);
+		dueler2.setFoodLevel(20);
+	}
+
+	public void endDuel() {
+		dueler1.setAllowFlight(false);
+		dueler2.setAllowFlight(false);
+	}
 }

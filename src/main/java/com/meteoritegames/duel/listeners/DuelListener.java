@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class DuelListener implements Listener {
 
@@ -33,6 +34,14 @@ public class DuelListener implements Listener {
 		if (d.isActive()) {
 			if (d.getDuelArgs().get(4).isEnabled()) e.setCancelled(true);
 		}
+	}
+
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		Duel d = Main.playerIsInDuel(e.getEntity());
+
+		if (d == null) return;
+
+		else d.endDuel();
 	}
 
 }
