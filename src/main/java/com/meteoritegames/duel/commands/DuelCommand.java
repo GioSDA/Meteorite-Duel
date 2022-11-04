@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -166,7 +167,7 @@ public class DuelCommand implements CommandClass {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', maps.get(i).getName()));
-			if (!maps.get(i).isActive()) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
+			if (Main.mapIsActive(maps.get(i))) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
 
 			item.setItemMeta(meta);
 
@@ -177,7 +178,7 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
 			if (maps.size() <= e.getEvent().getRawSlot()) return;
-			if (!maps.get(e.getEvent().getRawSlot()).isActive()) {
+			if (Main.mapIsActive(maps.get(e.getEvent().getRawSlot()))) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
 				return;
 			}
@@ -194,7 +195,6 @@ public class DuelCommand implements CommandClass {
 
 			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
 			Main.addDuel(duel);
-			Main.mapActive(e.getEvent().getRawSlot(), false);
 		});
 
 		inventory.applyPage(page);
@@ -305,8 +305,8 @@ public class DuelCommand implements CommandClass {
 		}
 
 		for (int i = 0; i < 12; i++) {
-			if (i >= duel.getWager1().size()) continue;
-			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager1().get(i));
+			if (i >= duel.getWager2().size()) continue;
+			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager2().get(i));
 		}
 
 		page.setOnSlotClickListener(e -> {
@@ -358,10 +358,9 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
-
-				BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-				scheduler.runTaskTimerAsynchronously(Main.plugin, new BukkitRunnable() {
+				BukkitTask task = new BukkitRunnable() {
 					int count = 3;
+
 					final Player p1 = duel.getDueler1();
 					final Player p2 = duel.getDueler2();
 
@@ -386,14 +385,13 @@ public class DuelCommand implements CommandClass {
 							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§c1", "");
 							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-						} else if (count == 0) {
-							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
-							//play a cool sound :)
-							duel.startDuel();
+						} else if (count <= 0) {
+							if (duel.isAccepted1() && duel.isAccepted2()) duel.startDuel();
+							this.cancel();
 						}
 						count--;
 					}
-				}, 0L, 30);
+				}.runTaskTimer(Main.plugin, 0L, 30);
 			}
 
 			if (e.getEvent().getRawSlot() > 36) {

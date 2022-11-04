@@ -38,10 +38,6 @@ public class Main extends MeteoritePlugin {
 		}
 	}
 
-	public static void mapActive(int index, boolean active) {
-		maps.get(index).setActive(active);
-	}
-
 	private void initMaps() throws IllegalArgumentException {
 		for (String key : getConfig().getConfigurationSection("maps").getKeys(false)) {
 			String mapkey = "maps." + key + ".";
@@ -55,12 +51,22 @@ public class Main extends MeteoritePlugin {
 			double y2 = getConfig().getDouble(mapkey + "spawn2y");
 			double z2 = getConfig().getDouble(mapkey + "spawn2z");
 
-			maps.add(new DuelMap(name, material, x1, y1, z1, x2, y2, z2, true));
+			maps.add(new DuelMap(name, material, x1, y1, z1, x2, y2, z2));
 		}
 	}
 
 	public static ArrayList<DuelMap> getMaps() {
 		return maps;
+	}
+
+	public static boolean mapIsActive(DuelMap map) {
+		for (Duel d : duels) {
+			if (d.getMap().equals(map)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static void addDuel(Duel d) {
