@@ -1,5 +1,6 @@
 package com.meteoritegames.duel.objects;
 
+import com.meteoritegames.duel.Main;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,6 +8,7 @@ import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -224,8 +226,33 @@ public class Duel {
 		dueler2.setFoodLevel(20);
 	}
 
-	public void endDuel() {
+	public void endDuel(Player loser) {
 		dueler1.setAllowFlight(false);
 		dueler2.setAllowFlight(false);
+
+		Player winner;
+		if (loser.equals(dueler1)) winner = dueler2;
+		else winner = dueler1;
+
+		ArrayList<ItemStack> rewards = new ArrayList<>();
+		rewards.addAll(getWager1());
+		rewards.addAll(getWager2());
+
+		if (duelArgs.get(7).isEnabled()) {
+			for (int i = 0; i < loser.getInventory().getSize(); i++) {
+				rewards.add(loser.getInventory().getItem(i));
+				loser.getInventory().setItem(i, new ItemStack(Material.AIR));
+			}
+		}
+
+		if (duelArgs.get(13).isEnabled()) {
+			ItemStack cert = new ItemStack(Material.PAPER);
+			ItemMeta meta = cert.getItemMeta();
+			meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner);
+			cert.setItemMeta(meta);
+			rewards.add(cert);
+		}
+
+		Main.addDuelRewards(winner, rewards);
 	}
 }

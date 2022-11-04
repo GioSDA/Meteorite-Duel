@@ -7,13 +7,15 @@ import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
-
+	public static HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
 	public static ArrayList<Duel> duels = new ArrayList<>();
 	private static ArrayList<DuelMap> maps = new ArrayList<>();
 
@@ -83,5 +85,9 @@ public class Main extends MeteoritePlugin {
 
 	public static void removeDuel(Duel d) {
 		duels.remove(d);
+	}
+
+	public static void addDuelRewards(Player p, ArrayList<ItemStack> rewards) {
+		duelRewards.put(p, rewards);
 	}
 }

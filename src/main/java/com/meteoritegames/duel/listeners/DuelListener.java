@@ -40,8 +40,9 @@ public class DuelListener implements Listener {
 		Duel d = Main.playerIsInDuel(e.getEntity());
 
 		if (d == null) return;
+		if (!d.isActive()) return;
 
-		else d.endDuel();
+		d.endDuel(e.getEntity());
 	}
 
 }
