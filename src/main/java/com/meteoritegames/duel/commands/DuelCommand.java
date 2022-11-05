@@ -22,10 +22,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.sql.Array;
 import java.util.*;
 
 @DefaultCommand
@@ -71,8 +69,14 @@ public class DuelCommand implements CommandClass {
 
 	@Command(description="Toggle duel invites from other players",
 			args="toggle")
-	public void duelToggle() {
-		//TODO
+	public void duelToggle(Player sender) {
+		if (!Main.noDuel.contains(sender)) {
+			Main.noDuel.add(sender);
+			sender.sendMessage("§cDuel requests have been disabled!");
+		} else {
+			Main.noDuel.remove(sender);
+			sender.sendMessage("§aDuel requests have been enabled!");
+		}
 	}
 
 	@Command(description="Collect your duel winnings",

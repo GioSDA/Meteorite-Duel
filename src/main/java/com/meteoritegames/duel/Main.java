@@ -1,22 +1,25 @@
 package com.meteoritegames.duel;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.commands.FixFlyCommand;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
 import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
 	public static HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
-	public static HashMap<Player, Boolean> duelToggle = new HashMap<>();
+	public static Set<Player> noDuel = new HashSet<>();
 	public static ArrayList<Duel> duels = new ArrayList<>();
 	private static ArrayList<DuelMap> maps = new ArrayList<>();
 
@@ -28,6 +31,7 @@ public class Main extends MeteoritePlugin {
 		try {
 			saveDefaultConfig();
 
+			initToggle();
 			initMaps();
 			print("Duel plugin enabled.");
 
@@ -37,6 +41,29 @@ public class Main extends MeteoritePlugin {
 			print("Error enabling duel maps! Make sure your icons are correct?");
 			e.printStackTrace();
 		}
+	}
+
+	private void initToggle() throws IOException {
+		Gson gson = new Gson();
+		File file = new File(this.getDataFolder().getAbsolutePath() + "/toggles.json");
+
+		if (file.exists()){
+			Reader reader = new FileReader(file);
+			Type setType = new TypeToken<HashSet<String>>(){}.getType();
+			noDuel = gson.fromJson(reader, setType);
+		}
+	}
+
+	private void saveToggle() throws IOException {
+		Gson gson = new Gson();
+		File file = new File(this.getDataFolder().getAbsolutePath() + "/toggles.json");
+		file.getParentFile().mkdir();
+		file.createNewFile();
+		Writer writer = new FileWriter(file, false);
+		gson.toJson(noDuel, writer);
+		writer.flush();
+		writer.close();
+		System.out.println("Saved duel toggles.");
 	}
 
 	private void initMaps() throws IllegalArgumentException {
