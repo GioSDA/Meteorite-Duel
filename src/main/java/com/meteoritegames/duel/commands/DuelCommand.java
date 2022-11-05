@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.sql.Array;
 import java.util.*;
 
 @DefaultCommand
@@ -58,6 +59,11 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
+		if (Main.duelRewards.get(sender) != null) {
+			sender.sendMessage("§cYou have duel rewards waiting to be collected!");
+			return;
+		}
+
 		Duel duel = new Duel(p,d);
 
 		createArgsGui(duel);
@@ -66,12 +72,26 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Toggle duel invites from other players",
 			args="toggle")
 	public void duelToggle() {
-
+		//TODO
 	}
 
 	@Command(description="Collect your duel winnings",
 			args="collect")
-	public void duelCollect() {
+	public void duelCollect(Player sender) {
+		ArrayList<ItemStack> rewards = Main.duelRewards.get(sender);
+
+		if (rewards != null) {
+			for (ItemStack reward : rewards) {
+				if (sender.getInventory().addItem(reward) == null) {
+					Main.duelRewards.get(sender).remove(reward);
+				}
+			}
+
+			if (Main.duelRewards.get(sender) == null) {
+				Main.duelRewards.remove(sender);
+			}
+		}
+
 
 	}
 

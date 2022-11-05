@@ -16,6 +16,7 @@ import java.util.Locale;
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
 	public static HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
+	public static HashMap<Player, Boolean> duelToggle = new HashMap<>();
 	public static ArrayList<Duel> duels = new ArrayList<>();
 	private static ArrayList<DuelMap> maps = new ArrayList<>();
 
