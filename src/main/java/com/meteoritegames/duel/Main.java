@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.commands.FixFlyCommand;
+import com.meteoritegames.duel.listeners.DuelListener;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
@@ -38,6 +39,8 @@ public class Main extends MeteoritePlugin {
 
 			registerCommandClass(DuelCommand.class);
 			registerCommandClass(FixFlyCommand.class);
+
+			registerEventListener(new DuelListener());
 		} catch (Exception e) {
 			print("Error enabling duel maps! Make sure your icons are correct?");
 			e.printStackTrace();

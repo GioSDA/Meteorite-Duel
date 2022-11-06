@@ -256,6 +256,7 @@ public class Duel {
 			rewards.add(cert);
 		}
 
+		winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
 		Main.addDuelRewards(winner, rewards);
 		Main.removeDuel(this);
 	}

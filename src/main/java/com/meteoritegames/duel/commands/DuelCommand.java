@@ -105,17 +105,20 @@ public class DuelCommand implements CommandClass {
 			args="spectate",
 			params="@player")
 	public void duelSpectate(Player sender, String[] params) {
+		if (Main.playerIsInDuel(sender) != null) return;
+
 		if (params[0].equalsIgnoreCase("stop")) {
 			if (!Main.spectators.containsKey(sender)) {
 				sender.sendMessage("§cYou are not currently spectating anyone!");
 				return;
 			}
 
-			Main.spectators.remove(sender);
-
-			sender.setGameMode(GameMode.SURVIVAL);
 			sender.teleport(Main.spectators.get(sender));
+			sender.setGameMode(GameMode.SURVIVAL);
 			sender.sendMessage("§cStopped spectating!");
+
+			Main.spectators.remove(sender);
+			return;
 		}
 
 		Player d = sender.getServer().getPlayer(params[0]);
@@ -130,7 +133,7 @@ public class DuelCommand implements CommandClass {
 
 		sender.setGameMode(GameMode.SPECTATOR);
 		sender.teleport(new Location(duel.getDueler1().getWorld(), duel.getMap().getX1(), duel.getMap().getY1(), duel.getMap().getZ1()));
-		sender.sendMessage("§eType '§6/duel spectate stop§e' to stop spectating!");
+		sender.sendMessage("§eType §6/duel spectate stop§e to stop spectating!");
 	}
 
 	@Command(description="Accept a duel invitation",
@@ -292,6 +295,7 @@ public class DuelCommand implements CommandClass {
 
 	public void createWagerGui(Player p, Duel duel, boolean forced) {
 		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
+		if (duel.isActive()) return;
 
 		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 4, true);
 		BasicInventory page = new BasicInventory(9, 4);
