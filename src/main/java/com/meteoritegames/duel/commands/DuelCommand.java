@@ -21,6 +21,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -30,35 +32,32 @@ import java.util.*;
 public class DuelCommand implements CommandClass {
 	@Command(description="Invite another player to a duel",
 			params="@player")
-	public void duelPlayer(CommandSender sender, String[] params) {
-		if (!(sender instanceof Player)) return;
-//		ADD LINE MAKING SURE THEY DONT DO THEMSELVES
-		Player p = (Player) sender;
-		Player d = sender.getServer().getPlayer(params[0]);
+	public void duelPlayer(Player p, String[] params) {
+		Player d = p.getServer().getPlayer(params[0]);
 
 		if (d == null) {
-			sender.sendMessage("§cThat player is not online!");
+			p.sendMessage("§cThat player is not online!");
 			return;
 		}
 
 		if (Main.playerIsInDuel(d) != null) {
-			sender.sendMessage("§cThat player is already in a duel!");
+			p.sendMessage("§cThat player is already in a duel!");
 			return;
 		}
 
 		if (Main.playerIsInDuel(p) != null) {
-			sender.sendMessage("§cYou are already in a duel!");
+			p.sendMessage("§cYou are already in a duel!");
 			return;
 		}
 
 		if (Main.getDuel(p) != null) {
 			//TODO: come up with way to make it so that duel requests expire/end
-			sender.sendMessage("§cYou can only have 1 duel request active at once!");
+			p.sendMessage("§cYou can only have 1 duel request active at once!");
 			return;
 		}
 
-		if (Main.duelRewards.get(sender) != null) {
-			sender.sendMessage("§cYou have duel rewards waiting to be collected!");
+		if (Main.duelRewards.get(p) != null) {
+			p.sendMessage("§cYou have duel rewards waiting to be collected!");
 			return;
 		}
 
@@ -102,15 +101,44 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Access the duel spectate GUI",
 			args="spectate",
 			params="@player")
-	public void duelSpectate() {
+	public void duelSpectate(Player sender, String[] params) {
+		if (params[0].equalsIgnoreCase("stop")) {
+			if (!Main.spectators.containsKey(sender)) {
+				sender.sendMessage("§cYou are not currently spectating anyone!");
+				return;
+			}
 
+			Main.spectators.remove(sender);
+
+			sender.setGameMode(GameMode.SURVIVAL);
+			sender.teleport(Main.spectators.get(sender));
+			sender.sendMessage("§cStopped spectating!");
+		}
+
+		Player d = sender.getServer().getPlayer(params[0]);
+
+		Duel duel = Main.playerIsInDuel(d);
+		if (duel == null) {
+			sender.sendMessage("§cThat player is not currently in a duel!");
+			return;
+		}
+
+		if (!duel.isActive()) {
+			sender.sendMessage("§cThat player is not currently in a duel!");
+			return;
+		}
+
+		if (!Main.spectators.containsKey(sender)) Main.spectators.put(sender, sender.getLocation());
+
+		sender.setGameMode(GameMode.SPECTATOR);
+		sender.teleport(new Location(duel.getDueler1().getWorld(), duel.getMap().getX1(), duel.getMap().getY1(), duel.getMap().getZ1()));
+		sender.sendMessage("§eType '§6/duel spectate stop§e' to stop spectating!");
 	}
 
 	@Command(description="Accept a duel invitation",
 			args="accept",
 			params="@player")
-	public void duelAccept(CommandSender sender, String[] params) {
-		if (!(sender instanceof Player)) return;
+	public void duelAccept(Player sender, String[] params) {
 		Player p = sender.getServer().getPlayer(params[0]);
 
 		if (p == null) {

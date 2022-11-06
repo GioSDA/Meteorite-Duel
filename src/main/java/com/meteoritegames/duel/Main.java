@@ -7,8 +7,8 @@ import com.meteoritegames.duel.commands.FixFlyCommand;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,6 +19,7 @@ import java.util.*;
 public class Main extends MeteoritePlugin {
 	public static Main plugin;
 	public static HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
+	public static HashMap<Player, Location> spectators = new HashMap<>();
 	public static Set<Player> noDuel = new HashSet<>();
 	public static ArrayList<Duel> duels = new ArrayList<>();
 	private static ArrayList<DuelMap> maps = new ArrayList<>();
