@@ -172,6 +172,8 @@ public class Duel {
 	}
 
 	public void startDuel() {
+		this.active = true;
+
 		this.inventory1 = dueler1.getInventory();
 		this.inventory2 = dueler2.getInventory();
 

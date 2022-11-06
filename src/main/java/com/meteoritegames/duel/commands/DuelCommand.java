@@ -14,15 +14,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
-import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -53,6 +51,11 @@ public class DuelCommand implements CommandClass {
 		if (Main.getDuel(p) != null) {
 			//TODO: come up with way to make it so that duel requests expire/end
 			p.sendMessage("§cYou can only have 1 duel request active at once!");
+			return;
+		}
+
+		if (Main.noDuel.contains(p)) {
+			p.sendMessage("§cThis player has duel requests disabled!");
 			return;
 		}
 
@@ -119,11 +122,6 @@ public class DuelCommand implements CommandClass {
 
 		Duel duel = Main.playerIsInDuel(d);
 		if (duel == null) {
-			sender.sendMessage("§cThat player is not currently in a duel!");
-			return;
-		}
-
-		if (!duel.isActive()) {
 			sender.sendMessage("§cThat player is not currently in a duel!");
 			return;
 		}
