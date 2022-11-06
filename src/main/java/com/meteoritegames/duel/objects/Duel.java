@@ -211,9 +211,13 @@ public class Duel {
 			});
 		}
 
-		if (this.getDuelArgs().get(12).isEnabled()) {
+		if (this.getDuelArgs().get(12).isEnabled()) { //Flight
 			dueler1.setAllowFlight(true);
 			dueler2.setAllowFlight(true);
+		}
+
+		if (!this.getDuelArgs().get(13).isEnabled()) { //Pets
+			dueler1.getInventory().remove(Material.SKULL_ITEM);
 		}
 
 		dueler1.setHealth(20.0);
