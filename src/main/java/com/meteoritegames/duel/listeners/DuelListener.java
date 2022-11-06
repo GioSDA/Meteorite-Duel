@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class DuelListener implements Listener {
 
@@ -44,6 +45,15 @@ public class DuelListener implements Listener {
 		if (!d.isActive()) return;
 
 		d.endDuel(e.getEntity());
+	}
+
+	public void onPlayerLeave(PlayerQuitEvent e) {
+		Duel d = Main.playerIsInDuel(e.getPlayer());
+
+		if (d == null) return;
+		if (!d.isActive()) return;
+
+		d.endDuel(e.getPlayer());
 	}
 
 }

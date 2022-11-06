@@ -428,19 +428,19 @@ public class DuelCommand implements CommandClass {
 							p2.sendTitle("§a3", "");
 							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if(count == 2) {
-							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							if (!duel.isAccepted1() || !duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) this.cancel();
 							p1.sendTitle("§62", "");
 							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§62", "");
 							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if(count == 1) {
-							if (!duel.isAccepted1() || !duel.isAccepted2()) this.cancel();
+							if (!duel.isAccepted1() || !duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) this.cancel();
 							p1.sendTitle("§c1", "");
 							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 							p2.sendTitle("§c1", "");
 							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 						} else if (count <= 0) {
-							if (duel.isAccepted1() && duel.isAccepted2()) duel.startDuel();
+							if (duel.isAccepted1() && duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) duel.startDuel();
 							this.cancel();
 						}
 						count--;
