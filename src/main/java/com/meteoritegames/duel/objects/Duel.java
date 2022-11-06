@@ -241,17 +241,17 @@ public class Duel {
 		rewards.addAll(getWager1());
 		rewards.addAll(getWager2());
 
-		if (duelArgs.get(7).isEnabled()) {
+		if (duelArgs.get(6).isEnabled()) {
 			for (int i = 0; i < loser.getInventory().getSize(); i++) {
 				rewards.add(loser.getInventory().getItem(i));
 				loser.getInventory().setItem(i, new ItemStack(Material.AIR));
 			}
 		}
 
-		if (duelArgs.get(13).isEnabled()) {
+		if (duelArgs.get(12).isEnabled()) {
 			ItemStack cert = new ItemStack(Material.PAPER);
 			ItemMeta meta = cert.getItemMeta();
-			meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner);
+			meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner.getName());
 			cert.setItemMeta(meta);
 			rewards.add(cert);
 		}

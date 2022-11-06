@@ -36,6 +36,7 @@ public class DuelListener implements Listener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Duel d = Main.playerIsInDuel(e.getEntity());
 

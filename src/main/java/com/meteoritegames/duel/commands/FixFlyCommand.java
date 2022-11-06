@@ -24,7 +24,7 @@ public class FixFlyCommand implements CommandClass {
 			return;
 		}
 
-		if (d.getDuelArgs().get(10).isEnabled()) {
+		if (d.getDuelArgs().get(9).isEnabled()) {
 			ItemStack item = p.getInventory().getItemInHand();
 			item.setDurability((short) 0);
 			p.getInventory().setItemInHand(item);
@@ -48,9 +48,10 @@ public class FixFlyCommand implements CommandClass {
 			return;
 		}
 
-		if (d.getDuelArgs().get(11).isEnabled()) {
+		if (d.getDuelArgs().get(10).isEnabled()) {
 			for (int i = 0; i < p.getInventory().getSize(); i++) {
 				ItemStack item = p.getInventory().getItem(i);
+				if (item == null) continue;
 				item.setDurability((short) 0);
 				p.getInventory().setItem(i, item);
 			}
@@ -74,7 +75,7 @@ public class FixFlyCommand implements CommandClass {
 			return;
 		}
 
-		if (d.getDuelArgs().get(12).isEnabled()) {
+		if (d.getDuelArgs().get(11).isEnabled()) {
 			p.setAllowFlight(!p.getAllowFlight());
 		} else {
 			p.sendMessage("§c/fly is not enabled!");
