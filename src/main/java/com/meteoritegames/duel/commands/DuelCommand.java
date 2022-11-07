@@ -412,52 +412,25 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
-				BukkitTask task = new BukkitRunnable() {
-					int count = 3;
-
-					final Player p1 = duel.getDueler1();
-					final Player p2 = duel.getDueler2();
-
-					@Override
-					public void run() {
-						p1.closeInventory();
-						p2.closeInventory();
-						if(count == 3) {
-							p1.sendTitle("§a3", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-							p2.sendTitle("§a3", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-						} else if(count == 2) {
-							if (!duel.isAccepted1() || !duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) this.cancel();
-							p1.sendTitle("§62", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-							p2.sendTitle("§62", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-						} else if(count == 1) {
-							if (!duel.isAccepted1() || !duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) this.cancel();
-							p1.sendTitle("§c1", "");
-							p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-							p2.sendTitle("§c1", "");
-							p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-						} else if (count <= 0) {
-							if (duel.isAccepted1() && duel.isAccepted2() || !duel.getDueler1().isOnline() || !duel.getDueler2().isOnline()) duel.startDuel();
-							this.cancel();
-						}
-						count--;
-					}
-				}.runTaskTimer(Main.plugin, 0L, 30);
+				duel.startCountdown();
 			}
 
 			if (e.getEvent().getRawSlot() > 36) {
 				if (duel.getDueler1().equals(p)) {
-					duel.getWager1().add(p.getInventory().getItem(e.getSlot()));
-					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
+					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
+					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
+
+					duel.getWager1().add(wagerItem);
+					p.getInventory().removeItem(wagerItem);
 
 					createWagerGui(duel.getDueler1(), duel, false);
 					createWagerGui(duel.getDueler2(), duel, false);
 				} else if (duel.getDueler2().equals(p)) {
+					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
+					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
+
 					duel.getWager2().add(p.getInventory().getItem(e.getSlot()));
-					p.getInventory().remove(p.getInventory().getItem(e.getSlot()));
+					p.getInventory().removeItem(wagerItem);
 
 					createWagerGui(duel.getDueler1(), duel, false);
 					createWagerGui(duel.getDueler2(), duel, false);

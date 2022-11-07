@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -169,6 +171,43 @@ public class Duel {
 
 	public void setInventory2(Inventory inventory2) {
 		this.inventory2 = inventory2;
+	}
+
+	public void startCountdown() {
+		BukkitTask task = new BukkitRunnable() {
+			int count = 3;
+
+			final Player p1 = dueler1;
+			final Player p2 = dueler2;
+
+			@Override
+			public void run() {
+				p1.closeInventory();
+				p2.closeInventory();
+				if(count == 3) {
+					p1.sendTitle("§a3", "");
+					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+					p2.sendTitle("§a3", "");
+					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+				} else if(count == 2) {
+					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) this.cancel();
+					p1.sendTitle("§62", "");
+					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+					p2.sendTitle("§62", "");
+					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+				} else if(count == 1) {
+					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) this.cancel();
+					p1.sendTitle("§c1", "");
+					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+					p2.sendTitle("§c1", "");
+					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+				} else if (count <= 0) {
+					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) startDuel();
+					this.cancel();
+				}
+				count--;
+			}
+		}.runTaskTimer(Main.plugin, 0L, 30);
 	}
 
 	public void startDuel() {
