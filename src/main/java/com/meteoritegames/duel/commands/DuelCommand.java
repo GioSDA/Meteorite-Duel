@@ -49,9 +49,7 @@ public class DuelCommand implements CommandClass {
 		}
 
 		if (Main.getDuel(p) != null) {
-			//TODO: come up with way to make it so that duel requests expire/end
-			p.sendMessage("§cYou can only have 1 duel request active at once!");
-			return;
+			Main.removeDuel(Main.getDuel(p));
 		}
 
 		if (Main.noDuel.contains(p)) {
@@ -412,7 +410,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
-				duel.startCountdown();
+				duel.startDuel();
 			}
 
 			if (e.getEvent().getRawSlot() > 36) {

@@ -44,16 +44,17 @@ public class DuelListener implements Listener {
 		if (d == null) return;
 		if (!d.isActive()) return;
 
-		d.endDuel(e.getEntity());
+		d.endDuel(e.getEntity(), false);
 	}
 
+	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Duel d = Main.playerIsInDuel(e.getPlayer());
 
 		if (d == null) return;
 		if (!d.isActive()) return;
 
-		d.endDuel(e.getPlayer());
+		d.endDuel(e.getPlayer(), false);
 	}
 
 }

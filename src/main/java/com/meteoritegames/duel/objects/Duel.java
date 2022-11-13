@@ -1,17 +1,16 @@
 package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
@@ -21,14 +20,17 @@ public class Duel {
 
 	private Player dueler1;
 	private Player dueler2;
+	private Location start1;
+	private Location start2;
 	private DuelMap map;
 	private boolean active;
 	private boolean accepted1;
 	private boolean accepted2;
 	private ArrayList<ItemStack> wager1;
 	private ArrayList<ItemStack> wager2;
-	private Inventory inventory1;
-	private Inventory inventory2;
+	private PlayerInventory inventory1;
+	private PlayerInventory inventory2;
+	private int timer = -5;
 
 	private static final Set<Material> ARMORTYPES = EnumSet.of(
 			Material.LEATHER_HELMET,
@@ -69,6 +71,8 @@ public class Duel {
 		this.wager2 = new ArrayList<>();
 		this.accepted1 = false;
 		this.accepted2 = false;
+		this.start1 = dueler1.getLocation();
+		this.start2 = dueler2.getLocation();
 
 		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
 //		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
@@ -156,61 +160,51 @@ public class Duel {
 		this.accepted2 = accepted2;
 	}
 
+	public void setId(int id) {
 
-	public Inventory getInventory1() {
+	}
+
+	public PlayerInventory getInventory1() {
 		return inventory1;
 	}
 
-	public void setInventory1(Inventory inventory1) {
+	public void setInventory1(PlayerInventory inventory1) {
 		this.inventory1 = inventory1;
 	}
 
-	public Inventory getInventory2() {
+	public PlayerInventory getInventory2() {
 		return inventory2;
 	}
 
-	public void setInventory2(Inventory inventory2) {
+	public void setInventory2(PlayerInventory inventory2) {
 		this.inventory2 = inventory2;
 	}
 
-	public void startCountdown() {
+	public void startDuel() {
 		BukkitTask task = new BukkitRunnable() {
-			int count = 3;
-
 			final Player p1 = dueler1;
 			final Player p2 = dueler2;
 
 			@Override
 			public void run() {
+				p1.setNoDamageTicks(140);
+				p2.setNoDamageTicks(140);
 				p1.closeInventory();
 				p2.closeInventory();
-				if(count == 3) {
-					p1.sendTitle("§a3", "");
+				if (timer < 0) {
+					p1.sendTitle("§a" + timer, "");
 					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-					p2.sendTitle("§a3", "");
-					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-				} else if(count == 2) {
-					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) this.cancel();
-					p1.sendTitle("§62", "");
-					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-					p2.sendTitle("§62", "");
-					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-				} else if(count == 1) {
-					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) this.cancel();
-					p1.sendTitle("§c1", "");
-					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-					p2.sendTitle("§c1", "");
-					p2.playNote(p2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-				} else if (count <= 0) {
-					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) startDuel();
-					this.cancel();
+					p2.sendTitle("§a" + timer, "");
+					p2.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
+					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
 				}
-				count--;
-			}
-		}.runTaskTimer(Main.plugin, 0L, 30);
-	}
 
-	public void startDuel() {
+				updateScoreboard(p1);
+				updateScoreboard(p2);
+				timer++;
+			}
+		}.runTaskTimer(Main.plugin, 0L, 20);
+
 		this.active = true;
 
 		this.inventory1 = dueler1.getInventory();
@@ -272,35 +266,98 @@ public class Duel {
 
 	}
 
-	public void endDuel(Player loser) {
+	public void endDuel(Player loser, boolean stalemate) {
 		dueler1.setAllowFlight(false);
 		dueler2.setAllowFlight(false);
+
 
 		Player winner;
 		if (loser.equals(dueler1)) winner = dueler2;
 		else winner = dueler1;
 
-		ArrayList<ItemStack> rewards = new ArrayList<>();
-		rewards.addAll(getWager1());
-		rewards.addAll(getWager2());
+		dueler1.getInventory().setContents(inventory1.getContents());
+		dueler2.getInventory().setContents(inventory1.getContents());
 
-		if (duelArgs.get(6).isEnabled()) {
-			for (int i = 0; i < loser.getInventory().getSize(); i++) {
-				rewards.add(loser.getInventory().getItem(i));
-				loser.getInventory().setItem(i, new ItemStack(Material.AIR));
+		if (!stalemate) {
+			ArrayList<ItemStack> rewards = new ArrayList<>();
+			rewards.addAll(getWager1());
+			rewards.addAll(getWager2());
+
+			if (duelArgs.get(6).isEnabled()) {
+				for (int i = 0; i < loser.getInventory().getSize(); i++) {
+					rewards.add(loser.getInventory().getItem(i));
+					loser.getInventory().setItem(i, new ItemStack(Material.AIR));
+				}
 			}
+
+			if (duelArgs.get(12).isEnabled()) {
+				ItemStack cert = new ItemStack(Material.PAPER);
+				ItemMeta meta = cert.getItemMeta();
+				meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner.getName());
+				cert.setItemMeta(meta);
+				rewards.add(cert);
+			}
+
+			winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
+			Main.addDuelRewards(winner, rewards);
+		} else {
+			winner.sendMessage("§eDuel cancelled.");
 		}
 
-		if (duelArgs.get(12).isEnabled()) {
-			ItemStack cert = new ItemStack(Material.PAPER);
-			ItemMeta meta = cert.getItemMeta();
-			meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner.getName());
-			cert.setItemMeta(meta);
-			rewards.add(cert);
-		}
+		dueler1.teleport(start1);
+		dueler2.teleport(start2);
 
-		winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
-		Main.addDuelRewards(winner, rewards);
 		Main.removeDuel(this);
 	}
+
+	private void updateScoreboard(Player p) {
+		ScoreboardManager m = Bukkit.getScoreboardManager();
+		Scoreboard b = m.getNewScoreboard();
+
+		Objective o = b.registerNewObjective("duel", "dummy");
+		o.setDisplayName("§6§l1v1 Duel §r§7" + LocalDate.now().getMonthValue() + "/" + LocalDate.now().getDayOfMonth());
+		o.setDisplaySlot(DisplaySlot.SIDEBAR);
+		Score s = o.getScore("§c§lOpponent");
+		s.setScore(10);
+		Score s1 = o.getScore("§f" + (dueler1.equals(p) ? dueler2 : dueler1));
+		s1.setScore(9);
+		Score s2 = o.getScore("");
+		s2.setScore(8);
+
+		if (timer < 0) {
+			Score s3 = o.getScore("§6§lStatus");
+			s3.setScore(7);
+			Score s4 = o.getScore("§a§lSTARTING");
+			s4.setScore(6);
+			Score s5 = o.getScore("");
+			s5.setScore(5);
+			Score s6 = o.getScore("§6§lStarting in");
+			s6.setScore(4);
+			Score s7 = o.getScore("§e" + -timer + "s");
+			s7.setScore(3);
+			Score s8 = o.getScore("");
+			s8.setScore(2);
+		} else {
+			Score s6 = o.getScore("§6§lRuntime");
+			s6.setScore(4);
+			Score s7 = o.getScore("§e" + timer + "s");
+			s7.setScore(3);
+			Score s8 = o.getScore("");
+			s8.setScore(2);
+		}
+
+		Score s3 = o.getScore("§6§lArena");
+		s3.setScore(1);
+		Score s4 = o.getScore("§e" + map.getName());
+		s4.setScore(0);
+		Score s8 = o.getScore("");
+		s8.setScore(-1);
+		Score s5 = o.getScore("§6§lAccount");
+		s5.setScore(-2);
+		Score s6 = o.getScore("§e" + p.getName());
+		s6.setScore(-3);
+
+		p.setScoreboard(b);
+	}
+
 }
