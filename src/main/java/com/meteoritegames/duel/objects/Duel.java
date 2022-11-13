@@ -1,6 +1,7 @@
 package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -192,9 +193,9 @@ public class Duel {
 				p1.closeInventory();
 				p2.closeInventory();
 				if (timer < 0) {
-					p1.sendTitle("§a" + timer, "");
+					p1.sendTitle("§6" + -timer, "");
 					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-					p2.sendTitle("§a" + timer, "");
+					p2.sendTitle("§6" + -timer, "");
 					p2.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
 				}
@@ -307,6 +308,9 @@ public class Duel {
 		dueler1.teleport(start1);
 		dueler2.teleport(start2);
 
+		dueler1.setScoreboard(null);
+		dueler2.setScoreboard(null);
+
 		Main.removeDuel(this);
 	}
 
@@ -319,9 +323,9 @@ public class Duel {
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 		Score s = o.getScore("§c§lOpponent");
 		s.setScore(10);
-		Score s1 = o.getScore("§f" + (dueler1.equals(p) ? dueler2 : dueler1));
+		Score s1 = o.getScore("§f" + (dueler1.equals(p) ? dueler2.getName() : dueler1.getName()));
 		s1.setScore(9);
-		Score s2 = o.getScore("");
+		Score s2 = o.getScore("§r");
 		s2.setScore(8);
 
 		if (timer < 0) {
@@ -329,28 +333,28 @@ public class Duel {
 			s3.setScore(7);
 			Score s4 = o.getScore("§a§lSTARTING");
 			s4.setScore(6);
-			Score s5 = o.getScore("");
+			Score s5 = o.getScore("§r§r");
 			s5.setScore(5);
 			Score s6 = o.getScore("§6§lStarting in");
 			s6.setScore(4);
 			Score s7 = o.getScore("§e" + -timer + "s");
 			s7.setScore(3);
-			Score s8 = o.getScore("");
+			Score s8 = o.getScore("§r§r§r");
 			s8.setScore(2);
 		} else {
 			Score s6 = o.getScore("§6§lRuntime");
 			s6.setScore(4);
 			Score s7 = o.getScore("§e" + timer + "s");
 			s7.setScore(3);
-			Score s8 = o.getScore("");
+			Score s8 = o.getScore("§r§r§r§r");
 			s8.setScore(2);
 		}
 
 		Score s3 = o.getScore("§6§lArena");
 		s3.setScore(1);
-		Score s4 = o.getScore("§e" + map.getName());
+		Score s4 = o.getScore("§e" + ChatColor.translateAlternateColorCodes('&', map.getName()));
 		s4.setScore(0);
-		Score s8 = o.getScore("");
+		Score s8 = o.getScore("§r§r§r§r§r§r");
 		s8.setScore(-1);
 		Score s5 = o.getScore("§6§lAccount");
 		s5.setScore(-2);
