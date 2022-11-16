@@ -182,16 +182,17 @@ public class Duel {
 	}
 
 	public void startDuel() {
+		dueler1.setNoDamageTicks(140);
+		dueler2.setNoDamageTicks(140);
+		dueler1.closeInventory();
+		dueler2.closeInventory();
+
 		BukkitTask task = new BukkitRunnable() {
 			final Player p1 = dueler1;
 			final Player p2 = dueler2;
 
 			@Override
 			public void run() {
-				p1.setNoDamageTicks(140);
-				p2.setNoDamageTicks(140);
-				p1.closeInventory();
-				p2.closeInventory();
 				if (timer < 0) {
 					p1.sendTitle("§6" + -timer, "");
 					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
