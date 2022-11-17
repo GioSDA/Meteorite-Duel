@@ -133,7 +133,7 @@ public class DuelCommand implements CommandClass {
 		if (!plugin.spectators.containsKey(sender)) plugin.spectators.put(sender, sender.getLocation());
 
 		sender.setGameMode(GameMode.SPECTATOR);
-		sender.teleport(new Location(duel.getDueler1().getWorld(), duel.getMap().getX1(), duel.getMap().getY1(), duel.getMap().getZ1()));
+		sender.teleport(duel.getMap().getSpawn1());
 		sender.sendMessage("§eType §6/duel spectate stop§e to stop spectating!");
 	}
 

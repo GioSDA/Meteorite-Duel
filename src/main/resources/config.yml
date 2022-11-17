@@ -3,9 +3,19 @@ maps:
     name: "&e&lupdate the config.yml"
     icon: "glass"
     #The x, y, and z positions of the map that players will be teleported to
-    spawn1x: 0
-    spawn1y: 100
-    spawn1z: 0
-    spawn2x: 0
-    spawn2y: 100
-    spawn2z: 0
+    spawn1:
+      ==: org.bukkit.Location
+      world: world
+      x: 100.0
+      y: 100.0
+      z: 100.0
+      pitch: 500.0
+      yaw: 400.0
+    spawn2:
+      ==: org.bukkit.Location
+      world: world
+      x: 100.0
+      y: 100.0
+      z: 100.0
+      pitch: 0.0
+      yaw: 0.0

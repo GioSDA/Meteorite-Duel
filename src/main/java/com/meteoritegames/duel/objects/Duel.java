@@ -263,8 +263,8 @@ public class Duel {
 		dueler1.setFoodLevel(20);
 		dueler2.setFoodLevel(20);
 
-		dueler1.teleport(new Location(dueler1.getServer().getWorlds().get(0), this.getMap().getX1(), this.getMap().getY1(), this.getMap().getZ1()));
-		dueler2.teleport(new Location(dueler2.getServer().getWorlds().get(0), this.getMap().getX2(), this.getMap().getY2(), this.getMap().getZ2()));
+		dueler1.teleport(this.getMap().getSpawn1());
+		dueler2.teleport(this.getMap().getSpawn2());
 		dueler1.playNote(dueler1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 		dueler2.playNote(dueler2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 
