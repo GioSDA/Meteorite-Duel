@@ -18,17 +18,15 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class Main extends MeteoritePlugin {
-	public static Main plugin;
-	public static HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
-	public static HashMap<Player, Location> spectators = new HashMap<>();
-	public static Set<Player> noDuel = new HashSet<>();
-	public static ArrayList<Duel> duels = new ArrayList<>();
-	private static ArrayList<DuelMap> maps = new ArrayList<>();
+	public HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
+	public HashMap<Player, Location> spectators = new HashMap<>();
+	public Set<Player> noDuel = new HashSet<>();
+	public ArrayList<Duel> duels = new ArrayList<>();
+	private ArrayList<DuelMap> maps = new ArrayList<>();
 
 	@Override
 	protected void onInit() {
 		super.onInit();
-		plugin = this;
 
 		try {
 			saveDefaultConfig();
@@ -37,10 +35,10 @@ public class Main extends MeteoritePlugin {
 			initMaps();
 			print("Duel plugin enabled.");
 
-			registerCommandClass(DuelCommand.class);
-			registerCommandClass(FixFlyCommand.class);
+			registerCommandObject(new DuelCommand(this));
+			registerCommandObject(new FixFlyCommand(this));
 
-			registerEventListener(new DuelListener());
+			registerEventListener(new DuelListener(this));
 		} catch (Exception e) {
 			print("Error enabling duel maps! Make sure your icons are correct?");
 			e.printStackTrace();
@@ -87,11 +85,11 @@ public class Main extends MeteoritePlugin {
 		}
 	}
 
-	public static ArrayList<DuelMap> getMaps() {
+	public ArrayList<DuelMap> getMaps() {
 		return maps;
 	}
 
-	public static boolean mapIsActive(DuelMap map) {
+	public boolean mapIsActive(DuelMap map) {
 		for (Duel d : duels) {
 			if (d.getMap().equals(map)) {
 				return true;
@@ -101,11 +99,11 @@ public class Main extends MeteoritePlugin {
 		return false;
 	}
 
-	public static void addDuel(Duel d) {
+	public void addDuel(Duel d) {
 		duels.add(d);
 	}
 
-	public static Duel getDuel(Player p) {
+	public Duel getDuel(Player p) {
 		for (Duel duel : duels) {
 			if (duel.getDueler1().equals(p)) return duel;
 		}
@@ -113,7 +111,7 @@ public class Main extends MeteoritePlugin {
 		return null;
 	}
 
-	public static Duel playerIsInDuel(Player p) {
+	public Duel playerIsInDuel(Player p) {
 		for (Duel duel : duels) {
 			if ((duel.getDueler1().equals(p) && duel.isActive()) || (duel.getDueler2().equals(p) && duel.isActive())) return duel;
 		}
@@ -121,11 +119,11 @@ public class Main extends MeteoritePlugin {
 		return null;
 	}
 
-	public static void removeDuel(Duel d) {
+	public void removeDuel(Duel d) {
 		duels.remove(d);
 	}
 
-	public static void addDuelRewards(Player p, ArrayList<ItemStack> rewards) {
+	public void addDuelRewards(Player p, ArrayList<ItemStack> rewards) {
 		duelRewards.put(p, rewards);
 	}
 }

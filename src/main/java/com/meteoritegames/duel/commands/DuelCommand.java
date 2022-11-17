@@ -21,13 +21,16 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.*;
 
 @DefaultCommand
 public class DuelCommand implements CommandClass {
+	private final Main plugin;
+	
+	public DuelCommand(Main plugin) {
+		this.plugin = plugin;
+	}
+	
 	@Command(description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
@@ -38,31 +41,31 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		if (Main.playerIsInDuel(d) != null) {
+		if (plugin.playerIsInDuel(d) != null) {
 			p.sendMessage("§cThat player is already in a duel!");
 			return;
 		}
 
-		if (Main.playerIsInDuel(p) != null) {
+		if (plugin.playerIsInDuel(p) != null) {
 			p.sendMessage("§cYou are already in a duel!");
 			return;
 		}
 
-		if (Main.getDuel(p) != null) {
-			Main.removeDuel(Main.getDuel(p));
+		if (plugin.getDuel(p) != null) {
+			plugin.removeDuel(plugin.getDuel(p));
 		}
 
-		if (Main.noDuel.contains(p)) {
+		if (plugin.noDuel.contains(p)) {
 			p.sendMessage("§cThis player has duel requests disabled!");
 			return;
 		}
 
-		if (Main.duelRewards.get(p) != null) {
+		if (plugin.duelRewards.get(p) != null) {
 			p.sendMessage("§cYou have duel rewards waiting to be collected!");
 			return;
 		}
 
-		Duel duel = new Duel(p,d);
+		Duel duel = new Duel(plugin, p,d);
 
 		createArgsGui(duel);
 	}
@@ -70,11 +73,11 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Toggle duel invites from other players",
 			args="toggle")
 	public void duelToggle(Player sender) {
-		if (!Main.noDuel.contains(sender)) {
-			Main.noDuel.add(sender);
+		if (!plugin.noDuel.contains(sender)) {
+			plugin.noDuel.add(sender);
 			sender.sendMessage("§cDuel requests have been disabled!");
 		} else {
-			Main.noDuel.remove(sender);
+			plugin.noDuel.remove(sender);
 			sender.sendMessage("§aDuel requests have been enabled!");
 		}
 	}
@@ -82,17 +85,17 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Collect your duel winnings",
 			args="collect")
 	public void duelCollect(Player sender) {
-		ArrayList<ItemStack> rewards = Main.duelRewards.get(sender);
+		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null) {
 			for (ItemStack reward : rewards) {
 				if (sender.getInventory().addItem(reward) == null) {
-					Main.duelRewards.get(sender).remove(reward);
+					plugin.duelRewards.get(sender).remove(reward);
 				}
 			}
 
-			if (Main.duelRewards.get(sender) == null) {
-				Main.duelRewards.remove(sender);
+			if (plugin.duelRewards.get(sender) == null) {
+				plugin.duelRewards.remove(sender);
 			}
 		}
 
@@ -103,31 +106,31 @@ public class DuelCommand implements CommandClass {
 			args="spectate",
 			params="@player")
 	public void duelSpectate(Player sender, String[] params) {
-		if (Main.playerIsInDuel(sender) != null) return;
+		if (plugin.playerIsInDuel(sender) != null) return;
 
 		if (params[0].equalsIgnoreCase("stop")) {
-			if (!Main.spectators.containsKey(sender)) {
+			if (!plugin.spectators.containsKey(sender)) {
 				sender.sendMessage("§cYou are not currently spectating anyone!");
 				return;
 			}
 
-			sender.teleport(Main.spectators.get(sender));
+			sender.teleport(plugin.spectators.get(sender));
 			sender.setGameMode(GameMode.SURVIVAL);
 			sender.sendMessage("§cStopped spectating!");
 
-			Main.spectators.remove(sender);
+			plugin.spectators.remove(sender);
 			return;
 		}
 
 		Player d = sender.getServer().getPlayer(params[0]);
 
-		Duel duel = Main.playerIsInDuel(d);
+		Duel duel = plugin.playerIsInDuel(d);
 		if (duel == null) {
 			sender.sendMessage("§cThat player is not currently in a duel!");
 			return;
 		}
 
-		if (!Main.spectators.containsKey(sender)) Main.spectators.put(sender, sender.getLocation());
+		if (!plugin.spectators.containsKey(sender)) plugin.spectators.put(sender, sender.getLocation());
 
 		sender.setGameMode(GameMode.SPECTATOR);
 		sender.teleport(new Location(duel.getDueler1().getWorld(), duel.getMap().getX1(), duel.getMap().getY1(), duel.getMap().getZ1()));
@@ -145,7 +148,7 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		Duel duel = Main.getDuel(p);
+		Duel duel = plugin.getDuel(p);
 
 		if (duel == null || duel.isActive()) {
 			sender.sendMessage("§cThat duel request is not active!");
@@ -175,7 +178,7 @@ public class DuelCommand implements CommandClass {
 	private void createArgsGui(Duel duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Duel Settings", 9, 3, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(Material.STAINED_GLASS_PANE);
 
@@ -208,9 +211,9 @@ public class DuelCommand implements CommandClass {
 	}
 
 	private void createMapGui(Duel duel) {
-		ArrayList<DuelMap> maps = Main.getMaps();
+		ArrayList<DuelMap> maps = plugin.getMaps();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Map Settings", 9, 3, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Map Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(Material.STAINED_GLASS_PANE);
 
@@ -218,7 +221,7 @@ public class DuelCommand implements CommandClass {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', maps.get(i).getName()));
-			if (Main.mapIsActive(maps.get(i))) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
+			if (plugin.mapIsActive(maps.get(i))) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
 
 			item.setItemMeta(meta);
 
@@ -229,7 +232,7 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
 			if (maps.size() <= e.getEvent().getRawSlot()) return;
-			if (Main.mapIsActive(maps.get(e.getEvent().getRawSlot()))) {
+			if (plugin.mapIsActive(maps.get(e.getEvent().getRawSlot()))) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
 				return;
 			}
@@ -245,7 +248,7 @@ public class DuelCommand implements CommandClass {
 			duel.getDueler2().spigot().sendMessage(message);
 
 			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
-			Main.addDuel(duel);
+			plugin.addDuel(duel);
 		});
 
 		inventory.applyPage(page);
@@ -253,7 +256,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Inventory view", 9, 5, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Inventory view", 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
 		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE));
@@ -295,7 +298,7 @@ public class DuelCommand implements CommandClass {
 		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
-		MeteoriteInventory inventory = new MeteoriteInventory(Main.plugin, "Wagering", 9, 4, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Wagering", 9, 4, true);
 		BasicInventory page = new BasicInventory(9, 4);
 
 		ItemStack rules = new ItemStack(Material.BOOK);

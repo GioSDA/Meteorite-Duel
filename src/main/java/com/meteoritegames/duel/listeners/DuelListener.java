@@ -12,12 +12,17 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class DuelListener implements Listener {
+	private final Main plugin;
+
+	public DuelListener(Main plugin) {
+		this.plugin = plugin;
+	}
 
 	@EventHandler
 	public void onHealEvent(EntityRegainHealthEvent e) {
 		if (!e.getEntityType().equals(EntityType.PLAYER)) return;
 
-		Duel d = Main.playerIsInDuel((Player)e.getEntity());
+		Duel d = plugin.playerIsInDuel((Player)e.getEntity());
 		if (d == null) return;
 
 		if (d.isActive()) {
@@ -29,7 +34,7 @@ public class DuelListener implements Listener {
 	public void onFoodChangeEvent(FoodLevelChangeEvent e) {
 		if (!e.getEntityType().equals(EntityType.PLAYER)) return;
 
-		Duel d = Main.playerIsInDuel((Player)e.getEntity());
+		Duel d = plugin.playerIsInDuel((Player)e.getEntity());
 		if (d == null) return;
 
 		if (d.isActive()) {
@@ -39,7 +44,7 @@ public class DuelListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		Duel d = Main.playerIsInDuel(e.getEntity());
+		Duel d = plugin.playerIsInDuel(e.getEntity());
 
 		if (d == null) return;
 		if (!d.isActive()) return;
@@ -49,7 +54,7 @@ public class DuelListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
-		Duel d = Main.playerIsInDuel(e.getPlayer());
+		Duel d = plugin.playerIsInDuel(e.getPlayer());
 
 		if (d == null) return;
 		if (!d.isActive()) return;

@@ -12,13 +12,19 @@ import org.bukkit.inventory.ItemStack;
 
 @DefaultCommand
 public class FixFlyCommand implements CommandClass {
+	private final Main plugin;
+
+	public FixFlyCommand(Main plugin) {
+		this.plugin = plugin;
+	}
+
 	@Command(description="Fix items ONLY IN DUEL",
 			name="fix")
 	public void fix(CommandSender sender) {
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
-		Duel d = Main.playerIsInDuel(p);
+		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
 			p.sendMessage("§cYou are not in a duel!");
 			return;
@@ -42,7 +48,7 @@ public class FixFlyCommand implements CommandClass {
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
-		Duel d = Main.playerIsInDuel(p);
+		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
 			p.sendMessage("§cYou are not in a duel!");
 			return;
@@ -69,7 +75,7 @@ public class FixFlyCommand implements CommandClass {
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
-		Duel d = Main.playerIsInDuel(p);
+		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
 			p.sendMessage("§cYou are not in a duel!");
 			return;

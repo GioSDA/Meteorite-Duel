@@ -17,6 +17,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class Duel {
+	private final Main plugin;
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
 
 	private Player dueler1;
@@ -64,7 +65,8 @@ public class Duel {
 			Material.IRON_SWORD
 	);
 
-	public Duel(Player dueler1, Player dueler2) {
+	public Duel(Main plugin, Player dueler1, Player dueler2) {
+		this.plugin = plugin;
 		this.dueler1 = dueler1;
 		this.dueler2 = dueler2;
 		this.active = false;
@@ -205,7 +207,7 @@ public class Duel {
 				updateScoreboard(p2);
 				timer++;
 			}
-		}.runTaskTimer(Main.plugin, 0L, 20);
+		}.runTaskTimer(plugin, 0L, 20);
 
 		this.active = true;
 
@@ -271,8 +273,7 @@ public class Duel {
 	public void endDuel(Player loser, boolean stalemate) {
 		dueler1.setAllowFlight(false);
 		dueler2.setAllowFlight(false);
-
-
+		
 		Player winner;
 		if (loser.equals(dueler1)) winner = dueler2;
 		else winner = dueler1;
@@ -301,7 +302,7 @@ public class Duel {
 			}
 
 			winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
-			Main.addDuelRewards(winner, rewards);
+			plugin.addDuelRewards(winner, rewards);
 		} else {
 			winner.sendMessage("§eDuel cancelled.");
 		}
@@ -312,7 +313,7 @@ public class Duel {
 		dueler1.setScoreboard(null);
 		dueler2.setScoreboard(null);
 
-		Main.removeDuel(this);
+		plugin.removeDuel(this);
 	}
 
 	private void updateScoreboard(Player p) {
