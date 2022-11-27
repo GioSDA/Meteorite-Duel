@@ -310,8 +310,10 @@ public class Duel {
 		dueler1.teleport(start1);
 		dueler2.teleport(start2);
 
-		dueler1.setScoreboard(null);
-		dueler2.setScoreboard(null);
+		dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		dueler2.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		dueler1.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+		dueler2.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
 
 		plugin.removeDuel(this);
 	}

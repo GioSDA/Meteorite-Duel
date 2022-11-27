@@ -49,6 +49,7 @@ public class DuelListener implements Listener {
 		if (d == null) return;
 		if (!d.isActive()) return;
 
+		e.setKeepInventory(true);
 		d.endDuel(e.getEntity(), false);
 	}
 
