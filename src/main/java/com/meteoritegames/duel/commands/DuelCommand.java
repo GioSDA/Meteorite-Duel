@@ -36,6 +36,11 @@ public class DuelCommand implements CommandClass {
 	public void duelPlayer(Player p, String[] params) {
 		Player d = p.getServer().getPlayer(params[0]);
 
+		if (p.equals(d)) {
+			p.sendMessage("§cYou can't duel yourself!");
+			return;
+		}
+
 		if (d == null) {
 			p.sendMessage("§cThat player is not online!");
 			return;
@@ -89,20 +94,27 @@ public class DuelCommand implements CommandClass {
 
 		if (rewards != null) {
 			for (ItemStack reward : rewards) {
-				if (sender.getInventory().addItem(reward) == null) {
+				if (sender.getInventory().addItem(reward).size() == 0) {
 					plugin.duelRewards.get(sender).remove(reward);
+					System.out.println("a");
 				}
 			}
 
-			if (plugin.duelRewards.get(sender) == null) {
+			if (plugin.duelRewards.get(sender).size() == 0) {
 				plugin.duelRewards.remove(sender);
+				sender.sendMessage("§aWinnings have been collected!");
+			} else {
+				sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
+				System.out.println(plugin.duelRewards.get(sender).size());
 			}
+		} else {
+			sender.sendMessage("§cYou have no winnings waiting to be collected!");
 		}
 
 
 	}
 
-	@Command(description="Access the duel spectate GUI",
+	@Command(description="Spectate a player",
 			args="spectate",
 			params="@player")
 	public void duelSpectate(Player sender, String[] params) {
@@ -220,7 +232,7 @@ public class DuelCommand implements CommandClass {
 		for (int i = 0; i < maps.size(); i++) {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
 			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', maps.get(i).getName()));
+			meta.setDisplayName(maps.get(i).getName());
 			if (plugin.mapIsActive(maps.get(i))) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
 
 			item.setItemMeta(meta);

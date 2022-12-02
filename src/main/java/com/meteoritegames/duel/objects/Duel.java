@@ -1,7 +1,6 @@
 package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,14 +10,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 
 public class Duel {
 	private final Main plugin;
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
+	BukkitTask duelTask;
 
 	private Player dueler1;
 	private Player dueler2;
@@ -189,7 +189,7 @@ public class Duel {
 		dueler1.closeInventory();
 		dueler2.closeInventory();
 
-		BukkitTask task = new BukkitRunnable() {
+		duelTask = new BukkitRunnable() {
 			final Player p1 = dueler1;
 			final Player p2 = dueler2;
 
@@ -279,7 +279,7 @@ public class Duel {
 		else winner = dueler1;
 
 		dueler1.getInventory().setContents(inventory1.getContents());
-		dueler2.getInventory().setContents(inventory1.getContents());
+		dueler2.getInventory().setContents(inventory2.getContents());
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
@@ -296,7 +296,17 @@ public class Duel {
 			if (duelArgs.get(12).isEnabled()) {
 				ItemStack cert = new ItemStack(Material.PAPER);
 				ItemMeta meta = cert.getItemMeta();
-				meta.setDisplayName("§6" + loser.getName() + " §ewas defeated by §6" + winner.getName());
+				meta.setDisplayName("§r§l%player%'s Death Certificate".replace("%player%", loser.getName()));
+				List<String> lore = new ArrayList<>();
+				lore.add("§f%player% §7was defeated in a §f1v1".replace("%player%", loser.getName()));
+
+				SimpleDateFormat dateformat = new SimpleDateFormat("EEE MM/dd/yy");
+				SimpleDateFormat timeformat = new SimpleDateFormat("hh:mmaa");
+				Date now = Date.from(Instant.now());
+				lore.add("§7duel on §f%date% at %time%".replace("%date%", dateformat.format(now)).replace("%time%", timeformat.format(now)));
+
+				lore.add("§7in the %arena%§r§7 by §f%winner%".replace("%arena%", map.getName()).replace("%winner%", winner.getName()));
+				meta.setLore(lore);
 				cert.setItemMeta(meta);
 				rewards.add(cert);
 			}
@@ -310,10 +320,9 @@ public class Duel {
 		dueler1.teleport(start1);
 		dueler2.teleport(start2);
 
-		dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		dueler2.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		dueler1.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-		dueler2.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+		duelTask.cancel();
+		dueler1.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
+		dueler2.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
 
 		plugin.removeDuel(this);
 	}
@@ -356,7 +365,7 @@ public class Duel {
 
 		Score s3 = o.getScore("§6§lArena");
 		s3.setScore(1);
-		Score s4 = o.getScore("§e" + ChatColor.translateAlternateColorCodes('&', map.getName()));
+		Score s4 = o.getScore("§e" + map.getName());
 		s4.setScore(0);
 		Score s8 = o.getScore("§r§r§r§r§r§r");
 		s8.setScore(-1);

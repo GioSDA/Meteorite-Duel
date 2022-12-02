@@ -1,5 +1,6 @@
 package com.meteoritegames.duel.objects;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -10,7 +11,7 @@ public class DuelMap {
 	private Location spawn2;
 
 	public DuelMap(String name, Material icon, Location spawn1, Location spawn2) {
-		this.name = name;
+		this.name = ChatColor.translateAlternateColorCodes('&', name);
 		this.icon = icon;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
