@@ -2,14 +2,18 @@ package com.meteoritegames.duel.listeners;
 
 import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.Duel;
+import org.bukkit.Instrument;
+import org.bukkit.Note;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class DuelListener implements Listener {
 	private final Main plugin;
@@ -61,6 +65,17 @@ public class DuelListener implements Listener {
 		if (!d.isActive()) return;
 
 		d.endDuel(e.getPlayer(), false);
+	}
+
+	@EventHandler
+	public void onPlayerHit(EntityDamageByEntityEvent e) {
+		if (!e.getEntityType().equals(EntityType.PLAYER)) return;
+		Duel d = plugin.playerIsInDuel((Player) e.getEntity());
+
+		if (d == null) return;
+		if (!d.isActive()) return;
+
+		d.registerHit();
 	}
 
 }

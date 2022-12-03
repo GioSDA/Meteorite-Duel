@@ -33,6 +33,8 @@ public class Duel {
 	private PlayerInventory inventory1;
 	private PlayerInventory inventory2;
 	private int timer = -5;
+	private int hitClock = 0;
+	private boolean firstHit = false;
 
 	private static final Set<Material> ARMORTYPES = EnumSet.of(
 			Material.LEATHER_HELMET,
@@ -184,6 +186,8 @@ public class Duel {
 	}
 
 	public void startDuel() {
+		dueler1.setGameMode(GameMode.ADVENTURE);
+		dueler2.setGameMode(GameMode.ADVENTURE);
 		dueler1.setNoDamageTicks(140);
 		dueler2.setNoDamageTicks(140);
 		dueler1.closeInventory();
@@ -203,8 +207,15 @@ public class Duel {
 					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
 				}
 
+				if (hitClock > 60)
+
 				updateScoreboard(p1);
 				updateScoreboard(p2);
+
+				if (hitClock >= 60 && !firstHit) endDuel(p1, true);
+				if (hitClock >= 180) endDuel(p1, true);
+
+				hitClock++;
 				timer++;
 			}
 		}.runTaskTimer(plugin, 0L, 20);
@@ -271,6 +282,8 @@ public class Duel {
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
+		dueler1.setGameMode(GameMode.SURVIVAL);
+		dueler2.setGameMode(GameMode.SURVIVAL);
 		dueler1.setAllowFlight(false);
 		dueler2.setAllowFlight(false);
 		
@@ -377,4 +390,8 @@ public class Duel {
 		p.setScoreboard(b);
 	}
 
+	public void registerHit() {
+		if (!firstHit) firstHit = true;
+		hitClock = 0;
+	}
 }
