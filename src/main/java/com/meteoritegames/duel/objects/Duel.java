@@ -327,6 +327,7 @@ public class Duel {
 			winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
 			plugin.addDuelRewards(winner, rewards);
 		} else {
+			loser.sendMessage("§eDuel cancelled.");
 			winner.sendMessage("§eDuel cancelled.");
 		}
 
@@ -334,8 +335,9 @@ public class Duel {
 		dueler2.teleport(start2);
 
 		duelTask.cancel();
-		dueler1.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
-		dueler2.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
+
+		dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		dueler2.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 
 		plugin.removeDuel(this);
 	}

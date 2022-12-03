@@ -96,7 +96,6 @@ public class DuelCommand implements CommandClass {
 			for (ItemStack reward : rewards) {
 				if (sender.getInventory().addItem(reward).size() == 0) {
 					plugin.duelRewards.get(sender).remove(reward);
-					System.out.println("a");
 				}
 			}
 
@@ -105,7 +104,6 @@ public class DuelCommand implements CommandClass {
 				sender.sendMessage("§aWinnings have been collected!");
 			} else {
 				sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
-				System.out.println(plugin.duelRewards.get(sender).size());
 			}
 		} else {
 			sender.sendMessage("§cYou have no winnings waiting to be collected!");
