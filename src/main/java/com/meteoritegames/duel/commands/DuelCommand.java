@@ -190,7 +190,7 @@ public class DuelCommand implements CommandClass {
 
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
-		page.fill(Material.STAINED_GLASS_PANE);
+		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
 		for (int i = 0; i < duelArgs.size(); i++) {
 			setGuiElement(i, page, duelArgs);
@@ -225,7 +225,7 @@ public class DuelCommand implements CommandClass {
 
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Map Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
-		page.fill(Material.STAINED_GLASS_PANE);
+		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
 		for (int i = 0; i < maps.size(); i++) {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
@@ -268,11 +268,11 @@ public class DuelCommand implements CommandClass {
 	public void createInventoryGui(Player p, Duel duel) {
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Inventory view", 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
-		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(40, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(43, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(44, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+		page.setItem(40, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+		page.setItem(43, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+		page.setItem(44, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
 		Player duelist = p.getPlayer().equals(duel.getDueler1()) ? duel.getDueler2() : duel.getDueler1();
 
@@ -312,8 +312,8 @@ public class DuelCommand implements CommandClass {
 		BasicInventory page = new BasicInventory(9, 3);
 
 		page.setItem(4, Material.ARROW, "§a§lInventory View");
-		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
+		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
 		ItemStack item;
 		if (duel.isAccepted1()) {
