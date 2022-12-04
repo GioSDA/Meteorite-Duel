@@ -308,33 +308,12 @@ public class DuelCommand implements CommandClass {
 		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Wagering", 9, 4, true);
-		BasicInventory page = new BasicInventory(9, 4);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Wagering", 9, 3, true);
+		BasicInventory page = new BasicInventory(9, 3);
 
-		ItemStack rules = new ItemStack(Material.BOOK);
-		ItemMeta rulesMeta = rules.getItemMeta();
-		rulesMeta.setDisplayName("§6Rules");
-
-		ArrayList<String> rulesLore = new ArrayList<>();
-
-		for (DuelArg arg : duel.getDuelArgs()) {
-			if (arg.isEnabled()) rulesLore.add("§e" + arg.getName() + ": §a§lON");
-			else rulesLore.add("§e" + arg.getName() + ": §c§lOFF");
-		}
-
-		rulesMeta.setLore(rulesLore);
-		rules.setItemMeta(rulesMeta);
-
-		page.setItem(4, rules);
+		page.setItem(4, Material.ARROW, "§a§lInventory View");
 		page.setItem(13, new ItemStack(Material.STAINED_GLASS_PANE));
 		page.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(27, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(28, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(29, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(31, Material.ARROW, "§a§lInventory View");
-		page.setItem(33, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(34, new ItemStack(Material.STAINED_GLASS_PANE));
-		page.setItem(35, new ItemStack(Material.STAINED_GLASS_PANE));
 
 		ItemStack item;
 		if (duel.isAccepted1()) {
@@ -348,7 +327,7 @@ public class DuelCommand implements CommandClass {
 			meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
 			item.setItemMeta(meta);
 		}
-		page.setItem(30, item);
+		page.setItem(0, item);
 
 		ItemStack item2;
 		if (duel.isAccepted2()) {
@@ -362,30 +341,30 @@ public class DuelCommand implements CommandClass {
 			meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
 			item2.setItemMeta(meta);
 		}
-		page.setItem(32, item2);
+		page.setItem(8, item2);
 
-		for (int i = 0; i < 12; i++) {
-			if (i >= duel.getWager1().size()) continue;
-			page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+		for (int i = 0; i < 14; i++) {
+			if (i >= duel.getWager1().size()) break;
+			page.setItem((i+1) % 4 + (((i+1) / 4)*9), duel.getWager1().get(i));
 		}
 
-		for (int i = 0; i < 12; i++) {
-			if (i >= duel.getWager2().size()) continue;
-			page.setItem((i % 4 + ((i / 4)*9))+5, duel.getWager2().get(i));
+		for (int i = 0; i < 14; i++) {
+			if (i >= duel.getWager2().size()) break;
+			page.setItem(8-((i+1) % 4 + (((i+1) / 4)*9)), duel.getWager2().get(i));
 		}
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
-			if (e.getEvent().getRawSlot() == 31) {
+			if (e.getEvent().getRawSlot() == 4) {
 				e.getEvent().getWhoClicked().closeInventory();
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
 
 			if (duel.getDueler1().equals(p)) {
-				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
-					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9);
-					if (index > duel.getWager1().size()) return;
+				if (e.getEvent().getRawSlot() != 0 && e.getSlotX() < 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9)-1;
+					if (index >= duel.getWager1().size()) return;
 
 					duel.getDueler1().getInventory().addItem(duel.getWager1().get(index));
 					duel.getWager1().remove(index);
@@ -394,9 +373,9 @@ public class DuelCommand implements CommandClass {
 					createWagerGui(duel.getDueler2(), duel, false);
 				}
 			} else if (duel.getDueler2().equals(p)) {
-				if (e.getSlotX() > 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
-					int index = e.getEvent().getRawSlot() - (e.getSlotY()*9) - 5;
-					if (index > duel.getWager2().size()) return;
+				if (e.getEvent().getRawSlot() != 8 && e.getSlotX() > 4 && e.getEvent().getRawSlot() < 27 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = 8-(e.getEvent().getRawSlot() - (e.getSlotY()*9))-1;
+					if (index >= duel.getWager2().size()) return;
 
 					duel.getDueler2().getInventory().addItem(duel.getWager2().get(index));
 					duel.getWager2().remove(index);
@@ -406,17 +385,17 @@ public class DuelCommand implements CommandClass {
 				}
 			}
 
-			if (e.getEvent().getRawSlot() == 30 && duel.getDueler1().equals(p)) {
-				if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted1(true);
-				else if (e.getInventory().getInventory().getItem(30).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted1(false);
+			if (e.getEvent().getRawSlot() == 0 && duel.getDueler1().equals(p)) {
+				if (e.getInventory().getInventory().getItem(0).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted1(true);
+				else if (e.getInventory().getInventory().getItem(0).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted1(false);
 
 				createWagerGui(duel.getDueler1(), duel, false);
 				createWagerGui(duel.getDueler2(), duel, false);
 			}
 
-			if (e.getEvent().getRawSlot() == 32 && duel.getDueler2().equals(p)) {
-				if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted2(true);
-				else if (e.getInventory().getInventory().getItem(32).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted2(false);
+			if (e.getEvent().getRawSlot() == 8 && duel.getDueler2().equals(p)) {
+				if (e.getInventory().getInventory().getItem(8).getItemMeta().getDisplayName().contains("§c")) duel.setAccepted2(true);
+				else if (e.getInventory().getInventory().getItem(8).getItemMeta().getDisplayName().contains("§a")) duel.setAccepted2(false);
 
 				createWagerGui(duel.getDueler1(), duel, false);
 				createWagerGui(duel.getDueler2(), duel, false);
@@ -426,7 +405,7 @@ public class DuelCommand implements CommandClass {
 				duel.startDuel();
 			}
 
-			if (e.getEvent().getRawSlot() > 36) {
+			if (e.getEvent().getRawSlot() > 27) {
 				if (duel.getDueler1().equals(p)) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
