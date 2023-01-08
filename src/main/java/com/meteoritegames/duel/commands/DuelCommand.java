@@ -15,11 +15,13 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 
@@ -93,22 +95,40 @@ public class DuelCommand implements CommandClass {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null) {
-			for (ItemStack reward : rewards) {
-				if (sender.getInventory().addItem(reward).size() == 0) {
-					plugin.duelRewards.get(sender).remove(reward);
+			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 1, 6, true);
+			BasicInventory page = new BasicInventory(9, 6);
+
+
+			ItemStack hopper = new ItemStack(Material.HOPPER);
+			ItemMeta hopperMeta = hopper.getItemMeta();
+			hopperMeta.setDisplayName("&e&lDuel Collect");
+			hopperMeta.setLore(Collections.singletonList("&7Click to collect everything"));
+			hopper.setItemMeta(hopperMeta);
+			page.setItem(4, Material.HOPPER);
+
+			for (int i = 0; i < 45 && i < rewards.size(); i++) {
+				page.setItem(9+i, rewards.get(i));
+			}
+
+			page.setOnSlotClickListener(e -> {
+				if (e.getEvent().getRawSlot() == 4) {
+					for (ItemStack reward : rewards) {
+						if (sender.getInventory().addItem(reward).size() == 0) {
+							plugin.duelRewards.get(sender).remove(reward);
+						}
+					}
+
+					if (plugin.duelRewards.get(sender).size() == 0) {
+						plugin.duelRewards.remove(sender);
+						sender.sendMessage("§aWinnings have been collected!");
+					} else {
+						sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
+					}
 				}
-			}
-
-			if (plugin.duelRewards.get(sender).size() == 0) {
-				plugin.duelRewards.remove(sender);
-				sender.sendMessage("§aWinnings have been collected!");
-			} else {
-				sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
-			}
+			});
 		} else {
-			sender.sendMessage("§cYou have no winnings waiting to be collected!");
+			sender.sendMessage("§c§l(!) §cYour §n/duel collect§c is empty.");
 		}
-
 
 	}
 
@@ -165,8 +185,8 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		createWagerGui(duel.getDueler1(), duel, true);
-		createWagerGui(duel.getDueler2(), duel, true);
+		createDuelGui(duel.getDueler1(), duel, true);
+		createDuelGui(duel.getDueler2(), duel, true);
 	}
 
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
@@ -265,6 +285,65 @@ public class DuelCommand implements CommandClass {
 		inventory.show(duel.getDueler1());
 	}
 
+	public void createDuelGui(Player p, Duel duel, boolean forced) {
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 1, 6, true);
+		BasicInventory page = new BasicInventory(3, 5);
+
+		if (p.getOpenInventory().getTitle().equals("Inventory view") || p.getOpenInventory().getTitle().equals("Wagering") && !forced) return;
+		if (duel.isActive()) return;
+
+		String ready1 = "%player1%: %ready%";
+		if (duel.isAccepted1()) ready1.replace("%player%","§c" + duel.getDueler1()).replace("%ready%", "NOT READY");
+		else ready1.replace("%player%","§a" + duel.getDueler1()).replace("%ready%", "READY");
+
+		String ready2 = "%player2%: %ready%";
+		if (duel.isAccepted2()) ready2.replace("%player2","§c" + duel.getDueler2()).replace("%ready%", "NOT READY");
+		else ready2.replace("%player2%","§a" + duel.getDueler2()).replace("%ready%", "READY");
+
+		if (duel.getDueler1().equals(p)) { //Player is first
+			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+
+			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+
+			skmeta.setOwner(duel.getDueler2().getName());
+			skmeta.setDisplayName(duel.getDueler2().getName());
+			skmeta.setLore(Arrays.asList(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skull.setItemMeta(skmeta);
+
+			page.setItem(1, skull);
+
+			ItemStack item2;
+			if (duel.isAccepted2()) {
+				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+				ItemMeta meta = item2.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§a§l Has accepted!");
+				item2.setItemMeta(meta);
+			} else {
+				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+				ItemMeta meta = item2.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+				item2.setItemMeta(meta);
+			}
+
+			page.setItem(4, item2);
+
+			page.setItem(7, Material.BOOK);
+
+			page.setItem(7, Material.BOOK);
+		} else { //Player is second
+
+		}
+
+		page.setOnSlotClickListener(e -> {
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+
+
+		});
+
+		inventory.applyPage(page);
+		inventory.show(p);
+	}
+
 	public void createInventoryGui(Player p, Duel duel) {
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Inventory view", 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
@@ -305,7 +384,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createWagerGui(Player p, Duel duel, boolean forced) {
-		if (p.getOpenInventory().getTitle().equals("Inventory view") && !forced) return;
+		if (p.getOpenInventory().getTitle().equals("Inventory view") || p.getOpenInventory().getTitle().equals("§8Duel Wager") && !forced) return;
 		if (duel.isActive()) return;
 
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Wagering", 9, 3, true);
