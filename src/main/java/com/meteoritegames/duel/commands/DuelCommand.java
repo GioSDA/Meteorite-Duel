@@ -367,6 +367,16 @@ public class DuelCommand implements CommandClass {
 			skull.setItemMeta(skmeta2);
 
 			page.setItem(40, skull2);
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager1().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+			}
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager2().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager2().get(i));
+			}
 		} else { //Player is second
 			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
 
@@ -410,6 +420,8 @@ public class DuelCommand implements CommandClass {
 			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler1().getName()));
 			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
 
+			page.setItem(31, anvil);
+
 			ItemStack item1;
 			if (duel.isAccepted2()) {
 				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
@@ -423,7 +435,7 @@ public class DuelCommand implements CommandClass {
 				item1.setItemMeta(meta);
 			}
 
-			page.setItem(31, item1);
+			page.setItem(40, item1);
 
 			ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
 
@@ -434,13 +446,26 @@ public class DuelCommand implements CommandClass {
 			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
 			skull.setItemMeta(skmeta2);
 
-			page.setItem(40, skull2);
+			page.setItem(49, skull2);
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager2().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9), duel.getWager2().get(i));
+			}
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager1().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager1().get(i));
+			}
 		}
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
-
+			if (e.getEvent().getRawSlot() == 31) {
+				e.getEvent().getWhoClicked().closeInventory();
+				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
+			}
 		});
 
 		inventory.applyPage(page);
