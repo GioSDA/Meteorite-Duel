@@ -95,9 +95,8 @@ public class DuelCommand implements CommandClass {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null) {
-			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 1, 6, true);
+			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Collect Bin", 1, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
-
 
 			ItemStack hopper = new ItemStack(Material.HOPPER);
 			ItemMeta hopperMeta = hopper.getItemMeta();
@@ -287,7 +286,7 @@ public class DuelCommand implements CommandClass {
 
 	public void createDuelGui(Player p, Duel duel, boolean forced) {
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 1, 6, true);
-		BasicInventory page = new BasicInventory(3, 5);
+		BasicInventory page = new BasicInventory(9, 6);
 
 		if (p.getOpenInventory().getTitle().equals("Inventory view") || p.getOpenInventory().getTitle().equals("Wagering") && !forced) return;
 		if (duel.isActive()) return;
@@ -310,7 +309,7 @@ public class DuelCommand implements CommandClass {
 			skmeta.setLore(Arrays.asList(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
 			skull.setItemMeta(skmeta);
 
-			page.setItem(1, skull);
+			page.setItem(4, skull);
 
 			ItemStack item2;
 			if (duel.isAccepted2()) {
@@ -321,17 +320,121 @@ public class DuelCommand implements CommandClass {
 			} else {
 				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
 				ItemMeta meta = item2.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§c§l Has not accepted!");
+				item2.setItemMeta(meta);
+			}
+
+			page.setItem(13, item2);
+
+			ItemStack book = new ItemStack(Material.BOOK);
+			ItemMeta bookMeta = book.getItemMeta();
+			List<String> bookLore = bookMeta.getLore();
+			for (DuelArg arg : duel.getDuelArgs()) {
+				bookLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+			}
+
+			bookMeta.setLore(bookLore);
+			book.setItemMeta(bookMeta);
+			page.setItem(22, book);
+
+			ItemStack anvil = new ItemStack(Material.ANVIL);
+			ItemMeta anvilMeta = anvil.getItemMeta();
+			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler2().getName()));
+			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
+
+			ItemStack item1;
+			if (duel.isAccepted2()) {
+				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+				ItemMeta meta = item1.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§a§l Has accepted!");
+				item1.setItemMeta(meta);
+			} else {
+				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+				ItemMeta meta = item1.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+				item1.setItemMeta(meta);
+			}
+
+			page.setItem(31, item1);
+
+			ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+
+			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+
+			skmeta2.setOwner(duel.getDueler1().getName());
+			skmeta2.setDisplayName(duel.getDueler1().getName());
+			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skull.setItemMeta(skmeta2);
+
+			page.setItem(40, skull2);
+		} else { //Player is second
+			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+
+			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+
+			skmeta.setOwner(duel.getDueler1().getName());
+			skmeta.setDisplayName(duel.getDueler1().getName());
+			skmeta.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skull.setItemMeta(skmeta);
+
+			page.setItem(4, skull);
+
+			ItemStack item2;
+			if (duel.isAccepted1()) {
+				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+				ItemMeta meta = item2.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§a§l Has accepted!");
+				item2.setItemMeta(meta);
+			} else {
+				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+				ItemMeta meta = item2.getItemMeta();
 				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
 				item2.setItemMeta(meta);
 			}
 
-			page.setItem(4, item2);
+			page.setItem(13, item2);
 
-			page.setItem(7, Material.BOOK);
+			ItemStack book = new ItemStack(Material.BOOK);
+			ItemMeta bookMeta = book.getItemMeta();
+			List<String> bookLore = bookMeta.getLore();
+			for (DuelArg arg : duel.getDuelArgs()) {
+				bookLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+			}
 
-			page.setItem(7, Material.BOOK);
-		} else { //Player is second
+			bookMeta.setLore(bookLore);
+			book.setItemMeta(bookMeta);
+			page.setItem(22, book);
 
+			ItemStack anvil = new ItemStack(Material.ANVIL);
+			ItemMeta anvilMeta = anvil.getItemMeta();
+			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler1().getName()));
+			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
+
+			ItemStack item1;
+			if (duel.isAccepted2()) {
+				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+				ItemMeta meta = item1.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§a§l Has accepted!");
+				item1.setItemMeta(meta);
+			} else {
+				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+				ItemMeta meta = item1.getItemMeta();
+				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+				item1.setItemMeta(meta);
+			}
+
+			page.setItem(31, item1);
+
+			ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+
+			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+
+			skmeta2.setOwner(duel.getDueler2().getName());
+			skmeta2.setDisplayName(duel.getDueler2().getName());
+			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skull.setItemMeta(skmeta2);
+
+			page.setItem(40, skull2);
 		}
 
 		page.setOnSlotClickListener(e -> {
