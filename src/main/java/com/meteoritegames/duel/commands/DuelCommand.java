@@ -311,12 +311,12 @@ public class DuelCommand implements CommandClass {
 		if (duel.isActive()) return;
 
 		String ready1 = "%player1%: %ready%";
-		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§c" + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
-		else ready1 = ready1.replace("%player1%","§a" + duel.getDueler1().getName()).replace("%ready%", "READY");
+		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§a" + duel.getDueler1().getName()).replace("%ready%", "READY");
+		else ready1 = ready1.replace("%player1%","§c" + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
 
 		String ready2 = "%player2%: %ready%";
-		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§c" + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
-		else ready2 = ready2.replace("%player2%","§a" + duel.getDueler2().getName()).replace("%ready%", "READY");
+		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§a" + duel.getDueler2().getName()).replace("%ready%", "READY");
+		else ready2 = ready2.replace("%player2%","§c" + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
 
 		if (duel.getDueler1().equals(p)) { //Player is first
 			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
@@ -500,6 +500,8 @@ public class DuelCommand implements CommandClass {
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+
+			if (e.getSlot() != 40 && timer != 0) return;
 
 			if (e.getEvent().getRawSlot() == 31) {
 				e.getEvent().getWhoClicked().closeInventory();
