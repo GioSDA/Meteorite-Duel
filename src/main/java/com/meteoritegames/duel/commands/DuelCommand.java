@@ -482,7 +482,7 @@ public class DuelCommand implements CommandClass {
 
 			skmeta2.setOwner(duel.getDueler2().getName());
 			skmeta2.setDisplayName(duel.getDueler2().getName());
-			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skmeta2.setLore(Arrays.asList(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
 			skull2.setItemMeta(skmeta2);
 
 			page.setItem(49, skull2);
