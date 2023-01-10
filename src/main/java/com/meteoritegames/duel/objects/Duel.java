@@ -203,8 +203,6 @@ public class Duel {
 					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
 				}
 
-				if (hitClock > 60)
-
 				updateScoreboard(p1);
 				updateScoreboard(p2);
 
