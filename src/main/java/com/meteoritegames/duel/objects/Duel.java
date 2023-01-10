@@ -200,10 +200,6 @@ public class Duel {
 			@Override
 			public void run() {
 				if (timer < 0) {
-					p1.sendTitle("§6" + -timer, "");
-					p1.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
-					p2.sendTitle("§6" + -timer, "");
-					p2.playNote(p1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.A));
 					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
 				}
 
@@ -395,5 +391,9 @@ public class Duel {
 	public void registerHit() {
 		if (!firstHit) firstHit = true;
 		hitClock = 0;
+	}
+
+	public int getTimer() {
+		return timer;
 	}
 }
