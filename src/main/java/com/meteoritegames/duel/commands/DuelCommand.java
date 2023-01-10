@@ -15,7 +15,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
@@ -97,7 +96,7 @@ public class DuelCommand implements CommandClass {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null) {
-			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Collect Bin", 1, 6, true);
+			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Collect Bin", 9, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
 
 			ItemStack hopper = new ItemStack(Material.HOPPER);
@@ -112,21 +111,39 @@ public class DuelCommand implements CommandClass {
 			}
 
 			page.setOnSlotClickListener(e -> {
+				System.out.println(e.getEvent().getRawSlot());
+				System.out.println(e.getEvent().getRawSlot() - 9);
+				System.out.println(rewards.size());
+
 				if (e.getEvent().getRawSlot() == 4) {
-					for (ItemStack reward : rewards) {
-						if (sender.getInventory().addItem(reward).size() == 0) {
-							plugin.duelRewards.get(sender).remove(reward);
-						}
-					}
+
+					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward) != null);
 
 					if (plugin.duelRewards.get(sender).size() == 0) {
 						plugin.duelRewards.remove(sender);
 						sender.sendMessage("§aWinnings have been collected!");
+						sender.closeInventory();
 					} else {
 						sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
+						sender.closeInventory();
+					}
+				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 <= rewards.size()) {
+					System.out.println("A");
+					ItemStack reward = rewards.get(e.getEvent().getRawSlot() - 9);
+					System.out.println(reward);
+
+					if (sender.getInventory().addItem(reward) != null) {
+						plugin.duelRewards.get(sender).remove(reward);
+						duelCollect(sender);
+					} else {
+						sender.sendMessage("§cItem could not be collected! Try emptying your inventory.");
+						sender.closeInventory();
 					}
 				}
 			});
+
+			inventory.applyPage(page);
+			inventory.show(sender);
 		} else {
 			sender.sendMessage("§c§l(!) §cYour §n/duel collect§c is empty.");
 		}
@@ -294,12 +311,12 @@ public class DuelCommand implements CommandClass {
 		if (duel.isActive()) return;
 
 		String ready1 = "%player1%: %ready%";
-		if (duel.isAccepted1()) ready1 = ready1.replace("%player%","§c" + duel.getDueler1()).replace("%ready%", "NOT READY");
-		else ready1 = ready1.replace("%player%","§a" + duel.getDueler1()).replace("%ready%", "READY");
+		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§c" + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
+		else ready1 = ready1.replace("%player1%","§a" + duel.getDueler1().getName()).replace("%ready%", "READY");
 
 		String ready2 = "%player2%: %ready%";
-		if (duel.isAccepted2()) ready2 = ready2.replace("%player2","§c" + duel.getDueler2()).replace("%ready%", "NOT READY");
-		else ready2 = ready2.replace("%player2%","§a" + duel.getDueler2()).replace("%ready%", "READY");
+		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§c" + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
+		else ready2 = ready2.replace("%player2%","§a" + duel.getDueler2().getName()).replace("%ready%", "READY");
 
 		if (duel.getDueler1().equals(p)) { //Player is first
 			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
@@ -343,13 +360,14 @@ public class DuelCommand implements CommandClass {
 			ItemMeta anvilMeta = anvil.getItemMeta();
 			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler2().getName()));
 			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
+			anvil.setItemMeta(anvilMeta);
 
 			page.setItem(31, anvil);
 
 			ItemStack item1;
 			if (duel.isAccepted1()) {
-				if (duel.isAccepted1()) {
-					item1 = new ItemStack(Material.WATCH, -duel.getTimer());
+				if (duel.isAccepted2()) {
+					item1 = new ItemStack(Material.WATCH, timer);
 					ItemMeta meta = item1.getItemMeta();
 					meta.setDisplayName("§e§lDUEL STARTING §ein §e§n%seconds%s§r".replace("%seconds%", ""+ timer));
 					meta.setLore(Collections.singletonList("§7Prepare for battle!"));
@@ -376,7 +394,7 @@ public class DuelCommand implements CommandClass {
 			skmeta2.setOwner(duel.getDueler1().getName());
 			skmeta2.setDisplayName(duel.getDueler1().getName());
 			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
-			skull.setItemMeta(skmeta2);
+			skull2.setItemMeta(skmeta2);
 
 			page.setItem(49, skull2);
 
@@ -431,13 +449,14 @@ public class DuelCommand implements CommandClass {
 			ItemMeta anvilMeta = anvil.getItemMeta();
 			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler1().getName()));
 			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
+			anvil.setItemMeta(anvilMeta);
 
 			page.setItem(31, anvil);
 
 			ItemStack item1;
 			if (duel.isAccepted2()) {
 				if (duel.isAccepted1()) {
-					item1 = new ItemStack(Material.WATCH, -duel.getTimer());
+					item1 = new ItemStack(Material.WATCH, timer);
 					ItemMeta meta = item1.getItemMeta();
 					meta.setDisplayName("§e§lDUEL STARTING §ein §e§n%seconds%s§r".replace("%seconds%", ""+ timer));
 					meta.setLore(Collections.singletonList("§7Prepare for battle!"));
@@ -488,8 +507,8 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.getDueler1().equals(p)) {
-				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
-					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
+				if (e.getSlotX() > 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = e.getEvent().getRawSlot() + (e.getSlotY() * 9) - 5;
 					if (index >= duel.getWager1().size()) return;
 
 					duel.getDueler1().getInventory().addItem(duel.getWager1().get(index));
@@ -499,8 +518,8 @@ public class DuelCommand implements CommandClass {
 					createDuelGui(duel.getDueler2(), duel, false, 0);
 				}
 			} else if (duel.getDueler2().equals(p)) {
-				if (e.getSlotX() > 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
-					int index = e.getEvent().getRawSlot() + (e.getSlotY() * 9) - 5;
+				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
+					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager2().size()) return;
 
 					duel.getDueler2().getInventory().addItem(duel.getWager2().get(index));
@@ -537,7 +556,7 @@ public class DuelCommand implements CommandClass {
 					@Override
 					public void run() {
 
-						if (timer >= 0) {
+						if (timer > 0) {
 							if (!duel.isAccepted1() || !duel.isAccepted2() || !p1.isOnline() || !p2.isOnline()) return;
 							createDuelGui(p1, duel, true, timer);
 							createDuelGui(p2, duel, true, timer);
@@ -551,7 +570,7 @@ public class DuelCommand implements CommandClass {
 				}.runTaskTimer(plugin, 0L, 20);
 			}
 
-			if (e.getEvent().getRawSlot() > 54) {
+			if (e.getEvent().getRawSlot() >= 54) {
 				if (duel.getDueler1().equals(p)) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;

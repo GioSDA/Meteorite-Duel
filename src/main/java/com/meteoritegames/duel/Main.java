@@ -16,11 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Main extends MeteoritePlugin {
-	public ConcurrentHashMap<Player, ArrayList<ItemStack>> duelRewards = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Player, Location> spectators = new ConcurrentHashMap<>();
+	public HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
+	public HashMap<Player, Location> spectators = new HashMap<>();
 	public Set<Player> noDuel = new HashSet<>();
 	public ArrayList<Duel> duels = new ArrayList<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
