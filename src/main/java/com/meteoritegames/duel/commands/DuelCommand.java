@@ -96,7 +96,7 @@ public class DuelCommand implements CommandClass {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null) {
-			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Collect Bin", 9, 6, true);
+			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Collect Bin", 9, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
 
 			ItemStack hopper = new ItemStack(Material.HOPPER);
@@ -206,6 +206,7 @@ public class DuelCommand implements CommandClass {
 		ItemMeta meta = item.getItemMeta();
 		if (duelArgs.get(slot).isEnabled()) {
 			meta.addEnchant(Enchantment.DIG_SPEED, 1,true);
+			if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1); //Replace with notch apple for glowing effect
 			meta.setLore(Arrays.asList("§a§lENABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
 		} else {
 			meta.setLore(Arrays.asList("§c§lDISABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
@@ -220,7 +221,7 @@ public class DuelCommand implements CommandClass {
 	private void createArgsGui(Duel duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Duel Settings", 9, 3, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
@@ -255,7 +256,7 @@ public class DuelCommand implements CommandClass {
 	private void createMapGui(Duel duel) {
 		ArrayList<DuelMap> maps = plugin.getMaps();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Map Settings", 9, 3, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Map Settings", 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
@@ -451,7 +452,7 @@ public class DuelCommand implements CommandClass {
 			if (duel.isAccepted2()) {
 				if (duel.isAccepted1()) {
 					item1 = new ItemStack(Material.WATCH, timer);
-					ItemMeta meta = item1.getItemMeta();
+					ItemMeta meta = item1 .getItemMeta();
 					meta.setDisplayName("§e§lDUEL STARTING §ein §e§n%seconds%s§r".replace("%seconds%", ""+ timer));
 					meta.setLore(Collections.singletonList("§7Prepare for battle!"));
 					item1.setItemMeta(meta);
@@ -598,7 +599,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "Inventory view", 9, 5, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Inventory view", 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
 		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
