@@ -264,7 +264,10 @@ public class DuelCommand implements CommandClass {
 			ItemStack item = new ItemStack(maps.get(i).getIcon());
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(maps.get(i).getName());
-			if (plugin.mapIsActive(maps.get(i))) meta.setLore(Collections.singletonList("§4§lThis map is not currently available!"));
+			Duel mapDuel = plugin.mapIsActive(maps.get(i));
+
+			if (mapDuel == null) meta.setLore(Collections.singletonList("§a§lOPEN"));
+			else meta.setLore(Collections.singletonList("§e§n%player1% §evs §e§n%player2%".replace("%player1%", mapDuel.getDueler1().getName()).replace("%player2%", mapDuel.getDueler2().getName())));
 
 			item.setItemMeta(meta);
 
@@ -275,7 +278,7 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
 			if (maps.size() <= e.getEvent().getRawSlot()) return;
-			if (plugin.mapIsActive(maps.get(e.getEvent().getRawSlot()))) {
+			if (plugin.mapIsActive(maps.get(e.getEvent().getRawSlot())) != null) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
 				return;
 			}
@@ -302,7 +305,7 @@ public class DuelCommand implements CommandClass {
 		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 9, 6, true);
 		BasicInventory page = new BasicInventory(9, 6);
 
-		if (p.getOpenInventory().getTitle().equals("Inventory view") || p.getOpenInventory().getTitle().equals("Wagering") && !forced) return;
+		if (p.getOpenInventory().getTitle().equals("§8Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
 		String ready1 = "%player1%: %ready%";

@@ -32,7 +32,7 @@ public class Duel {
 	private ArrayList<ItemStack> wager2;
 	private PlayerInventory inventory1;
 	private PlayerInventory inventory2;
-	private int timer = -5;
+	private int timer = 0;
 	private int hitClock = 0;
 	private boolean firstHit = false;
 
@@ -199,14 +199,14 @@ public class Duel {
 
 			@Override
 			public void run() {
-				if (timer < 0) {
-					if (!accepted1 || !accepted2 || !dueler1.isOnline() || !dueler2.isOnline()) return;
-				}
-
 				updateScoreboard(p1);
 				updateScoreboard(p2);
 
 				if (hitClock >= 60 && !firstHit) endDuel(p1, true);
+				if (hitClock == 120) {
+					p1.sendMessage("§e§l[/duel] §eHit the opponent in 60 seconds otherwise it will be a draw.");
+					p2.sendMessage("§e§l[/duel] §eHit the opponent in 60 seconds otherwise it will be a draw.");
+				}
 				if (hitClock >= 180) endDuel(p1, true);
 
 				hitClock++;
@@ -273,6 +273,24 @@ public class Duel {
 		dueler1.playNote(dueler1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 		dueler2.playNote(dueler2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 
+		dueler1.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
+		dueler2.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler2.getName()).replace("%player2%", dueler1.getName()));
+		dueler1.sendMessage("&b&m&l====================&6&m&l=====================&r\n" +
+				"\"\"\n" +
+				"           \"&8[ &6&lDUEL STARTED - FIGHT! &8]\"\n" +
+				"                      \"&b&l%player1%\"\n".replace("%player1%", dueler1.getName()) +
+				"                 \"&c&l&m---- VS &c&l&m----\"\n" +
+				"                      \"&b&l%player2%\"\n".replace("%player2%", dueler2.getName()) +
+				"\"\"\n" +
+				"&b&m&l====================&6&m&l=====================&r");
+		dueler2.sendMessage("&b&m&l====================&6&m&l=====================&r\n" +
+				"\"\"\n" +
+				"           \"&8[ &6&lDUEL STARTED - FIGHT! &8]\"\n" +
+				"                      \"&b&l%player1%\"\n".replace("%player1%", dueler2.getName()) +
+				"                 \"&c&l&m---- VS &c&l&m----\"\n" +
+				"                      \"&b&l%player2%\"\n".replace("%player2%", dueler1.getName()) +
+				"\"\"\n" +
+				"&b&m&l====================&6&m&l=====================&r");
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
@@ -319,8 +337,13 @@ public class Duel {
 			}
 
 			winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
+			if (rewards.size() != 0) winner.sendTitle("§e§l[/duel]", "§aItem(s) in your '/duel collect' bin!");
+			else winner.sendTitle("§e§l[/duel]", "§a%player% won this duel.".replace("%player%", winner.getName()));
 			plugin.addDuelRewards(winner, rewards);
 		} else {
+			loser.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
+			winner.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
+
 			loser.sendMessage("§eDuel cancelled.");
 			winner.sendMessage("§eDuel cancelled.");
 		}
@@ -349,39 +372,22 @@ public class Duel {
 		s1.setScore(9);
 		Score s2 = o.getScore("§r");
 		s2.setScore(8);
-
-		if (timer < 0) {
-			Score s3 = o.getScore("§6§lStatus");
-			s3.setScore(7);
-			Score s4 = o.getScore("§a§lSTARTING");
-			s4.setScore(6);
-			Score s5 = o.getScore("§r§r");
-			s5.setScore(5);
-			Score s6 = o.getScore("§6§lStarting in");
-			s6.setScore(4);
-			Score s7 = o.getScore("§e" + -timer + "s");
-			s7.setScore(3);
-			Score s8 = o.getScore("§r§r§r");
-			s8.setScore(2);
-		} else {
-			Score s6 = o.getScore("§6§lRuntime");
-			s6.setScore(4);
-			Score s7 = o.getScore("§e" + timer + "s");
-			s7.setScore(3);
-			Score s8 = o.getScore("§r§r§r§r");
-			s8.setScore(2);
-		}
-
+		Score s6 = o.getScore("§6§lRuntime");
+		s6.setScore(4);
+		Score s7 = o.getScore("§e" + timer + "s");
+		s7.setScore(3);
+		Score s8 = o.getScore("§r§r§r§r");
+		s8.setScore(2);
 		Score s3 = o.getScore("§6§lArena");
 		s3.setScore(1);
 		Score s4 = o.getScore("§e" + map.getName());
 		s4.setScore(0);
-		Score s8 = o.getScore("§r§r§r§r§r§r");
-		s8.setScore(-1);
-		Score s5 = o.getScore("§6§lAccount");
-		s5.setScore(-2);
-		Score s6 = o.getScore("§e" + p.getName());
-		s6.setScore(-3);
+		Score s9 = o.getScore("§r§r§r§r§r§r");
+		s9.setScore(-1);
+		Score s10 = o.getScore("§6§lAccount");
+		s10.setScore(-2);
+		Score s11 = o.getScore("§e" + p.getName());
+		s11.setScore(-3);
 
 		p.setScoreboard(b);
 	}

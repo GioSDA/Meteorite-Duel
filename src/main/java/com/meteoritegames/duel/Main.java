@@ -85,14 +85,14 @@ public class Main extends MeteoritePlugin {
 		return maps;
 	}
 
-	public boolean mapIsActive(DuelMap map) {
+	public Duel mapIsActive(DuelMap map) {
 		for (Duel d : duels) {
 			if (d.getMap().equals(map)) {
-				return true;
+				return d;
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	public void addDuel(Duel d) {

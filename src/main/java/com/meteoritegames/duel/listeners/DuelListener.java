@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -76,6 +77,28 @@ public class DuelListener implements Listener {
 		if (!d.isActive()) return;
 
 		d.registerHit();
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent e) {
+		switch (e.getInventory().getTitle()) {
+			case "§8Duel Settings":
+				e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nSETTINGS§e selection.");
+				e.getPlayer().sendMessage("§7The duel has been cancelled.");
+				plugin.removeDuel(plugin.getDuel((Player) e.getPlayer()));
+				break;
+			case "§8Map Settings":
+				e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nARENA§e selection.");
+				e.getPlayer().sendMessage("§7The duel has been cancelled.");
+				plugin.removeDuel(plugin.getDuel((Player) e.getPlayer()));
+				break;
+			case "§8Duel Wager":
+			case "§8Inventory view":
+				e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nRISK INVENTORY§e selection.");
+				e.getPlayer().sendMessage("§7The duel has been cancelled.");
+				plugin.removeDuel(plugin.getDuel((Player) e.getPlayer()));
+				break;
+		}
 	}
 
 }
