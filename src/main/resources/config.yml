@@ -19,3 +19,6 @@ maps:
       z: 100.0
       pitch: 0.0
       yaw: 0.0
+    #The position in the map GUI that the map will have (9x3)
+    guiX: 4 #0-8
+    guiY: 1 #0-2

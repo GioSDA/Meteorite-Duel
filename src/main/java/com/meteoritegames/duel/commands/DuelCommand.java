@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
@@ -229,7 +230,19 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
-		page.setItem(26, Material.ARROW, "§a§lContinue to map select");
+		ItemStack continueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+		ItemMeta continueMeta = continueItem.getItemMeta();
+		continueMeta.setDisplayName("§a§lContinue to map select");
+
+		List<String> continueLore = new ArrayList<>();
+		for (DuelArg arg : duel.getDuelArgs()) {
+			continueLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+		}
+
+		continueMeta.setLore(continueLore);
+
+		continueItem.setItemMeta(continueMeta);
+		page.setItem(22, continueItem);
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -260,18 +273,18 @@ public class DuelCommand implements CommandClass {
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
-		for (int i = 0; i < maps.size(); i++) {
-			ItemStack item = new ItemStack(maps.get(i).getIcon());
+		for (DuelMap map : plugin.getMaps()) {
+			ItemStack item = new ItemStack(map.getIcon());
 			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(maps.get(i).getName());
-			Duel mapDuel = plugin.mapIsActive(maps.get(i));
+			meta.setDisplayName(map.getName());
+			Duel mapDuel = plugin.mapIsActive(map);
 
 			if (mapDuel == null) meta.setLore(Collections.singletonList("§a§lOPEN"));
 			else meta.setLore(Collections.singletonList("§e§n%player1% §evs §e§n%player2%".replace("%player1%", mapDuel.getDueler1().getName()).replace("%player2%", mapDuel.getDueler2().getName())));
 
 			item.setItemMeta(meta);
 
-			page.setItem(i, item);
+			page.setItem(map.getInvPos(), item);
 		}
 
 		page.setOnSlotClickListener(e -> {

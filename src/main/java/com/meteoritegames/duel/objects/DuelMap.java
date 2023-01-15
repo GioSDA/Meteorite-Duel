@@ -9,12 +9,14 @@ public class DuelMap {
 	private Material icon;
 	private Location spawn1;
 	private Location spawn2;
+	private int invPos;
 
-	public DuelMap(String name, Material icon, Location spawn1, Location spawn2) {
+	public DuelMap(String name, Material icon, Location spawn1, Location spawn2, int invPos) {
 		this.name = ChatColor.translateAlternateColorCodes('&', name);
 		this.icon = icon;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
+		this.invPos = invPos;
 	}
 
 	public String getName() {
@@ -47,5 +49,14 @@ public class DuelMap {
 
 	public void setSpawn2(Location spawn2) {
 		this.spawn2 = spawn2;
+	}
+
+
+	public int getInvPos() {
+		return invPos;
+	}
+
+	public void setInvPos(int invPos) {
+		this.invPos = invPos;
 	}
 }

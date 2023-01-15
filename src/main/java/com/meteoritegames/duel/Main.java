@@ -76,8 +76,10 @@ public class Main extends MeteoritePlugin {
 			Material material = Material.valueOf(getConfig().getString(mapkey + "icon").toUpperCase(Locale.ROOT));
 			Location spawn1 = (Location) getConfig().get(mapkey + "spawn1");
 			Location spawn2 = (Location) getConfig().get(mapkey + "spawn2");
+			int guiX = getConfig().getInt(mapkey + "guiX");
+			int guiY = getConfig().getInt(mapkey + "guiX");;
 
-			maps.add(new DuelMap(name, material, spawn1, spawn2));
+			maps.add(new DuelMap(name, material, spawn1, spawn2, guiX*9+guiY));
 		}
 	}
 
