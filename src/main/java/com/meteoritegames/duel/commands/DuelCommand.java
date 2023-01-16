@@ -247,7 +247,7 @@ public class DuelCommand implements CommandClass {
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
-			if (e.getEvent().getRawSlot() == 26) {
+			if (e.getEvent().getRawSlot() == 22) {
 				duel.getDueler1().closeInventory();
 				createMapGui(duel);
 			}
@@ -256,6 +256,19 @@ public class DuelCommand implements CommandClass {
 			duelArgs.get(e.getEvent().getRawSlot()).setEnabled(!duelArgs.get(e.getEvent().getRawSlot()).isEnabled());
 
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
+			ItemStack ncontinueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+			ItemMeta ncontinueMeta = ncontinueItem.getItemMeta();
+			ncontinueMeta.setDisplayName("§a§lContinue to map select");
+
+			List<String> ncontinueLore = new ArrayList<>();
+			for (DuelArg arg : duel.getDuelArgs()) {
+				ncontinueLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+			}
+
+			ncontinueMeta.setLore(ncontinueLore);
+
+			ncontinueItem.setItemMeta(ncontinueMeta);
+			page.setItem(22, ncontinueItem);
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler1());
@@ -285,18 +298,25 @@ public class DuelCommand implements CommandClass {
 			item.setItemMeta(meta);
 
 			page.setItem(map.getInvPos(), item);
+			System.out.println(item);
+			System.out.println(map.getInvPos());
 		}
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+			Optional<DuelMap> m = maps.stream().filter(n -> n.getInvPos() == e.getEvent().getRawSlot()).findAny();
+			DuelMap map;
+			if (m.isPresent()) map = m.get();
+			else return;
 
-			if (maps.size() <= e.getEvent().getRawSlot()) return;
-			if (plugin.mapIsActive(maps.get(e.getEvent().getRawSlot())) != null) {
+
+
+			if (plugin.mapIsActive(map) != null) {
 				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
 				return;
 			}
 
-			duel.setMap(maps.get(e.getEvent().getRawSlot()));
+			duel.setMap(map);
 			duel.getDueler1().closeInventory();
 
 			BaseComponent[] message =

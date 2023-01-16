@@ -15,6 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public class DuelListener implements Listener {
 	private final Main plugin;
@@ -81,6 +82,8 @@ public class DuelListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
+		if (e.getPlayer().getOpenInventory().getTitle().startsWith("§8")) return;
+
 		switch (e.getInventory().getTitle()) {
 			case "§8Duel Settings":
 				e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nSETTINGS§e selection.");
@@ -94,6 +97,8 @@ public class DuelListener implements Listener {
 				break;
 			case "§8Duel Wager":
 			case "§8Inventory view":
+				if (!plugin.getDuel((Player) e.getPlayer()).isActive()) return;
+
 				e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nRISK INVENTORY§e selection.");
 				e.getPlayer().sendMessage("§7The duel has been cancelled.");
 				plugin.removeDuel(plugin.getDuel((Player) e.getPlayer()));

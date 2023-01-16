@@ -275,22 +275,22 @@ public class Duel {
 
 		dueler1.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
 		dueler2.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler2.getName()).replace("%player2%", dueler1.getName()));
-		dueler1.sendMessage("&b&m&l====================&6&m&l=====================&r\n" +
-				"\"\"\n" +
-				"           \"&8[ &6&lDUEL STARTED - FIGHT! &8]\"\n" +
-				"                      \"&b&l%player1%\"\n".replace("%player1%", dueler1.getName()) +
-				"                 \"&c&l&m---- VS &c&l&m----\"\n" +
-				"                      \"&b&l%player2%\"\n".replace("%player2%", dueler2.getName()) +
-				"\"\"\n" +
-				"&b&m&l====================&6&m&l=====================&r");
-		dueler2.sendMessage("&b&m&l====================&6&m&l=====================&r\n" +
-				"\"\"\n" +
-				"           \"&8[ &6&lDUEL STARTED - FIGHT! &8]\"\n" +
-				"                      \"&b&l%player1%\"\n".replace("%player1%", dueler2.getName()) +
-				"                 \"&c&l&m---- VS &c&l&m----\"\n" +
-				"                      \"&b&l%player2%\"\n".replace("%player2%", dueler1.getName()) +
-				"\"\"\n" +
-				"&b&m&l====================&6&m&l=====================&r");
+		dueler1.sendMessage("§b§m§l====================§6§m§l=====================§r\n" +
+				"\n§r" +
+				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
+				"                      §b§l%player1%\n§r".replace("%player1%", dueler1.getName()) +
+				"                 §c§l§m---- VS §c§l§m----\n§r" +
+				"                      §b§l%player2%\n".replace("%player2%", dueler2.getName()) +
+				"\n" +
+				"§b§m§l====================§6§m§l=====================§r");
+		dueler2.sendMessage("§b§m§l====================§6§m§l=====================§r\n" +
+				"\n" +
+				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n" +
+				"                      §b§l%player1%\n".replace("%player1%", dueler2.getName()) +
+				"                 §c§l§m---- VS §c§l§m----\n" +
+				"                      §b§l%player2%\n".replace("%player2%", dueler1.getName()) +
+				"\n" +
+				"§b§m§l====================§6§m§l=====================§r");
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
