@@ -127,7 +127,7 @@ public class DuelCommand implements CommandClass {
 				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 <= rewards.size()) {
 					ItemStack reward = rewards.get(e.getEvent().getRawSlot() - 9);
 
-					if (sender.getInventory().addItem(reward).size() != 0) {
+					if (sender.getInventory().addItem(reward).size() == 0) {
 						System.out.println();
 						plugin.duelRewards.get(sender).remove(reward);
 						duelCollect(sender);
@@ -583,15 +583,21 @@ public class DuelCommand implements CommandClass {
 					final Player p1 = duel.getDueler1();
 					final Player p2 = duel.getDueler2();
 
-					int timer = 5;
+					int timer = 100;
 
 					@Override
 					public void run() {
 
 						if (timer > 0) {
-							if (!duel.isAccepted1() || !duel.isAccepted2() || !p1.isOnline() || !p2.isOnline()) return;
-							createDuelGui(p1, duel, true, timer);
-							createDuelGui(p2, duel, true, timer);
+							if (!duel.isAccepted1() || !duel.isAccepted2() || !p1.isOnline() || !p2.isOnline()) {
+								timer = 100;
+								this.cancel();
+							}
+
+							if (timer % 20 == 0) {
+								createDuelGui(p1, duel, true, timer / 20);
+								createDuelGui(p2, duel, true, timer / 20);
+							}
 						} else {
 							duel.startDuel();
 							this.cancel();
@@ -599,7 +605,7 @@ public class DuelCommand implements CommandClass {
 
 						timer--;
 					}
-				}.runTaskTimer(plugin, 0L, 20);
+				}.runTaskTimer(plugin, 0L, 1);
 			}
 
 			if (e.getEvent().getRawSlot() >= 54) {

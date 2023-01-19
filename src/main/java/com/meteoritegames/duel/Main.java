@@ -21,7 +21,7 @@ public class Main extends MeteoritePlugin {
 	public HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
 	public HashMap<Player, Location> spectators = new HashMap<>();
 	public Set<Player> noDuel = new HashSet<>();
-	public ArrayList<Duel> duels = new ArrayList<>();
+	public Set<Duel> duels = new HashSet<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
 
 	@Override

@@ -186,6 +186,9 @@ public class Duel {
 	}
 
 	public void startDuel() {
+		if (active) return;
+		active = true;
+
 		dueler1.setGameMode(GameMode.ADVENTURE);
 		dueler2.setGameMode(GameMode.ADVENTURE);
 		dueler1.setNoDamageTicks(140);
@@ -217,8 +220,6 @@ public class Duel {
 				timer++;
 			}
 		}.runTaskTimer(plugin, 0L, 20);
-
-		this.active = true;
 
 		this.inventory1 = dueler1.getInventory();
 		this.inventory2 = dueler2.getInventory();
