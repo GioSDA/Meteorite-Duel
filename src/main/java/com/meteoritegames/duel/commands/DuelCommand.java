@@ -114,7 +114,7 @@ public class DuelCommand implements CommandClass {
 			page.setOnSlotClickListener(e -> {
 				if (e.getEvent().getRawSlot() == 4) {
 
-					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward) != null);
+					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward).size() == 0);
 
 					if (plugin.duelRewards.get(sender).size() == 0) {
 						plugin.duelRewards.remove(sender);
@@ -127,7 +127,8 @@ public class DuelCommand implements CommandClass {
 				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 <= rewards.size()) {
 					ItemStack reward = rewards.get(e.getEvent().getRawSlot() - 9);
 
-					if (sender.getInventory().addItem(reward) != null) {
+					if (sender.getInventory().addItem(reward).size() != 0) {
+						System.out.println();
 						plugin.duelRewards.get(sender).remove(reward);
 						duelCollect(sender);
 					} else {

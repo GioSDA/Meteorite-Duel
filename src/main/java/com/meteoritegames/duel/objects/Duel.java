@@ -288,10 +288,10 @@ public class Duel {
 				"\n" +
 				"§b§m§l====================§6§m§l=====================§r");
 		dueler2.sendMessage("§b§m§l====================§6§m§l=====================§r\n" +
-				"\n" +
-				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n" +
-				"                      §b§l%player1%\n".replace("%player1%", dueler2.getName()) +
-				"                 §c§l§m---- VS §c§l§m----\n" +
+				"\n§r" +
+				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
+				"                      §b§l%player1%\n§r".replace("%player1%", dueler2.getName()) +
+				"                 §c§l§m---- VS §c§l§m----\n§r" +
 				"                      §b§l%player2%\n".replace("%player2%", dueler1.getName()) +
 				"\n" +
 				"§b§m§l====================§6§m§l=====================§r");
