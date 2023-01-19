@@ -299,6 +299,8 @@ public class Duel {
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
+		duelTask.cancel();
+
 		dueler1.setGameMode(GameMode.SURVIVAL);
 		dueler2.setGameMode(GameMode.SURVIVAL);
 		dueler1.setAllowFlight(false);
