@@ -103,7 +103,7 @@ public class Main extends MeteoritePlugin {
 
 	public Duel getDuel(Player p) {
 		for (Duel duel : duels) {
-			if (duel.getDueler1().equals(p)) return duel;
+			if (duel.getDueler1().equals(p) || duel.getDueler2().equals(p)) return duel;
 		}
 
 		return null;

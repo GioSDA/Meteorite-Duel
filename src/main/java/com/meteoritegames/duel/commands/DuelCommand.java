@@ -298,8 +298,6 @@ public class DuelCommand implements CommandClass {
 			item.setItemMeta(meta);
 
 			page.setItem(map.getInvPos(), item);
-			System.out.println(item);
-			System.out.println(map.getInvPos());
 		}
 
 		page.setOnSlotClickListener(e -> {

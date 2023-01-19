@@ -202,6 +202,10 @@ public class Duel {
 				updateScoreboard(p1);
 				updateScoreboard(p2);
 
+				if (hitClock == 30 && !firstHit) {
+					p1.sendMessage("§e§l[/duel] §eHit the opponent in 30 seconds otherwise it will be a draw.");
+					p2.sendMessage("§e§l[/duel] §eHit the opponent in 30 seconds otherwise it will be a draw.");
+				}
 				if (hitClock >= 60 && !firstHit) endDuel(p1, true);
 				if (hitClock == 120) {
 					p1.sendMessage("§e§l[/duel] §eHit the opponent in 60 seconds otherwise it will be a draw.");
@@ -341,6 +345,9 @@ public class Duel {
 			else winner.sendTitle("§e§l[/duel]", "§a%player% won this duel.".replace("%player%", winner.getName()));
 			plugin.addDuelRewards(winner, rewards);
 		} else {
+			for (ItemStack item : wager1) winner.getInventory().addItem(item);
+			for (ItemStack item : wager2) loser.getInventory().addItem(item);
+
 			loser.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
 			winner.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
 
