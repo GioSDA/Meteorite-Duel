@@ -27,7 +27,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
-@DefaultCommand
 public class DuelCommand implements CommandClass {
 	private final Main plugin;
 	
