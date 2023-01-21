@@ -8,6 +8,7 @@ import com.meteoritegames.duel.listeners.DuelListener;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.MeteoritePlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,6 +35,8 @@ public class Main extends MeteoritePlugin {
 			initToggle();
 			initMaps();
 			print("Duel plugin enabled.");
+
+			registerPlaceholderParameter("player", (sender -> getNames()));
 
 			registerCommandObject(new DuelCommand(this));
 			registerCommandObject(new FixFlyCommand(this));
@@ -76,10 +79,9 @@ public class Main extends MeteoritePlugin {
 			Material material = Material.valueOf(getConfig().getString(mapkey + "icon").toUpperCase(Locale.ROOT));
 			Location spawn1 = (Location) getConfig().get(mapkey + "spawn1");
 			Location spawn2 = (Location) getConfig().get(mapkey + "spawn2");
-			int guiX = getConfig().getInt(mapkey + "guiX");
-			int guiY = getConfig().getInt(mapkey + "guiY");;
+			int guiPos = getConfig().getInt(mapkey + "guiPos");
 
-			maps.add(new DuelMap(name, material, spawn1, spawn2, (guiY*9)+guiX));
+			maps.add(new DuelMap(name, material, spawn1, spawn2, guiPos));
 		}
 	}
 
@@ -123,5 +125,13 @@ public class Main extends MeteoritePlugin {
 
 	public void addDuelRewards(Player p, ArrayList<ItemStack> rewards) {
 		duelRewards.put(p, rewards);
+	}
+
+
+	public List<String> getNames() {
+		List<String> names = new ArrayList<>();
+
+		Bukkit.getServer().getOnlinePlayers().forEach(e -> names.add(e.getName()));
+		return names;
 	}
 }

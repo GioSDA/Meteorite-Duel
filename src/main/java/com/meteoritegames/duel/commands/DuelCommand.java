@@ -35,7 +35,8 @@ public class DuelCommand implements CommandClass {
 		this.plugin = plugin;
 	}
 	
-	@Command(description="Invite another player to a duel",
+	@Command(name="duel",
+			description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
 		Player d = p.getServer().getPlayer(params[0]);
@@ -79,7 +80,8 @@ public class DuelCommand implements CommandClass {
 		createArgsGui(duel);
 	}
 
-	@Command(description="Toggle duel invites from other players",
+	@Command(name="duel",
+			description="Toggle duel invites from other players",
 			args="toggle")
 	public void duelToggle(Player sender) {
 		if (!plugin.noDuel.contains(sender)) {
@@ -91,7 +93,8 @@ public class DuelCommand implements CommandClass {
 		}
 	}
 
-	@Command(description="Collect your duel winnings",
+	@Command(name="duel",
+			description="Collect your duel winnings",
 			args="collect")
 	public void duelCollect(Player sender) {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
@@ -146,7 +149,8 @@ public class DuelCommand implements CommandClass {
 
 	}
 
-	@Command(description="Spectate a player",
+	@Command(name="duel",
+			description="Spectate a player",
 			args="spectate",
 			params="@player")
 	public void duelSpectate(Player sender, String[] params) {
@@ -181,7 +185,8 @@ public class DuelCommand implements CommandClass {
 		sender.sendMessage("§eType §6/duel spectate stop§e to stop spectating!");
 	}
 
-	@Command(description="Accept a duel invitation",
+	@Command(name="duel",
+			description="Accept a duel invitation",
 			args="accept",
 			params="@player")
 	public void duelAccept(Player sender, String[] params) {
@@ -231,19 +236,7 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
-		ItemStack continueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-		ItemMeta continueMeta = continueItem.getItemMeta();
-		continueMeta.setDisplayName("§a§lContinue to map select");
-
-		List<String> continueLore = new ArrayList<>();
-		for (DuelArg arg : duel.getDuelArgs()) {
-			continueLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
-		}
-
-		continueMeta.setLore(continueLore);
-
-		continueItem.setItemMeta(continueMeta);
-		page.setItem(22, continueItem);
+		page.setItem(22, generateRulesItem(duel));
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -257,19 +250,8 @@ public class DuelCommand implements CommandClass {
 			duelArgs.get(e.getEvent().getRawSlot()).setEnabled(!duelArgs.get(e.getEvent().getRawSlot()).isEnabled());
 
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
-			ItemStack ncontinueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-			ItemMeta ncontinueMeta = ncontinueItem.getItemMeta();
-			ncontinueMeta.setDisplayName("§a§lContinue to map select");
 
-			List<String> ncontinueLore = new ArrayList<>();
-			for (DuelArg arg : duel.getDuelArgs()) {
-				ncontinueLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
-			}
-
-			ncontinueMeta.setLore(ncontinueLore);
-
-			ncontinueItem.setItemMeta(ncontinueMeta);
-			page.setItem(22, ncontinueItem);
+			page.setItem(22, generateRulesItem(duel));
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler1());
@@ -280,11 +262,30 @@ public class DuelCommand implements CommandClass {
 		inventory.show(duel.getDueler1());
 	}
 
+	private ItemStack generateRulesItem(Duel d) {
+		ItemStack continueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+		ItemMeta continueMeta = continueItem.getItemMeta();
+		continueMeta.setDisplayName("§e§lConfirm Settings");
+
+		List<String> continueLore = new ArrayList<>();
+		for (DuelArg arg : d.getDuelArgs()) {
+			continueLore.add("§e" + arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+		}
+
+		continueLore.add("§7Click to go to the Arena Selection.");
+
+		continueMeta.setLore(continueLore);
+
+		continueItem.setItemMeta(continueMeta);
+
+		return continueItem;
+	}
+
 	private void createMapGui(Duel duel) {
 		ArrayList<DuelMap> maps = plugin.getMaps();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Map Settings", 9, 3, true);
-		BasicInventory page = new BasicInventory(9, 3);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Map Settings", 9, 1, true);
+		BasicInventory page = new BasicInventory(9, 1);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
 		for (DuelMap map : plugin.getMaps()) {

@@ -4,13 +4,11 @@ import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.Duel;
 import com.meteoritepvp.api.command.Command;
 import com.meteoritepvp.api.command.CommandClass;
-import com.meteoritepvp.api.command.DefaultCommand;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@DefaultCommand
 public class FixFlyCommand implements CommandClass {
 	private final Main plugin;
 
@@ -18,8 +16,8 @@ public class FixFlyCommand implements CommandClass {
 		this.plugin = plugin;
 	}
 
-	@Command(description="Fix items ONLY IN DUEL",
-			name="fix")
+	@Command(name="fix",
+			description="Fix items ONLY IN DUEL")
 	public void fix(CommandSender sender) {
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
@@ -41,8 +39,8 @@ public class FixFlyCommand implements CommandClass {
 		}
 	}
 
-	@Command(description="Fix all items ONLY IN DUEL",
-			name="fix",
+	@Command(name="fix",
+			description="Fix all items ONLY IN DUEL",
 			args="all")
 	public void fixAll(CommandSender sender) {
 		if (!(sender instanceof Player)) return;
@@ -69,8 +67,8 @@ public class FixFlyCommand implements CommandClass {
 		}
 	}
 
-	@Command(description="Fly ONLY IN DUEL",
-			name="fly")
+	@Command(name="fly",
+			description="Fly ONLY IN DUEL")
 	public void fly(CommandSender sender) {
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;

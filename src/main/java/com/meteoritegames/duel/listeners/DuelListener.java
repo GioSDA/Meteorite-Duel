@@ -3,8 +3,6 @@ package com.meteoritegames.duel.listeners;
 import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.Duel;
 import org.bukkit.Bukkit;
-import org.bukkit.Instrument;
-import org.bukkit.Note;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
