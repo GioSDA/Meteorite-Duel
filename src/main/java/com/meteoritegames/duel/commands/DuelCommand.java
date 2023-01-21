@@ -271,6 +271,7 @@ public class DuelCommand implements CommandClass {
 			continueLore.add("§e" + arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
 		}
 
+		continueLore.add("");
 		continueLore.add("§7Click to go to the Arena Selection.");
 
 		continueMeta.setLore(continueLore);

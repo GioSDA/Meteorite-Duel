@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.commands.FixFlyCommand;
+import com.meteoritegames.duel.commands.SetSpawnCommand;
 import com.meteoritegames.duel.listeners.DuelListener;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
@@ -37,9 +38,12 @@ public class Main extends MeteoritePlugin {
 			print("Duel plugin enabled.");
 
 			registerPlaceholderParameter("player", (sender -> getNames()));
+			registerPlaceholderParameter("num", (sender -> getNumbers()));
+
 
 			registerCommandObject(new DuelCommand(this));
 			registerCommandObject(new FixFlyCommand(this));
+			registerCommandObject(new SetSpawnCommand(this));
 
 			registerEventListener(new DuelListener(this));
 		} catch (Exception e) {
@@ -133,5 +137,9 @@ public class Main extends MeteoritePlugin {
 
 		Bukkit.getServer().getOnlinePlayers().forEach(e -> names.add(e.getName()));
 		return names;
+	}
+
+	public List<String> getNumbers() {
+		return Arrays.asList("1", "2");
 	}
 }
