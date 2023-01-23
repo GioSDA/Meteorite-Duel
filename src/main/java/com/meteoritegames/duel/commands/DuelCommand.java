@@ -235,7 +235,7 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
-		page.setItem(22, generateRulesItem(duel));
+		page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -250,7 +250,7 @@ public class DuelCommand implements CommandClass {
 
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
-			page.setItem(22, generateRulesItem(duel));
+			page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler1());
@@ -261,12 +261,12 @@ public class DuelCommand implements CommandClass {
 		inventory.show(duel.getDueler1());
 	}
 
-	private ItemStack generateRulesItem(Duel d) {
-		ItemStack continueItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-		ItemMeta continueMeta = continueItem.getItemMeta();
-		continueMeta.setDisplayName("§e§lConfirm Settings");
+	private ItemStack generateRulesItem(Duel d, String title, ItemStack item) {
+		ItemMeta continueMeta = item.getItemMeta();
+		continueMeta.setDisplayName(title);
 
 		List<String> continueLore = new ArrayList<>();
+		continueLore.add("");
 		for (DuelArg arg : d.getDuelArgs()) {
 			continueLore.add("§e" + arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
 		}
@@ -276,9 +276,9 @@ public class DuelCommand implements CommandClass {
 
 		continueMeta.setLore(continueLore);
 
-		continueItem.setItemMeta(continueMeta);
+		item.setItemMeta(continueMeta);
 
-		return continueItem;
+		return item;
 	}
 
 	private void createMapGui(Duel duel) {
@@ -341,13 +341,13 @@ public class DuelCommand implements CommandClass {
 		if (p.getOpenInventory().getTitle().equals("§8Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
-		String ready1 = "%player1%: %ready%";
-		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§a" + duel.getDueler1().getName()).replace("%ready%", "READY");
-		else ready1 = ready1.replace("%player1%","§c" + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
+		String ready1 = "* %player1%: %ready%";
+		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§a* " + duel.getDueler1().getName()).replace("%ready%", "READY");
+		else ready1 = ready1.replace("%player1%","§c* " + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
 
 		String ready2 = "%player2%: %ready%";
-		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§a" + duel.getDueler2().getName()).replace("%ready%", "READY");
-		else ready2 = ready2.replace("%player2%","§c" + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
+		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§a* " + duel.getDueler2().getName()).replace("%ready%", "READY");
+		else ready2 = ready2.replace("%player2%","§c* " + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
 
 		if (duel.getDueler1().equals(p)) { //Player is first
 			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
@@ -355,8 +355,8 @@ public class DuelCommand implements CommandClass {
 			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
 			skmeta.setOwner(duel.getDueler2().getName());
-			skmeta.setDisplayName(duel.getDueler2().getName());
-			skmeta.setLore(Arrays.asList(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skmeta.setDisplayName(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ");
+			skmeta.setLore(Arrays.asList(ready1,ready2));
 			skull.setItemMeta(skmeta);
 
 			page.setItem(4, skull);
@@ -376,16 +376,7 @@ public class DuelCommand implements CommandClass {
 
 			page.setItem(13, item2);
 
-			ItemStack book = new ItemStack(Material.BOOK);
-			ItemMeta bookMeta = book.getItemMeta();
-			List<String> bookLore = new ArrayList<>();
-			for (DuelArg arg : duel.getDuelArgs()) {
-				bookLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
-			}
-
-			bookMeta.setLore(bookLore);
-			book.setItemMeta(bookMeta);
-			page.setItem(22, book);
+			page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
 
 			ItemStack anvil = new ItemStack(Material.ANVIL);
 			ItemMeta anvilMeta = anvil.getItemMeta();
@@ -423,8 +414,8 @@ public class DuelCommand implements CommandClass {
 			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
 			skmeta2.setOwner(duel.getDueler1().getName());
-			skmeta2.setDisplayName(duel.getDueler1().getName());
-			skmeta2.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skmeta2.setDisplayName(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ");
+			skmeta2.setLore(Arrays.asList(ready1, ready2));
 			skull2.setItemMeta(skmeta2);
 
 			page.setItem(49, skull2);
@@ -444,8 +435,8 @@ public class DuelCommand implements CommandClass {
 			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
 			skmeta.setOwner(duel.getDueler1().getName());
-			skmeta.setDisplayName(duel.getDueler1().getName());
-			skmeta.setLore(Arrays.asList(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skmeta.setDisplayName(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ");
+			skmeta.setLore(Arrays.asList(ready1, ready2));
 			skull.setItemMeta(skmeta);
 
 			page.setItem(4, skull);
@@ -465,16 +456,7 @@ public class DuelCommand implements CommandClass {
 
 			page.setItem(13, item2);
 
-			ItemStack book = new ItemStack(Material.BOOK);
-			ItemMeta bookMeta = book.getItemMeta();
-			List<String> bookLore = new ArrayList<>();
-			for (DuelArg arg : duel.getDuelArgs()) {
-				bookLore.add(arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
-			}
-
-			bookMeta.setLore(bookLore);
-			book.setItemMeta(bookMeta);
-			page.setItem(22, book);
+			page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
 
 			ItemStack anvil = new ItemStack(Material.ANVIL);
 			ItemMeta anvilMeta = anvil.getItemMeta();
@@ -512,8 +494,8 @@ public class DuelCommand implements CommandClass {
 			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
 			skmeta2.setOwner(duel.getDueler2().getName());
-			skmeta2.setDisplayName(duel.getDueler2().getName());
-			skmeta2.setLore(Arrays.asList(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ",ready1, ready2));
+			skmeta2.setDisplayName(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ");
+			skmeta2.setLore(Arrays.asList(ready1, ready2));
 			skull2.setItemMeta(skmeta2);
 
 			page.setItem(49, skull2);

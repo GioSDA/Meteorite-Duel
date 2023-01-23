@@ -32,6 +32,8 @@ public class Duel {
 	private ArrayList<ItemStack> wager2;
 	private PlayerInventory inventory1;
 	private PlayerInventory inventory2;
+	private ItemStack[] armor1;
+	private ItemStack[] armor2;
 	private int timer = 0;
 	private int hitClock = 0;
 	private boolean firstHit = false;
@@ -223,6 +225,8 @@ public class Duel {
 
 		this.inventory1 = dueler1.getInventory();
 		this.inventory2 = dueler2.getInventory();
+		this.armor1 = dueler1.getInventory().getArmorContents();
+		this.armor2 = dueler2.getInventory().getArmorContents();
 
 		if (!this.getDuelArgs().get(0).isEnabled()) { //Golden Apples
 			dueler1.getInventory().remove(Material.GOLDEN_APPLE);
@@ -245,6 +249,8 @@ public class Duel {
 		}
 
 		if (!this.getDuelArgs().get(7).isEnabled()) { //Armor
+			dueler1.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
+			dueler2.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
 			ARMORTYPES.forEach(e -> {
 				dueler1.getInventory().remove(e);
 				dueler2.getInventory().remove(e);
@@ -284,7 +290,7 @@ public class Duel {
 				"\n§r" +
 				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
 				"                      §b§l%player1%\n§r".replace("%player1%", dueler1.getName()) +
-				"                 §c§l§m---- VS §c§l§m----\n§r" +
+				"                 §c§l§m----§r§c§l VS §c§l§m----\n§r" +
 				"                      §b§l%player2%\n".replace("%player2%", dueler2.getName()) +
 				"\n" +
 				"§b§m§l====================§6§m§l=====================§r");
@@ -292,7 +298,7 @@ public class Duel {
 				"\n§r" +
 				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
 				"                      §b§l%player1%\n§r".replace("%player1%", dueler2.getName()) +
-				"                 §c§l§m---- VS §c§l§m----\n§r" +
+				"                 §c§l§m----§r§c§l VS §c§l§m----\n§r" +
 				"                      §b§l%player2%\n".replace("%player2%", dueler1.getName()) +
 				"\n" +
 				"§b§m§l====================§6§m§l=====================§r");
@@ -312,6 +318,8 @@ public class Duel {
 
 		dueler1.getInventory().setContents(inventory1.getContents());
 		dueler2.getInventory().setContents(inventory2.getContents());
+		dueler1.getInventory().setArmorContents(armor1);
+		dueler1.getInventory().setArmorContents(armor2);
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
@@ -322,6 +330,12 @@ public class Duel {
 				for (int i = 0; i < loser.getInventory().getSize(); i++) {
 					rewards.add(loser.getInventory().getItem(i));
 					loser.getInventory().setItem(i, new ItemStack(Material.AIR));
+				}
+
+				for (int i = 0; i < loser.getInventory().getArmorContents().length; i++) {
+					rewards.add(loser.getInventory().getArmorContents()[i]);
+					rewards.add(loser.getInventory().getArmorContents()[i]);
+					loser.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
 				}
 			}
 

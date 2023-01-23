@@ -64,6 +64,7 @@ public class SetSpawnCommand implements CommandClass {
 					if (plugin.getConfig().getInt(mapkey + "guiPos") == m.get().getInvPos()) {
 						plugin.getConfig().set(mapkey + "spawn" + params[0], p.getLocation());
 						plugin.saveConfig();
+						plugin.initMaps();
 					}
 				}
 

@@ -75,7 +75,9 @@ public class Main extends MeteoritePlugin {
 		System.out.println("Saved duel toggles.");
 	}
 
-	private void initMaps() throws IllegalArgumentException {
+	public void initMaps() throws IllegalArgumentException {
+		maps.clear();
+
 		for (String key : getConfig().getConfigurationSection("maps").getKeys(false)) {
 			String mapkey = "maps." + key + ".";
 
