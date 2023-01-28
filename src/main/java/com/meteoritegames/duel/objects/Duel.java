@@ -102,13 +102,10 @@ public class Duel {
 
 		KitItems kitItemGen = new KitItems();
 
-		ItemStack potIcon = new ItemStack(Material.POTION, 1, (short)16388);
-		ItemStack nodeIcon = new ItemStack(Material.POTION, 1, (short)16389);
-
-		kits.add(new Kit("§a§lDefault Kit", new ItemStack(Material.BARRIER), new ItemStack[]{}));
-		kits.add(new Kit("§a§lSoup", new ItemStack(Material.MUSHROOM_SOUP), kitItemGen.getSoupItems()));
-		kits.add(new Kit("§a§lPotions", potIcon, kitItemGen.getSoupItems()));
-		kits.add(new Kit("§a§lPotions (No Debuff)",nodeIcon, kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lNone Kit", Material.DIAMOND_HELMET, new ItemStack[]{}));
+		kits.add(new Kit("§a§lSoup Kit", Material.MUSHROOM_SOUP, kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lPotion Kit", Material.SPIDER_EYE, kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lPotions (No Debuff)", Material.BREWING_STAND_ITEM, kitItemGen.getSoupItems()));
 	}
 
 

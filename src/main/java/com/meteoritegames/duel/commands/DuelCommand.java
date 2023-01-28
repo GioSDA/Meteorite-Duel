@@ -4,6 +4,7 @@ import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.DuelArg;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
+import com.meteoritegames.duel.objects.Kit;
 import com.meteoritepvp.api.command.Command;
 import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
@@ -287,11 +288,13 @@ public class DuelCommand implements CommandClass {
 	}
 
 	private ItemStack generateKitItem(Duel d) {
-		ItemStack item = new ItemStack(Material.DIAMOND_HELMET);
+		ItemStack item = new ItemStack(d.getKit().getSymbol());
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§e§lKit");
 		List<String> lore = Arrays.asList(d.getKit().getName(), "§7Click to select a kit.");
 		meta.setLore(lore);
+		meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -317,7 +320,31 @@ public class DuelCommand implements CommandClass {
 	}
 
 	private void createKitGui(Duel duel) {
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Select a Kit", 9, 1, true);
+		BasicInventory page = new BasicInventory(9, 1);
+		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
+		for (int i = 0; i < duel.getKits().size(); i++) {
+			Kit kit = duel.getKits().get(i);
+			ItemStack item = new ItemStack(kit.getSymbol());
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(kit.getName());
+			meta.setLore(Collections.singletonList("§8Click to select this kit."));
+
+			item.setItemMeta(meta);
+
+			page.setItem(i, item);
+		}
+
+		page.setOnSlotClickListener(e -> {
+			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
+			if (e.getEvent().getRawSlot() >= duel.getKits().size()) return;
+
+			duel.setKit(duel.getKits().get(e.getEvent().getRawSlot()));
+		});
+
+		inventory.applyPage(page);
+		inventory.show(duel.getDueler1());
 	}
 
 	private void createMapGui(Duel duel) {
