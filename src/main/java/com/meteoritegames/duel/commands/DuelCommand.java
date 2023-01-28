@@ -34,7 +34,7 @@ public class DuelCommand implements CommandClass {
 	public DuelCommand(Main plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@Command(name="duel",
 			description="Invite another player to a duel",
 			params="@player")
@@ -186,6 +186,23 @@ public class DuelCommand implements CommandClass {
 	}
 
 	@Command(name="duel",
+			description="Help menu",
+			args="help")
+	public void duelHelp(Player sender) {
+		sender.sendMessage("\n" +
+				"&e&l&nDuel Commands&r\n" +
+				"&e/duel <name>\n" +
+				"&7Invite a player to a settings specific duel\n" +
+				"&e/duel toggle\n" +
+				"&7Toggle duel invites from other players.\n" +
+				"&e/duel spectate\n" +
+				"&7Access the duel spectate menu.\n" +
+				"&e/duel collect\n" +
+				"&7Access your Stake Collection Bin.\n" +
+				"");
+	}
+
+	@Command(name="duel",
 			description="Accept a duel invitation",
 			args="accept",
 			params="@player")
@@ -297,6 +314,10 @@ public class DuelCommand implements CommandClass {
 		item.setItemMeta(continueMeta);
 
 		return item;
+	}
+
+	private void createKitGui(Duel duel) {
+
 	}
 
 	private void createMapGui(Duel duel) {
