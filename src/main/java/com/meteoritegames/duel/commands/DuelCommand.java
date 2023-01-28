@@ -25,6 +25,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.sql.Array;
 import java.util.*;
 
 public class DuelCommand implements CommandClass {
@@ -240,6 +241,11 @@ public class DuelCommand implements CommandClass {
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
+			if (e.getEvent().getRawSlot() == 18 || e.getEvent().getRawSlot() == 26) {
+				duel.getDueler1().closeInventory();
+				createKitGui(duel);
+			}
+
 			if (e.getEvent().getRawSlot() == 22) {
 				duel.getDueler1().closeInventory();
 				createMapGui(duel);
@@ -251,6 +257,8 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
 			page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+			page.setItem(26, generateKitItem(duel));
+			page.setItem(18, generateKitItem(duel));
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler1());
@@ -259,6 +267,16 @@ public class DuelCommand implements CommandClass {
 		inventory.applyPage(page);
 
 		inventory.show(duel.getDueler1());
+	}
+
+	private ItemStack generateKitItem(Duel d) {
+		ItemStack item = new ItemStack(Material.DIAMOND_HELMET);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§e§lKit");
+		List<String> lore = Arrays.asList(d.getKit().getName(), "§7Click to select a kit.");
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+		return item;
 	}
 
 	private ItemStack generateRulesItem(Duel d, String title, ItemStack item) {

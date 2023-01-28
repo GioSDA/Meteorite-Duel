@@ -87,6 +87,7 @@ public class DuelListener implements Listener {
 			if (d == null) return;
 
 			switch (e.getInventory().getTitle()) {
+				case "§8Kit":
 				case "§8Duel Settings":
 					e.getPlayer().sendMessage("§e§l(!) §eYou closed the §nSETTINGS§e selection.");
 					e.getPlayer().sendMessage("§7The duel has been cancelled.");

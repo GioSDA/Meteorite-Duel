@@ -2,6 +2,7 @@ package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -30,6 +31,8 @@ public class Duel {
 	private boolean accepted2;
 	private ArrayList<ItemStack> wager1;
 	private ArrayList<ItemStack> wager2;
+	private ArrayList<Kit> kits;
+	private Kit kit;
 	private PlayerInventory inventory1;
 	private PlayerInventory inventory2;
 	private ItemStack[] armor1;
@@ -96,6 +99,16 @@ public class Duel {
 		duelArgs.add(new DuelArg(Material.FEATHER, "/fly", false));
 		duelArgs.add(new DuelArg(Material.PAPER, "Death Certificates", true));
 		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
+
+		KitItems kitItemGen = new KitItems();
+
+		ItemStack potIcon = new ItemStack(Material.POTION, 1, (short)16388);
+		ItemStack nodeIcon = new ItemStack(Material.POTION, 1, (short)16389);
+
+		kits.add(new Kit("§a§lDefault Kit", new ItemStack(Material.BARRIER), new ItemStack[]{}));
+		kits.add(new Kit("§a§lSoup", new ItemStack(Material.MUSHROOM_SOUP), kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lPotions", potIcon, kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lPotions (No Debuff)",nodeIcon, kitItemGen.getSoupItems()));
 	}
 
 
@@ -424,4 +437,21 @@ public class Duel {
 	public int getTimer() {
 		return timer;
 	}
+
+	public ArrayList<Kit> getKits() {
+		return kits;
+	}
+
+	public void setKits(ArrayList<Kit> kits) {
+		this.kits = kits;
+	}
+
+	public Kit getKit() {
+		return kit;
+	}
+
+	public void setKit(Kit kit) {
+		this.kit = kit;
+	}
+
 }
