@@ -2,7 +2,6 @@ package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -111,7 +110,6 @@ public class Duel {
 		kit = kits.get(0);
 	}
 
-
 	public Player getDueler1() {
 		return dueler1;
 	}
@@ -208,6 +206,8 @@ public class Duel {
 		dueler2.setGameMode(GameMode.ADVENTURE);
 		dueler1.setNoDamageTicks(140);
 		dueler2.setNoDamageTicks(140);
+		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
+		dueler2.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
 		dueler1.closeInventory();
 		dueler2.closeInventory();
 
@@ -351,6 +351,8 @@ public class Duel {
 		dueler2.getInventory().setContents(inventory2.getContents());
 		dueler1.getInventory().setArmorContents(armor1);
 		dueler2.getInventory().setArmorContents(armor2);
+		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
+		dueler2.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();

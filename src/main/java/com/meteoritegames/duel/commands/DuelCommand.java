@@ -100,7 +100,7 @@ public class DuelCommand implements CommandClass {
 	public void duelCollect(Player sender) {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
-		if (rewards != null) {
+		if (rewards != null || rewards.size() == 0) {
 			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Collect Bin", 9, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
 
@@ -135,6 +135,11 @@ public class DuelCommand implements CommandClass {
 						System.out.println();
 						plugin.duelRewards.get(sender).remove(reward);
 						duelCollect(sender);
+						if (plugin.duelRewards.get(sender).size() == 0) {
+							plugin.duelRewards.remove(sender);
+							sender.sendMessage("§aWinnings have been collected!");
+							sender.closeInventory();
+						}
 					} else {
 						sender.sendMessage("§cItem could not be collected! Try emptying your inventory.");
 						sender.closeInventory();
