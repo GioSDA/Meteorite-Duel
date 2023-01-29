@@ -2,7 +2,6 @@ package com.meteoritegames.duel.objects;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -20,24 +19,24 @@ public class KitItems {
 		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack helmet = new ItemStack(Material.IRON_HELMET);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack boots = new ItemStack(Material.IRON_BOOTS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack bow = new ItemStack(Material.BOW);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
 		ItemStack arrow = new ItemStack(Material.ARROW);
 
@@ -61,28 +60,28 @@ public class KitItems {
 		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack gapples = new ItemStack(Material.GOLDEN_APPLE, 32);
 
 		ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 64);
 
 		ItemStack bow = new ItemStack(Material.BOW);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
 		ItemStack arrow = new ItemStack(Material.ARROW);
 
@@ -110,28 +109,28 @@ public class KitItems {
 		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
-		sword.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
-		sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+		boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+		boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
 		ItemStack gapples = new ItemStack(Material.GOLDEN_APPLE, 32);
 
 		ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 64);
 
 		ItemStack bow = new ItemStack(Material.BOW);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
-		sword.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
 
 		ItemStack arrow = new ItemStack(Material.ARROW);
 
@@ -152,10 +151,8 @@ public class KitItems {
 	}
 
 	private ItemStack[] addDuelLore(ItemStack[] items) {
-		ItemStack[] modifiedItems = items.clone();
-
 		for (int i = 0; i < items.length; i++) {
-			ItemStack item = modifiedItems[i];
+			ItemStack item = items[i].clone();
 			ItemMeta meta = item.getItemMeta();
 			List<String> lore;
 			if (meta.hasLore()) lore = meta.getLore();
@@ -164,9 +161,9 @@ public class KitItems {
 			lore.add("§6§lDUEL KIT ITEM");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
-			modifiedItems[i] = item;
+			items[i] = item;
 		}
 
-		return modifiedItems;
+		return items;
 	}
 }

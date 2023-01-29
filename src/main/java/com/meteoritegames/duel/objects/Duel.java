@@ -101,11 +101,14 @@ public class Duel {
 		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
 
 		KitItems kitItemGen = new KitItems();
+		kits = new ArrayList<>();
 
 		kits.add(new Kit("§a§lNone Kit", Material.DIAMOND_HELMET, new ItemStack[]{}));
 		kits.add(new Kit("§a§lSoup Kit", Material.MUSHROOM_SOUP, kitItemGen.getSoupItems()));
-		kits.add(new Kit("§a§lPotion Kit", Material.SPIDER_EYE, kitItemGen.getSoupItems()));
-		kits.add(new Kit("§a§lPotions (No Debuff)", Material.BREWING_STAND_ITEM, kitItemGen.getSoupItems()));
+		kits.add(new Kit("§a§lPotion Kit", Material.SPIDER_EYE, kitItemGen.getPotionItems()));
+		kits.add(new Kit("§a§lPotions (No Debuff)", Material.BREWING_STAND_ITEM, kitItemGen.getNoDebuffItems()));
+
+		kit = kits.get(0);
 	}
 
 
@@ -238,6 +241,22 @@ public class Duel {
 		this.armor1 = dueler1.getInventory().getArmorContents();
 		this.armor2 = dueler2.getInventory().getArmorContents();
 
+		if (!kit.getName().equals("§a§lNone Kit")) {
+			dueler1.getInventory().clear();
+			dueler2.getInventory().clear();
+			dueler1.getInventory().getArmorContents()[0] = new ItemStack(Material.AIR);
+			dueler1.getInventory().getArmorContents()[1] = new ItemStack(Material.AIR);
+			dueler1.getInventory().getArmorContents()[2] = new ItemStack(Material.AIR);
+			dueler1.getInventory().getArmorContents()[3] = new ItemStack(Material.AIR);
+			dueler2.getInventory().getArmorContents()[0] = new ItemStack(Material.AIR);
+			dueler2.getInventory().getArmorContents()[1] = new ItemStack(Material.AIR);
+			dueler2.getInventory().getArmorContents()[2] = new ItemStack(Material.AIR);
+			dueler2.getInventory().getArmorContents()[3] = new ItemStack(Material.AIR);
+
+			dueler1.getInventory().setContents(kit.getItems());
+			dueler2.getInventory().setContents(kit.getItems());
+		}
+
 		if (!this.getDuelArgs().get(0).isEnabled()) { //Golden Apples
 			dueler1.getInventory().remove(Material.GOLDEN_APPLE);
 			dueler2.getInventory().remove(Material.GOLDEN_APPLE);
@@ -326,17 +345,19 @@ public class Duel {
 		if (loser.equals(dueler1)) winner = dueler2;
 		else winner = dueler1;
 
+		dueler1.getInventory().clear();
+		dueler2.getInventory().clear();
 		dueler1.getInventory().setContents(inventory1.getContents());
 		dueler2.getInventory().setContents(inventory2.getContents());
 		dueler1.getInventory().setArmorContents(armor1);
-		dueler1.getInventory().setArmorContents(armor2);
+		dueler2.getInventory().setArmorContents(armor2);
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
 			rewards.addAll(getWager1());
 			rewards.addAll(getWager2());
 
-			if (duelArgs.get(6).isEnabled()) {
+			if (duelArgs.get(6).isEnabled()) { //Risk Inventory
 				for (int i = 0; i < loser.getInventory().getSize(); i++) {
 					rewards.add(loser.getInventory().getItem(i));
 					loser.getInventory().setItem(i, new ItemStack(Material.AIR));
@@ -349,7 +370,7 @@ public class Duel {
 				}
 			}
 
-			if (duelArgs.get(12).isEnabled()) {
+			if (duelArgs.get(12).isEnabled()) { //Death Certificate
 				ItemStack cert = new ItemStack(Material.PAPER);
 				ItemMeta meta = cert.getItemMeta();
 				meta.setDisplayName("§r§l%player%'s Death Certificate".replace("%player%", loser.getName()));

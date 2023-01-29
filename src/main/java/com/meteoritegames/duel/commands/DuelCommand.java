@@ -191,15 +191,15 @@ public class DuelCommand implements CommandClass {
 			args="help")
 	public void duelHelp(Player sender) {
 		sender.sendMessage("\n" +
-				"&e&l&nDuel Commands&r\n" +
-				"&e/duel <name>\n" +
-				"&7Invite a player to a settings specific duel\n" +
-				"&e/duel toggle\n" +
-				"&7Toggle duel invites from other players.\n" +
-				"&e/duel spectate\n" +
-				"&7Access the duel spectate menu.\n" +
-				"&e/duel collect\n" +
-				"&7Access your Stake Collection Bin.\n" +
+				"§e§l§nDuel Commands§r\n" +
+				"§e/duel <name>\n" +
+				"§7Invite a player to a settings specific duel\n" +
+				"§e/duel toggle\n" +
+				"§7Toggle duel invites from other players.\n" +
+				"§e/duel spectate\n" +
+				"§7Access the duel spectate menu.\n" +
+				"§e/duel collect\n" +
+				"§7Access your Stake Collection Bin.\n" +
 				"");
 	}
 
@@ -255,6 +255,8 @@ public class DuelCommand implements CommandClass {
 		}
 
 		page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+		page.setItem(26, generateKitItem(duel));
+		page.setItem(18, generateKitItem(duel));
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -290,8 +292,8 @@ public class DuelCommand implements CommandClass {
 	private ItemStack generateKitItem(Duel d) {
 		ItemStack item = new ItemStack(d.getKit().getSymbol());
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§e§lKit");
-		List<String> lore = Arrays.asList(d.getKit().getName(), "§7Click to select a kit.");
+		meta.setDisplayName(d.getKit().getName());
+		List<String> lore = Collections.singletonList("§7Click to select a kit.");
 		meta.setLore(lore);
 		meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -308,6 +310,7 @@ public class DuelCommand implements CommandClass {
 		for (DuelArg arg : d.getDuelArgs()) {
 			continueLore.add("§e" + arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
 		}
+		continueLore.add("§eKit: " + d.getKit().getName());
 
 		continueLore.add("");
 		continueLore.add("§7Click to go to the Arena Selection.");
@@ -341,6 +344,8 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getRawSlot() >= duel.getKits().size()) return;
 
 			duel.setKit(duel.getKits().get(e.getEvent().getRawSlot()));
+			duel.getDueler1().closeInventory();
+			createArgsGui(duel);
 		});
 
 		inventory.applyPage(page);
@@ -407,7 +412,7 @@ public class DuelCommand implements CommandClass {
 		if (p.getOpenInventory().getTitle().equals("§8Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
-		String ready1 = "* %player1%: %ready%";
+		String ready1 = "%player1%: %ready%";
 		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§a* " + duel.getDueler1().getName()).replace("%ready%", "READY");
 		else ready1 = ready1.replace("%player1%","§c* " + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
 
