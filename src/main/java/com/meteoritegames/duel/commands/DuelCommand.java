@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.IOException;
 import java.sql.Array;
 import java.util.*;
 
@@ -43,22 +44,22 @@ public class DuelCommand implements CommandClass {
 		Player d = p.getServer().getPlayer(params[0]);
 
 		if (p.equals(d)) {
-			p.sendMessage("§cYou can't duel yourself!");
+			p.sendMessage(plugin.text.get("duel-self"));
 			return;
 		}
 
 		if (d == null) {
-			p.sendMessage("§cThat player is not online!");
+			p.sendMessage(plugin.text.get("player-offline"));
 			return;
 		}
 
 		if (plugin.playerIsInDuel(d) != null) {
-			p.sendMessage("§cThat player is already in a duel!");
+			p.sendMessage(plugin.text.get("player-in-duel"));
 			return;
 		}
 
 		if (plugin.playerIsInDuel(p) != null) {
-			p.sendMessage("§cYou are already in a duel!");
+			p.sendMessage(plugin.text.get("in-duel"));
 			return;
 		}
 
@@ -67,12 +68,12 @@ public class DuelCommand implements CommandClass {
 		}
 
 		if (plugin.noDuel.contains(p)) {
-			p.sendMessage("§cThis player has duel requests disabled!");
+			p.sendMessage(plugin.text.get("requests-disabled"));
 			return;
 		}
 
 		if (plugin.duelRewards.get(p) != null) {
-			p.sendMessage("§cYou have duel rewards waiting to be collected!");
+			p.sendMessage(plugin.text.get("rewards-waiting"));
 			return;
 		}
 
@@ -87,10 +88,10 @@ public class DuelCommand implements CommandClass {
 	public void duelToggle(Player sender) {
 		if (!plugin.noDuel.contains(sender)) {
 			plugin.noDuel.add(sender);
-			sender.sendMessage("§cDuel requests have been disabled!");
+			sender.sendMessage(plugin.text.get("disable-requests"));
 		} else {
 			plugin.noDuel.remove(sender);
-			sender.sendMessage("§aDuel requests have been enabled!");
+			sender.sendMessage(plugin.text.get("enable-requests"));
 		}
 	}
 
@@ -100,7 +101,7 @@ public class DuelCommand implements CommandClass {
 	public void duelCollect(Player sender) {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
-		if (rewards != null || rewards.size() == 0) {
+		if (rewards != null && rewards.size() != 0) {
 			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Collect Bin", 9, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
 
@@ -120,37 +121,35 @@ public class DuelCommand implements CommandClass {
 
 					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward).size() == 0);
 
-					if (plugin.duelRewards.get(sender).size() == 0) {
-						plugin.duelRewards.remove(sender);
-						sender.sendMessage("§aWinnings have been collected!");
-						sender.closeInventory();
-					} else {
-						sender.sendMessage("§cNot all winnings were collected! Try emptying your inventory.");
-						sender.closeInventory();
+					if (plugin.duelRewards.get(sender).size() != 0) {
+						sender.sendMessage(plugin.text.get("not-collected"));
 					}
+
+					sender.closeInventory();
 				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 <= rewards.size()) {
 					ItemStack reward = rewards.get(e.getEvent().getRawSlot() - 9);
 
 					if (sender.getInventory().addItem(reward).size() == 0) {
-						System.out.println();
 						plugin.duelRewards.get(sender).remove(reward);
 						duelCollect(sender);
-						if (plugin.duelRewards.get(sender).size() == 0) {
-							plugin.duelRewards.remove(sender);
-							sender.sendMessage("§aWinnings have been collected!");
-							sender.closeInventory();
-						}
+
 					} else {
-						sender.sendMessage("§cItem could not be collected! Try emptying your inventory.");
+						sender.sendMessage(plugin.text.get("item-not-collected"));
 						sender.closeInventory();
 					}
 				}
 			});
 
+			if (plugin.duelRewards.get(sender).size() == 0) {
+				plugin.duelRewards.remove(sender);
+				sender.sendMessage(plugin.text.get("winnings-collected"));
+				sender.closeInventory();
+			}
+
 			inventory.applyPage(page);
 			inventory.show(sender);
 		} else {
-			sender.sendMessage("§c§l(!) §cYour §n/duel collect§c is empty.");
+			sender.sendMessage(plugin.text.get("collect-empty"));
 		}
 
 	}
@@ -164,13 +163,13 @@ public class DuelCommand implements CommandClass {
 
 		if (params[0].equalsIgnoreCase("stop")) {
 			if (!plugin.spectators.containsKey(sender)) {
-				sender.sendMessage("§cYou are not currently spectating anyone!");
+				sender.sendMessage(plugin.text.get("not-spectating"));
 				return;
 			}
 
 			sender.teleport(plugin.spectators.get(sender));
 			sender.setGameMode(GameMode.SURVIVAL);
-			sender.sendMessage("§cStopped spectating!");
+			sender.sendMessage(plugin.text.get("stop-spectating"));
 
 			plugin.spectators.remove(sender);
 			return;
@@ -180,7 +179,7 @@ public class DuelCommand implements CommandClass {
 
 		Duel duel = plugin.playerIsInDuel(d);
 		if (duel == null) {
-			sender.sendMessage("§cThat player is not currently in a duel!");
+			sender.sendMessage(plugin.text.get("invalid-spectate"));
 			return;
 		}
 
@@ -188,24 +187,14 @@ public class DuelCommand implements CommandClass {
 
 		sender.setGameMode(GameMode.SPECTATOR);
 		sender.teleport(duel.getMap().getSpawn1());
-		sender.sendMessage("§eType §6/duel spectate stop§e to stop spectating!");
+		sender.sendMessage(plugin.text.get("spectate-info"));
 	}
 
 	@Command(name="duel",
 			description="Help menu",
 			args="help")
 	public void duelHelp(Player sender) {
-		sender.sendMessage("\n" +
-				"§e§l§nDuel Commands§r\n" +
-				"§e/duel <name>\n" +
-				"§7Invite a player to a settings specific duel\n" +
-				"§e/duel toggle\n" +
-				"§7Toggle duel invites from other players.\n" +
-				"§e/duel spectate\n" +
-				"§7Access the duel spectate menu.\n" +
-				"§e/duel collect\n" +
-				"§7Access your Stake Collection Bin.\n" +
-				"");
+		sender.sendMessage(plugin.text.get("help"));
 	}
 
 	@Command(name="duel",
@@ -216,14 +205,14 @@ public class DuelCommand implements CommandClass {
 		Player p = sender.getServer().getPlayer(params[0]);
 
 		if (p == null) {
-			sender.sendMessage("§cThat player is not online!");
+			sender.sendMessage(plugin.text.get("player-offline"));
 			return;
 		}
 
 		Duel duel = plugin.getDuel(p);
 
 		if (duel == null || duel.isActive()) {
-			sender.sendMessage("§cThat duel request is not active!");
+			sender.sendMessage(plugin.text.get("duel-inactive"));
 			return;
 		}
 
@@ -388,7 +377,7 @@ public class DuelCommand implements CommandClass {
 
 
 			if (plugin.mapIsActive(map) != null) {
-				e.getEvent().getWhoClicked().sendMessage("§cThat map is currently unavailable!");
+				e.getEvent().getWhoClicked().sendMessage(plugin.text.get("map-unavailable"));
 				return;
 			}
 
@@ -402,7 +391,7 @@ public class DuelCommand implements CommandClass {
 
 			duel.getDueler2().spigot().sendMessage(message);
 
-			e.getEvent().getWhoClicked().sendMessage("§eYour duel request has been sent.");
+			e.getEvent().getWhoClicked().sendMessage(plugin.text.get("request-sent"));
 			plugin.addDuel(duel);
 		});
 

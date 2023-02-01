@@ -15,11 +15,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class Main extends MeteoritePlugin {
+	public HashMap<String, String> text = new HashMap<>();
 	public HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
 	public HashMap<Player, Location> spectators = new HashMap<>();
 	public Set<Player> noDuel = new HashSet<>();
@@ -33,7 +32,7 @@ public class Main extends MeteoritePlugin {
 		try {
 			saveDefaultConfig();
 
-			initToggle();
+			initText();
 			initMaps();
 			print("Duel plugin enabled.");
 
@@ -52,29 +51,6 @@ public class Main extends MeteoritePlugin {
 		}
 	}
 
-	private void initToggle() throws IOException {
-		Gson gson = new Gson();
-		File file = new File(this.getDataFolder().getAbsolutePath() + "/toggles.json");
-
-		if (file.exists()){
-			Reader reader = new FileReader(file);
-			Type setType = new TypeToken<HashSet<String>>(){}.getType();
-			noDuel = gson.fromJson(reader, setType);
-		}
-	}
-
-	private void saveToggle() throws IOException {
-		Gson gson = new Gson();
-		File file = new File(this.getDataFolder().getAbsolutePath() + "/toggles.json");
-		file.getParentFile().mkdir();
-		file.createNewFile();
-		Writer writer = new FileWriter(file, false);
-		gson.toJson(noDuel, writer);
-		writer.flush();
-		writer.close();
-		System.out.println("Saved duel toggles.");
-	}
-
 	public void initMaps() throws IllegalArgumentException {
 		maps.clear();
 
@@ -88,6 +64,14 @@ public class Main extends MeteoritePlugin {
 			int guiPos = getConfig().getInt(mapkey + "guiPos");
 
 			maps.add(new DuelMap(name, material, spawn1, spawn2, guiPos));
+		}
+	}
+
+	private void initText() {
+		text.clear();
+
+		for (String key : getConfig().getConfigurationSection("text").getKeys(false)) {
+			text.put(key, getConfig().getString("text." + key).replaceAll("&", "§"));
 		}
 	}
 

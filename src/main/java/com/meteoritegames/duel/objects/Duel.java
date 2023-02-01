@@ -221,13 +221,13 @@ public class Duel {
 				updateScoreboard(p2);
 
 				if (hitClock == 30 && !firstHit) {
-					p1.sendMessage("§e§l[/duel] §eHit the opponent in 30 seconds otherwise it will be a draw.");
-					p2.sendMessage("§e§l[/duel] §eHit the opponent in 30 seconds otherwise it will be a draw.");
+					p1.sendMessage(plugin.text.get("hit-30"));
+					p2.sendMessage(plugin.text.get("hit-30"));
 				}
 				if (hitClock >= 60 && !firstHit) endDuel(p1, true);
 				if (hitClock == 120) {
-					p1.sendMessage("§e§l[/duel] §eHit the opponent in 60 seconds otherwise it will be a draw.");
-					p2.sendMessage("§e§l[/duel] §eHit the opponent in 60 seconds otherwise it will be a draw.");
+					p1.sendMessage(plugin.text.get("hit-60"));
+					p2.sendMessage(plugin.text.get("hit-60"));
 				}
 				if (hitClock >= 180) endDuel(p1, true);
 
@@ -315,22 +315,8 @@ public class Duel {
 
 		dueler1.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
 		dueler2.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler2.getName()).replace("%player2%", dueler1.getName()));
-		dueler1.sendMessage("§b§m§l====================§6§m§l=====================§r\n" +
-				"\n§r" +
-				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
-				"                      §b§l%player1%\n§r".replace("%player1%", dueler1.getName()) +
-				"                 §c§l§m----§r§c§l VS §c§l§m----\n§r" +
-				"                      §b§l%player2%\n".replace("%player2%", dueler2.getName()) +
-				"\n" +
-				"§b§m§l====================§6§m§l=====================§r");
-		dueler2.sendMessage("§b§m§l====================§6§m§l=====================§r\n" +
-				"\n§r" +
-				"           §8[ §6§lDUEL STARTED - FIGHT! §8]\n§r" +
-				"                      §b§l%player1%\n§r".replace("%player1%", dueler2.getName()) +
-				"                 §c§l§m----§r§c§l VS §c§l§m----\n§r" +
-				"                      §b§l%player2%\n".replace("%player2%", dueler1.getName()) +
-				"\n" +
-				"§b§m§l====================§6§m§l=====================§r");
+		dueler1.sendMessage(plugin.text.get("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
+		dueler2.sendMessage(plugin.text.get("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
