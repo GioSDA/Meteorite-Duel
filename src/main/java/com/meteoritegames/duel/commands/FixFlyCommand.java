@@ -24,7 +24,7 @@ public class FixFlyCommand implements CommandClass {
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
-			p.sendMessage("§cYou are not in a duel!");
+			p.sendMessage(plugin.getText("not-in-duel"));
 			return;
 		}
 
@@ -35,7 +35,7 @@ public class FixFlyCommand implements CommandClass {
 			p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
 			p.updateInventory();
 		} else {
-			p.sendMessage("§c/fix is not enabled!");
+			p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fix"));
 		}
 	}
 
@@ -48,7 +48,7 @@ public class FixFlyCommand implements CommandClass {
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
-			p.sendMessage("§cYou are not in a duel!");
+			p.sendMessage(plugin.getText("not-in-duel"));
 			return;
 		}
 
@@ -63,7 +63,7 @@ public class FixFlyCommand implements CommandClass {
 			p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
 			p.updateInventory();
 		} else {
-			p.sendMessage("§c/fix all is not enabled!");
+			p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fix all"));
 		}
 	}
 
@@ -75,14 +75,14 @@ public class FixFlyCommand implements CommandClass {
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d == null) {
-			p.sendMessage("§cYou are not in a duel!");
+			p.sendMessage(plugin.getText("not-in-duel"));
 			return;
 		}
 
 		if (d.getDuelArgs().get(11).isEnabled()) {
 			p.setAllowFlight(!p.getAllowFlight());
 		} else {
-			p.sendMessage("§c/fly is not enabled!");
+			p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fly"));
 		}
 	}
 }

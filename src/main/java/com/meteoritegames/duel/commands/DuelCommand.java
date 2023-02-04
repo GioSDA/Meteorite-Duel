@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -44,22 +45,22 @@ public class DuelCommand implements CommandClass {
 		Player d = p.getServer().getPlayer(params[0]);
 
 		if (p.equals(d)) {
-			p.sendMessage(plugin.text.get("duel-self"));
+			p.sendMessage(plugin.getText("duel-self"));
 			return;
 		}
 
 		if (d == null) {
-			p.sendMessage(plugin.text.get("player-offline"));
+			p.sendMessage(plugin.getText("player-offline"));
 			return;
 		}
 
 		if (plugin.playerIsInDuel(d) != null) {
-			p.sendMessage(plugin.text.get("player-in-duel"));
+			p.sendMessage(plugin.getText("player-in-duel"));
 			return;
 		}
 
 		if (plugin.playerIsInDuel(p) != null) {
-			p.sendMessage(plugin.text.get("in-duel"));
+			p.sendMessage(plugin.getText("in-duel"));
 			return;
 		}
 
@@ -68,12 +69,12 @@ public class DuelCommand implements CommandClass {
 		}
 
 		if (plugin.noDuel.contains(p)) {
-			p.sendMessage(plugin.text.get("requests-disabled"));
+			p.sendMessage(plugin.getText("requests-disabled"));
 			return;
 		}
 
 		if (plugin.duelRewards.get(p) != null) {
-			p.sendMessage(plugin.text.get("rewards-waiting"));
+			p.sendMessage(plugin.getText("rewards-waiting"));
 			return;
 		}
 
@@ -88,10 +89,10 @@ public class DuelCommand implements CommandClass {
 	public void duelToggle(Player sender) {
 		if (!plugin.noDuel.contains(sender)) {
 			plugin.noDuel.add(sender);
-			sender.sendMessage(plugin.text.get("disable-requests"));
+			sender.sendMessage(plugin.getText("disable-requests"));
 		} else {
 			plugin.noDuel.remove(sender);
-			sender.sendMessage(plugin.text.get("enable-requests"));
+			sender.sendMessage(plugin.getText("enable-requests"));
 		}
 	}
 
@@ -102,13 +103,13 @@ public class DuelCommand implements CommandClass {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null && rewards.size() != 0) {
-			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Collect Bin", 9, 6, true);
+			MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("collect-menu"), 9, 6, true);
 			BasicInventory page = new BasicInventory(9, 6);
 
 			ItemStack hopper = new ItemStack(Material.HOPPER);
 			ItemMeta hopperMeta = hopper.getItemMeta();
-			hopperMeta.setDisplayName("&e&lDuel Collect");
-			hopperMeta.setLore(Collections.singletonList("&7Click to collect everything"));
+			hopperMeta.setDisplayName(plugin.getText("collect-item"));
+			hopperMeta.setLore(Collections.singletonList(plugin.getText("collect-desc")));
 			hopper.setItemMeta(hopperMeta);
 			page.setItem(4, Material.HOPPER);
 
@@ -122,7 +123,7 @@ public class DuelCommand implements CommandClass {
 					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward).size() == 0);
 
 					if (plugin.duelRewards.get(sender).size() != 0) {
-						sender.sendMessage(plugin.text.get("not-collected"));
+						sender.sendMessage(plugin.getText("not-collected"));
 					}
 
 					sender.closeInventory();
@@ -134,7 +135,7 @@ public class DuelCommand implements CommandClass {
 						duelCollect(sender);
 
 					} else {
-						sender.sendMessage(plugin.text.get("item-not-collected"));
+						sender.sendMessage(plugin.getText("item-not-collected"));
 						sender.closeInventory();
 					}
 				}
@@ -142,14 +143,14 @@ public class DuelCommand implements CommandClass {
 
 			if (plugin.duelRewards.get(sender).size() == 0) {
 				plugin.duelRewards.remove(sender);
-				sender.sendMessage(plugin.text.get("winnings-collected"));
+				sender.sendMessage(plugin.getText("winnings-collected"));
 				sender.closeInventory();
 			}
 
 			inventory.applyPage(page);
 			inventory.show(sender);
 		} else {
-			sender.sendMessage(plugin.text.get("collect-empty"));
+			sender.sendMessage(plugin.getText("collect-empty"));
 		}
 
 	}
@@ -163,13 +164,13 @@ public class DuelCommand implements CommandClass {
 
 		if (params[0].equalsIgnoreCase("stop")) {
 			if (!plugin.spectators.containsKey(sender)) {
-				sender.sendMessage(plugin.text.get("not-spectating"));
+				sender.sendMessage(plugin.getText("not-spectating"));
 				return;
 			}
 
 			sender.teleport(plugin.spectators.get(sender));
 			sender.setGameMode(GameMode.SURVIVAL);
-			sender.sendMessage(plugin.text.get("stop-spectating"));
+			sender.sendMessage(plugin.getText("stop-spectating"));
 
 			plugin.spectators.remove(sender);
 			return;
@@ -179,7 +180,7 @@ public class DuelCommand implements CommandClass {
 
 		Duel duel = plugin.playerIsInDuel(d);
 		if (duel == null) {
-			sender.sendMessage(plugin.text.get("invalid-spectate"));
+			sender.sendMessage(plugin.getText("invalid-spectate"));
 			return;
 		}
 
@@ -187,14 +188,14 @@ public class DuelCommand implements CommandClass {
 
 		sender.setGameMode(GameMode.SPECTATOR);
 		sender.teleport(duel.getMap().getSpawn1());
-		sender.sendMessage(plugin.text.get("spectate-info"));
+		sender.sendMessage(plugin.getText("spectate-info"));
 	}
 
 	@Command(name="duel",
 			description="Help menu",
 			args="help")
 	public void duelHelp(Player sender) {
-		sender.sendMessage(plugin.text.get("help"));
+		sender.sendMessage(plugin.getText("help"));
 	}
 
 	@Command(name="duel",
@@ -205,14 +206,14 @@ public class DuelCommand implements CommandClass {
 		Player p = sender.getServer().getPlayer(params[0]);
 
 		if (p == null) {
-			sender.sendMessage(plugin.text.get("player-offline"));
+			sender.sendMessage(plugin.getText("player-offline"));
 			return;
 		}
 
 		Duel duel = plugin.getDuel(p);
 
 		if (duel == null || duel.isActive()) {
-			sender.sendMessage(plugin.text.get("duel-inactive"));
+			sender.sendMessage(plugin.getText("duel-inactive"));
 			return;
 		}
 
@@ -240,7 +241,7 @@ public class DuelCommand implements CommandClass {
 	private void createArgsGui(Duel duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Settings", 9, 3, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("duel-menu"), 9, 3, true);
 		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
@@ -248,7 +249,7 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
-		page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+		page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 		page.setItem(26, generateKitItem(duel));
 		page.setItem(18, generateKitItem(duel));
 
@@ -270,7 +271,7 @@ public class DuelCommand implements CommandClass {
 
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
-			page.setItem(22, generateRulesItem(duel, "§e§lConfirm Settings", new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+			page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 			page.setItem(26, generateKitItem(duel));
 			page.setItem(18, generateKitItem(duel));
 
@@ -317,7 +318,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	private void createKitGui(Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Select a Kit", 9, 1, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("kit-menu"), 9, 1, true);
 		BasicInventory page = new BasicInventory(9, 1);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
@@ -326,7 +327,7 @@ public class DuelCommand implements CommandClass {
 			ItemStack item = new ItemStack(kit.getSymbol());
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(kit.getName());
-			meta.setLore(Collections.singletonList("§8Click to select this kit."));
+			meta.setLore(Collections.singletonList(plugin.getText("kit-select")));
 
 			item.setItemMeta(meta);
 
@@ -349,7 +350,7 @@ public class DuelCommand implements CommandClass {
 	private void createMapGui(Duel duel) {
 		ArrayList<DuelMap> maps = plugin.getMaps();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Map Settings", 9, 1, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("map-menu"), 9, 1, true);
 		BasicInventory page = new BasicInventory(9, 1);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
@@ -359,8 +360,8 @@ public class DuelCommand implements CommandClass {
 			meta.setDisplayName(map.getName());
 			Duel mapDuel = plugin.mapIsActive(map);
 
-			if (mapDuel == null) meta.setLore(Collections.singletonList("§a§lOPEN"));
-			else meta.setLore(Collections.singletonList("§e§n%player1% §evs §e§n%player2%".replace("%player1%", mapDuel.getDueler1().getName()).replace("%player2%", mapDuel.getDueler2().getName())));
+			if (mapDuel == null) meta.setLore(Collections.singletonList(plugin.getText("map-open")));
+			else meta.setLore(Collections.singletonList(plugin.getText("map-taken").replace("%player1%", mapDuel.getDueler1().getName()).replace("%player2%", mapDuel.getDueler2().getName())));
 
 			item.setItemMeta(meta);
 
@@ -377,7 +378,7 @@ public class DuelCommand implements CommandClass {
 
 
 			if (plugin.mapIsActive(map) != null) {
-				e.getEvent().getWhoClicked().sendMessage(plugin.text.get("map-unavailable"));
+				e.getEvent().getWhoClicked().sendMessage(plugin.getText("map-unavailable"));
 				return;
 			}
 
@@ -391,7 +392,7 @@ public class DuelCommand implements CommandClass {
 
 			duel.getDueler2().spigot().sendMessage(message);
 
-			e.getEvent().getWhoClicked().sendMessage(plugin.text.get("request-sent"));
+			e.getEvent().getWhoClicked().sendMessage(plugin.getText("request-sent"));
 			plugin.addDuel(duel);
 		});
 
@@ -400,180 +401,109 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createDuelGui(Player p, Duel duel, boolean forced, int timer) {
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Duel Wager", 9, 6, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("wager-menu"), 9, 6, true);
 		BasicInventory page = new BasicInventory(9, 6);
 
 		if (p.getOpenInventory().getTitle().equals("§8Inventory view") && !forced) return;
 		if (duel.isActive()) return;
 
-		String ready1 = "%player1%: %ready%";
-		if (duel.isAccepted1()) ready1 = ready1.replace("%player1%","§a* " + duel.getDueler1().getName()).replace("%ready%", "READY");
-		else ready1 = ready1.replace("%player1%","§c* " + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
+		String ready1 = plugin.getText("wager-ready");
+		if (duel.isAccepted1()) ready1 = ready1.replace("%player%","§a* " + duel.getDueler1().getName()).replace("%ready%", "READY");
+		else ready1 = ready1.replace("%player%","§c* " + duel.getDueler1().getName()).replace("%ready%", "NOT READY");
 
-		String ready2 = "%player2%: %ready%";
-		if (duel.isAccepted2()) ready2 = ready2.replace("%player2%","§a* " + duel.getDueler2().getName()).replace("%ready%", "READY");
-		else ready2 = ready2.replace("%player2%","§c* " + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
+		String ready2 = plugin.getText("wager-ready");
+		if (duel.isAccepted2()) ready2 = ready2.replace("%player%","§a* " + duel.getDueler2().getName()).replace("%ready%", "READY");
+		else ready2 = ready2.replace("%player%","§c* " + duel.getDueler2().getName()).replace("%ready%", "NOT READY");
+		
+		Player player1;
+		Player player2;
+		
+		if (duel.getDueler1().equals(p)) {
+			player1 = duel.getDueler1();
+			player2 = duel.getDueler2();
+		} else {
+			player1 = duel.getDueler2();
+			player2 = duel.getDueler1();
+		}
 
-		if (duel.getDueler1().equals(p)) { //Player is first
-			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
 
-			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
-			skmeta.setOwner(duel.getDueler2().getName());
-			skmeta.setDisplayName(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ");
-			skmeta.setLore(Arrays.asList(ready1,ready2));
-			skull.setItemMeta(skmeta);
+		skmeta.setOwner(player2.getName());
+		skmeta.setDisplayName(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ");
+		skmeta.setLore(Arrays.asList(ready1,ready2));
+		skull.setItemMeta(skmeta);
 
-			page.setItem(4, skull);
+		page.setItem(4, skull);
 
-			ItemStack item2;
+		ItemStack item2;
+		if (duel.isAccepted2()) {
+			item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+			ItemMeta meta = item2.getItemMeta();
+			meta.setDisplayName(plugin.getText("wager-accepted").replace("%player%", player2.getName()));
+			item2.setItemMeta(meta);
+		} else {
+			item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta meta = item2.getItemMeta();
+			meta.setDisplayName(plugin.getText("wager-notaccepted").replace("%player%", player2.getName()));
+			item2.setItemMeta(meta);
+		}
+
+		page.setItem(13, item2);
+
+		page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
+
+		ItemStack anvil = new ItemStack(Material.ANVIL);
+		ItemMeta anvilMeta = anvil.getItemMeta();
+		anvilMeta.setDisplayName(plugin.getText("wager-inventory").replace("%player%", player2.getName()));
+		anvilMeta.setLore(Collections.singletonList(plugin.getText("wager-inv2")));
+		anvil.setItemMeta(anvilMeta);
+
+		page.setItem(31, anvil);
+
+		ItemStack item1;
+		if (duel.isAccepted1()) {
 			if (duel.isAccepted2()) {
-				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-				ItemMeta meta = item2.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§a§l Has accepted!");
-				item2.setItemMeta(meta);
-			} else {
-				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-				ItemMeta meta = item2.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§c§l Has not accepted!");
-				item2.setItemMeta(meta);
-			}
-
-			page.setItem(13, item2);
-
-			page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
-
-			ItemStack anvil = new ItemStack(Material.ANVIL);
-			ItemMeta anvilMeta = anvil.getItemMeta();
-			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler2().getName()));
-			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
-			anvil.setItemMeta(anvilMeta);
-
-			page.setItem(31, anvil);
-
-			ItemStack item1;
-			if (duel.isAccepted1()) {
-				if (duel.isAccepted2()) {
-					item1 = new ItemStack(Material.WATCH, timer);
-					ItemMeta meta = item1.getItemMeta();
-					meta.setDisplayName("§e§lDUEL STARTING §ein §e§n%seconds%s§r".replace("%seconds%", ""+ timer));
-					meta.setLore(Collections.singletonList("§7Prepare for battle!"));
-					item1.setItemMeta(meta);
-				} else {
-					item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-					ItemMeta meta = item1.getItemMeta();
-					meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§a§l Has accepted!");
-					item1.setItemMeta(meta);
-				}
-			} else {
-				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+				item1 = new ItemStack(Material.WATCH, timer);
 				ItemMeta meta = item1.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
+				meta.setDisplayName(plugin.getText("wager-starting").replace("%seconds%", ""+ timer));
+				meta.setLore(Collections.singletonList(plugin.getText("wager-prepare")));
+				item1.setItemMeta(meta);
+			} else {
+				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+				ItemMeta meta = item1.getItemMeta();
+				meta.setDisplayName(plugin.getText("wager-notaccepted").replace("%player%", player1.getName()));
 				item1.setItemMeta(meta);
 			}
+		} else {
+			item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta meta = item1.getItemMeta();
+			meta.setDisplayName(plugin.getText("wager-notaccepted").replace("%player%", player1.getName()));
+			item1.setItemMeta(meta);
+		}
 
-			page.setItem(40, item1);
+		page.setItem(40, item1);
 
-			ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+		ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
 
-			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
-			skmeta2.setOwner(duel.getDueler1().getName());
-			skmeta2.setDisplayName(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ");
-			skmeta2.setLore(Arrays.asList(ready1, ready2));
-			skull2.setItemMeta(skmeta2);
+		skmeta2.setOwner(player1.getName());
+		skmeta2.setDisplayName(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ");
+		skmeta2.setLore(Arrays.asList(ready1, ready2));
+		skull2.setItemMeta(skmeta2);
 
-			page.setItem(49, skull2);
+		page.setItem(49, skull2);
 
-			for (int i = 0; i < 24; i++) {
-				if (i >= duel.getWager1().size()) break;
-				page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
-			}
+		for (int i = 0; i < 24; i++) {
+			if (i >= duel.getWager1().size()) break;
+			page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+		}
 
-			for (int i = 0; i < 24; i++) {
-				if (i >= duel.getWager2().size()) break;
-				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager2().get(i));
-			}
-		} else { //Player is second
-			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-
-			SkullMeta skmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-
-			skmeta.setOwner(duel.getDueler1().getName());
-			skmeta.setDisplayName(duel.isAccepted1() ? "§aREADY " : "§cNOT READY ");
-			skmeta.setLore(Arrays.asList(ready1, ready2));
-			skull.setItemMeta(skmeta);
-
-			page.setItem(4, skull);
-
-			ItemStack item2;
-			if (duel.isAccepted1()) {
-				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-				ItemMeta meta = item2.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§a§l Has accepted!");
-				item2.setItemMeta(meta);
-			} else {
-				item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-				ItemMeta meta = item2.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler1().getDisplayName() + "§c§l Has not accepted!");
-				item2.setItemMeta(meta);
-			}
-
-			page.setItem(13, item2);
-
-			page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
-
-			ItemStack anvil = new ItemStack(Material.ANVIL);
-			ItemMeta anvilMeta = anvil.getItemMeta();
-			anvilMeta.setDisplayName("§c§l%player% Inventory".replace("%player%", duel.getDueler1().getName()));
-			anvilMeta.setLore(Collections.singletonList("§7Click to see your opponent's inventory"));
-			anvil.setItemMeta(anvilMeta);
-
-			page.setItem(31, anvil);
-
-			ItemStack item1;
-			if (duel.isAccepted2()) {
-				if (duel.isAccepted1()) {
-					item1 = new ItemStack(Material.WATCH, timer);
-					ItemMeta meta = item1 .getItemMeta();
-					meta.setDisplayName("§e§lDUEL STARTING §ein §e§n%seconds%s§r".replace("%seconds%", ""+ timer));
-					meta.setLore(Collections.singletonList("§7Prepare for battle!"));
-					item1.setItemMeta(meta);
-				} else {
-					item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-					ItemMeta meta = item1.getItemMeta();
-					meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§a§l Has accepted!");
-					item1.setItemMeta(meta);
-				}
-			} else {
-				item1 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-				ItemMeta meta = item1.getItemMeta();
-				meta.setDisplayName("§6" + duel.getDueler2().getDisplayName() + "§c§l Has not accepted!");
-				item1.setItemMeta(meta);
-			}
-
-			page.setItem(40, item1);
-
-			ItemStack skull2 = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-
-			SkullMeta skmeta2 = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-
-			skmeta2.setOwner(duel.getDueler2().getName());
-			skmeta2.setDisplayName(duel.isAccepted2() ? "§aREADY " : "§cNOT READY ");
-			skmeta2.setLore(Arrays.asList(ready1, ready2));
-			skull2.setItemMeta(skmeta2);
-
-			page.setItem(49, skull2);
-
-			for (int i = 0; i < 24; i++) {
-				if (i >= duel.getWager2().size()) break;
-				page.setItem(i % 4 + ((i / 4)*9), duel.getWager2().get(i));
-			}
-
-			for (int i = 0; i < 24; i++) {
-				if (i >= duel.getWager1().size()) break;
-				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager1().get(i));
-			}
+		for (int i = 0; i < 24; i++) {
+			if (i >= duel.getWager2().size()) break;
+			page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager2().get(i));
 		}
 
 		page.setOnSlotClickListener(e -> {
@@ -586,50 +516,50 @@ public class DuelCommand implements CommandClass {
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
 
-			if (duel.getDueler1().equals(p)) {
+			if (player1.equals(p)) {
 				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager1().size()) return;
 
-					duel.getDueler1().getInventory().addItem(duel.getWager1().get(index));
+					player1.getInventory().addItem(duel.getWager1().get(index));
 					duel.getWager1().remove(index);
 
-					createDuelGui(duel.getDueler1(), duel, false, 0);
-					createDuelGui(duel.getDueler2(), duel, false, 0);
+					createDuelGui(player1, duel, false, 0);
+					createDuelGui(player2, duel, false, 0);
 				}
-			} else if (duel.getDueler2().equals(p)) {
+			} else if (player2.equals(p)) {
 				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager2().size()) return;
 
-					duel.getDueler2().getInventory().addItem(duel.getWager2().get(index));
+					player2.getInventory().addItem(duel.getWager2().get(index));
 					duel.getWager2().remove(index);
 
-					createDuelGui(duel.getDueler1(), duel, false, 0);
-					createDuelGui(duel.getDueler2(), duel, false, 0);
+					createDuelGui(player1, duel, false, 0);
+					createDuelGui(player2, duel, false, 0);
 				}
 			}
 
-			if (e.getEvent().getRawSlot() == 40 && duel.getDueler1().equals(p)) {
+			if (e.getEvent().getRawSlot() == 40 && player1.equals(p)) {
 				if (!duel.isAccepted1()) duel.setAccepted1(true);
 				else if (duel.isAccepted1()) duel.setAccepted1(false);
 
-				createDuelGui(duel.getDueler1(), duel, false, 0);
-				createDuelGui(duel.getDueler2(), duel, false, 0);
+				createDuelGui(player1, duel, false, 0);
+				createDuelGui(player2, duel, false, 0);
 			}
 
-			if (e.getEvent().getRawSlot() == 40 && duel.getDueler2().equals(p)) {
+			if (e.getEvent().getRawSlot() == 40 && player2.equals(p)) {
 				if (!duel.isAccepted2()) duel.setAccepted2(true);
 				else if (duel.isAccepted2()) duel.setAccepted2(false);
 
-				createDuelGui(duel.getDueler1(), duel, false, 0);
-				createDuelGui(duel.getDueler2(), duel, false, 0);
+				createDuelGui(player1, duel, false, 0);
+				createDuelGui(player2, duel, false, 0);
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
 				BukkitTask task = new BukkitRunnable() {
-					final Player p1 = duel.getDueler1();
-					final Player p2 = duel.getDueler2();
+					final Player p1 = player1;
+					final Player p2 = player2;
 
 					int timer = 100;
 
@@ -657,24 +587,24 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (e.getEvent().getRawSlot() >= 54) {
-				if (duel.getDueler1().equals(p)) {
+				if (player1.equals(p)) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
 
 					duel.getWager1().add(wagerItem);
 					p.getInventory().removeItem(wagerItem);
 
-					createDuelGui(duel.getDueler1(), duel, false, 0);
-					createDuelGui(duel.getDueler2(), duel, false, 0);
-				} else if (duel.getDueler2().equals(p)) {
+					createDuelGui(player1, duel, false, 0);
+					createDuelGui(player2, duel, false, 0);
+				} else if (player2.equals(p)) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
 
 					duel.getWager2().add(p.getInventory().getItem(e.getSlot()));
 					p.getInventory().removeItem(wagerItem);
 
-					createDuelGui(duel.getDueler1(), duel, false, 0);
-					createDuelGui(duel.getDueler2(), duel, false, 0);
+					createDuelGui(player1, duel, false, 0);
+					createDuelGui(player2, duel, false, 0);
 				}
 			}
 
@@ -688,7 +618,7 @@ public class DuelCommand implements CommandClass {
 	}
 
 	public void createInventoryGui(Player p, Duel duel) {
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Inventory view", 9, 5, true);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("inventory-menu"), 9, 5, true);
 		BasicInventory page = new BasicInventory(9, 5);
 		page.setItem(36, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 		page.setItem(37, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
@@ -711,7 +641,7 @@ public class DuelCommand implements CommandClass {
 		page.setItem(41, duelist.getInventory().getLeggings());
 		page.setItem(42, duelist.getInventory().getBoots());
 
-		page.setItem(44, Material.ARROW, "§a§lWagering");
+		page.setItem(44, Material.ARROW, plugin.getText("inventory-wagering"));
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;

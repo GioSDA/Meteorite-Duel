@@ -54,7 +54,7 @@ public class SetSpawnCommand implements CommandClass {
 				Optional<DuelMap> m = maps.stream().filter(n -> n.getInvPos() == e.getEvent().getRawSlot()).findAny();
 
 				if (!m.isPresent()) {
-					p.sendMessage("§cPlease choose a valid map!");
+					p.sendMessage(plugin.getText("map-invalid"));
 					return;
 				}
 
@@ -71,13 +71,13 @@ public class SetSpawnCommand implements CommandClass {
 				plugin.getConfig().get("maps");
 
 				p.closeInventory();
-				e.getEvent().getWhoClicked().sendMessage("§eSpawn position updated!");
+				e.getEvent().getWhoClicked().sendMessage(plugin.getText("spawn-updated"));
 			});
 
 			inventory.applyPage(page);
 			inventory.show(p);
 		} else {
-			p.sendMessage("§eYou do not have permission to use that command!");
+			p.sendMessage(plugin.getText("no-permission"));
 		}
 	}
 

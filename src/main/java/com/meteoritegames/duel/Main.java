@@ -128,4 +128,9 @@ public class Main extends MeteoritePlugin {
 	public List<String> getNumbers() {
 		return Arrays.asList("1", "2");
 	}
+
+	public String getText(String id) {
+		return text.getOrDefault(id, "TEXT COULD NOT BE LOADED");
+
+	}
 }

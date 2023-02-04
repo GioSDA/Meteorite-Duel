@@ -89,24 +89,24 @@ public class DuelListener implements Listener {
 			switch (e.getInventory().getTitle()) {
 				case "§8Select a Kit":
 				case "§8Duel Settings":
-					e.getPlayer().sendMessage(plugin.text.get("close-settings"));
-					e.getPlayer().sendMessage(plugin.text.get("cancel-duel"));
+					e.getPlayer().sendMessage(plugin.getText("close-settings"));
+					e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
 					plugin.removeDuel(d);
 					break;
 				case "§8Map Settings":
 					if (plugin.getDuel((Player) e.getPlayer()) != null) return;
 
-					e.getPlayer().sendMessage(plugin.text.get("close-arena"));
-					e.getPlayer().sendMessage(plugin.text.get("cancel-duel"));
+					e.getPlayer().sendMessage(plugin.getText("close-arena"));
+					e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
 					plugin.removeDuel(d);
 					break;
 				case "§8Duel Wager":
 				case "§8Inventory view":
 					if (d.isActive()) return;
 
-					e.getPlayer().sendMessage(plugin.text.get("close-wager"));
-					d.getDueler1().sendMessage(plugin.text.get("cancel-duel"));
-					d.getDueler2().sendMessage(plugin.text.get("cancel-duel"));
+					e.getPlayer().sendMessage(plugin.getText("close-wager"));
+					d.getDueler1().sendMessage(plugin.getText("cancel-duel"));
+					d.getDueler2().sendMessage(plugin.getText("cancel-duel"));
 
 					d.getDueler1().closeInventory();
 					d.getDueler2().closeInventory();

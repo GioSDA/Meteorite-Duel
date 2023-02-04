@@ -102,10 +102,10 @@ public class Duel {
 		KitItems kitItemGen = new KitItems();
 		kits = new ArrayList<>();
 
-		kits.add(new Kit("§a§lNone Kit", Material.DIAMOND_HELMET, new ItemStack[]{}));
-		kits.add(new Kit("§a§lSoup Kit", Material.MUSHROOM_SOUP, kitItemGen.getSoupItems()));
-		kits.add(new Kit("§a§lPotion Kit", Material.SPIDER_EYE, kitItemGen.getPotionItems()));
-		kits.add(new Kit("§a§lPotions (No Debuff)", Material.BREWING_STAND_ITEM, kitItemGen.getNoDebuffItems()));
+		kits.add(new Kit(plugin.getText("kit-none"), Material.DIAMOND_HELMET, new ItemStack[]{}));
+		kits.add(new Kit(plugin.getText("kit-soup"), Material.MUSHROOM_SOUP, kitItemGen.getSoupItems()));
+		kits.add(new Kit(plugin.getText("kit-potion"), Material.SPIDER_EYE, kitItemGen.getPotionItems()));
+		kits.add(new Kit(plugin.getText("kit-nodebuff"), Material.BREWING_STAND_ITEM, kitItemGen.getNoDebuffItems()));
 
 		kit = kits.get(0);
 	}
@@ -221,13 +221,13 @@ public class Duel {
 				updateScoreboard(p2);
 
 				if (hitClock == 30 && !firstHit) {
-					p1.sendMessage(plugin.text.get("hit-30"));
-					p2.sendMessage(plugin.text.get("hit-30"));
+					p1.sendMessage(plugin.getText("hit-30"));
+					p2.sendMessage(plugin.getText("hit-30"));
 				}
 				if (hitClock >= 60 && !firstHit) endDuel(p1, true);
 				if (hitClock == 120) {
-					p1.sendMessage(plugin.text.get("hit-60"));
-					p2.sendMessage(plugin.text.get("hit-60"));
+					p1.sendMessage(plugin.getText("hit-60"));
+					p2.sendMessage(plugin.getText("hit-60"));
 				}
 				if (hitClock >= 180) endDuel(p1, true);
 
@@ -241,7 +241,7 @@ public class Duel {
 		this.armor1 = dueler1.getInventory().getArmorContents();
 		this.armor2 = dueler2.getInventory().getArmorContents();
 
-		if (!kit.getName().equals("§a§lNone Kit")) {
+		if (!kit.getName().equals(plugin.getText("kit-none"))) {
 			dueler1.getInventory().clear();
 			dueler2.getInventory().clear();
 			dueler1.getInventory().getArmorContents()[0] = new ItemStack(Material.AIR);
@@ -313,10 +313,10 @@ public class Duel {
 		dueler1.playNote(dueler1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 		dueler2.playNote(dueler2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 
-		dueler1.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
-		dueler2.sendTitle("§e§l[/duel]", "§b§l%player1% vs %player2%".replace("%player1%", dueler2.getName()).replace("%player2%", dueler1.getName()));
-		dueler1.sendMessage(plugin.text.get("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
-		dueler2.sendMessage(plugin.text.get("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
+		dueler1.sendTitle(plugin.getText("versus-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
+		dueler2.sendTitle(plugin.getText("versus-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
+		dueler1.sendMessage(plugin.getText("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
+		dueler2.sendMessage(plugin.getText("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
 	}
 
 	public void endDuel(Player loser, boolean stalemate) {
@@ -361,34 +361,34 @@ public class Duel {
 			if (duelArgs.get(12).isEnabled()) { //Death Certificate
 				ItemStack cert = new ItemStack(Material.PAPER);
 				ItemMeta meta = cert.getItemMeta();
-				meta.setDisplayName("§r§l%player%'s Death Certificate".replace("%player%", loser.getName()));
+				meta.setDisplayName(plugin.getText("certificate-title").replace("%player%", loser.getName()));
 				List<String> lore = new ArrayList<>();
-				lore.add("§f%player% §7was defeated in a §f1v1".replace("%player%", loser.getName()));
+				lore.add(plugin.getText("certificate-lore1").replace("%player%", loser.getName()));
 
 				SimpleDateFormat dateformat = new SimpleDateFormat("EEE MM/dd/yy");
 				SimpleDateFormat timeformat = new SimpleDateFormat("hh:mmaa");
 				Date now = Date.from(Instant.now());
-				lore.add("§7duel on §f%date% at %time%".replace("%date%", dateformat.format(now)).replace("%time%", timeformat.format(now)));
+				lore.add(plugin.getText("certificate-lore2").replace("%date%", dateformat.format(now)).replace("%time%", timeformat.format(now)));
 
-				lore.add("§7in the %arena%§r§7 by §f%winner%".replace("%arena%", map.getName()).replace("%winner%", winner.getName()));
+				lore.add(plugin.getText("certificate-lore3").replace("%arena%", map.getName()).replace("%winner%", winner.getName()));
 				meta.setLore(lore);
 				cert.setItemMeta(meta);
 				rewards.add(cert);
 			}
 
-			winner.sendMessage("§eYou have won the duel! use §6/duel collect §eto claim your winnings.");
-			if (rewards.size() != 0) winner.sendTitle("§e§l[/duel]", "§aItem(s) in your '/duel collect' bin!");
-			else winner.sendTitle("§e§l[/duel]", "§a%player% won this duel.".replace("%player%", winner.getName()));
+			winner.sendMessage(plugin.getText("duel-win"));
+			if (rewards.size() != 0) winner.sendTitle(plugin.getText("duel-title"), plugin.getText("collect-def"));
+			else winner.sendTitle(plugin.getText("duel-title"), plugin.getText("won-def").replace("%player%", winner.getName()));
 			plugin.addDuelRewards(winner, rewards);
 		} else {
 			for (ItemStack item : wager1) winner.getInventory().addItem(item);
 			for (ItemStack item : wager2) loser.getInventory().addItem(item);
 
-			loser.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
-			winner.sendTitle("§e§l[/duel]", "§7This duel has no winner (draw).");
+			loser.sendTitle(plugin.getText("duel-title"), plugin.getText("no-winner"));
+			winner.sendTitle(plugin.getText("duel-title"), plugin.getText("no-winner"));
 
-			loser.sendMessage("§eDuel cancelled.");
-			winner.sendMessage("§eDuel cancelled.");
+			loser.sendMessage(plugin.getText("duel-cancelled"));
+			winner.sendMessage(plugin.getText("duel-cancelled"));
 		}
 
 		dueler1.teleport(start1);
