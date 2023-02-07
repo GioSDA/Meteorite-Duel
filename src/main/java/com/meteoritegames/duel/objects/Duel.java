@@ -313,8 +313,8 @@ public class Duel {
 		dueler1.playNote(dueler1.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 		dueler2.playNote(dueler2.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.F));
 
-		dueler1.sendTitle(plugin.getText("versus-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
-		dueler2.sendTitle(plugin.getText("versus-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
+		dueler1.sendTitle(plugin.getText("duel-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
+		dueler2.sendTitle(plugin.getText("duel-title"), plugin.getText("versus-description").replace("%player1%", dueler1.getName()).replace("%player2%", dueler2.getName()));
 		dueler1.sendMessage(plugin.getText("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
 		dueler2.sendMessage(plugin.getText("duel-info").replace("%dueler1%", dueler1.getName()).replace("%dueler2%", dueler2.getName()));
 	}

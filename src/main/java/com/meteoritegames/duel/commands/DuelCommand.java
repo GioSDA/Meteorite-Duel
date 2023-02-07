@@ -417,13 +417,19 @@ public class DuelCommand implements CommandClass {
 		
 		Player player1;
 		Player player2;
+		boolean accepted1;
+		boolean accepted2;
 		
 		if (duel.getDueler1().equals(p)) {
 			player1 = duel.getDueler1();
 			player2 = duel.getDueler2();
+			accepted1 = duel.isAccepted1();
+			accepted2 = duel.isAccepted2();
 		} else {
 			player1 = duel.getDueler2();
 			player2 = duel.getDueler1();
+			accepted1 = duel.isAccepted2();
+			accepted2 = duel.isAccepted1();
 		}
 
 		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
@@ -438,7 +444,7 @@ public class DuelCommand implements CommandClass {
 		page.setItem(4, skull);
 
 		ItemStack item2;
-		if (duel.isAccepted2()) {
+		if (accepted2) {
 			item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
 			ItemMeta meta = item2.getItemMeta();
 			meta.setDisplayName(plugin.getText("wager-accepted").replace("%player%", player2.getName()));
@@ -463,8 +469,8 @@ public class DuelCommand implements CommandClass {
 		page.setItem(31, anvil);
 
 		ItemStack item1;
-		if (duel.isAccepted1()) {
-			if (duel.isAccepted2()) {
+		if (accepted1) {
+			if (accepted2) {
 				item1 = new ItemStack(Material.WATCH, timer);
 				ItemMeta meta = item1.getItemMeta();
 				meta.setDisplayName(plugin.getText("wager-starting").replace("%seconds%", ""+ timer));
@@ -516,7 +522,7 @@ public class DuelCommand implements CommandClass {
 				createInventoryGui((Player) e.getEvent().getWhoClicked(), duel);
 			}
 
-			if (player1.equals(p)) {
+			if (p.equals(duel.getDueler1())) {
 				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager1().size()) return;
@@ -527,7 +533,7 @@ public class DuelCommand implements CommandClass {
 					createDuelGui(player1, duel, false, 0);
 					createDuelGui(player2, duel, false, 0);
 				}
-			} else if (player2.equals(p)) {
+			} else if (p.equals(duel.getDueler2())) {
 				if (e.getSlotX() < 4 && e.getEvent().getRawSlot() < 54 && e.getInventory().getInventory().getItem(e.getSlot()) != null && !e.getInventory().getInventory().getItem(e.getSlot()).equals(new ItemStack(Material.AIR))) {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager2().size()) return;
@@ -540,7 +546,7 @@ public class DuelCommand implements CommandClass {
 				}
 			}
 
-			if (e.getEvent().getRawSlot() == 40 && player1.equals(p)) {
+			if (e.getEvent().getRawSlot() == 40 && p.equals(duel.getDueler1())) {
 				if (!duel.isAccepted1()) duel.setAccepted1(true);
 				else if (duel.isAccepted1()) duel.setAccepted1(false);
 
@@ -548,7 +554,7 @@ public class DuelCommand implements CommandClass {
 				createDuelGui(player2, duel, false, 0);
 			}
 
-			if (e.getEvent().getRawSlot() == 40 && player2.equals(p)) {
+			if (e.getEvent().getRawSlot() == 40 && p.equals(duel.getDueler2())) {
 				if (!duel.isAccepted2()) duel.setAccepted2(true);
 				else if (duel.isAccepted2()) duel.setAccepted2(false);
 
@@ -587,7 +593,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (e.getEvent().getRawSlot() >= 54) {
-				if (player1.equals(p)) {
+				if (p.equals(duel.getDueler1())) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
 
@@ -596,7 +602,7 @@ public class DuelCommand implements CommandClass {
 
 					createDuelGui(player1, duel, false, 0);
 					createDuelGui(player2, duel, false, 0);
-				} else if (player2.equals(p)) {
+				} else if (p.equals(duel.getDueler2())) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
 					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
 

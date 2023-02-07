@@ -131,6 +131,5 @@ public class Main extends MeteoritePlugin {
 
 	public String getText(String id) {
 		return text.getOrDefault(id, "TEXT COULD NOT BE LOADED");
-
 	}
 }
