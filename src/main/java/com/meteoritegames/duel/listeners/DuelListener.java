@@ -86,35 +86,31 @@ public class DuelListener implements Listener {
 
 			if (d == null) return;
 
-			switch (e.getInventory().getTitle()) {
-				case "§8Select a Kit":
-				case "§8Duel Settings":
-					e.getPlayer().sendMessage(plugin.getText("close-settings"));
-					e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
-					plugin.removeDuel(d);
-					break;
-				case "§8Map Settings":
-					if (plugin.getDuel((Player) e.getPlayer()) != null) return;
+			String title = e.getInventory().getTitle();
 
-					e.getPlayer().sendMessage(plugin.getText("close-arena"));
-					e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
-					plugin.removeDuel(d);
-					break;
-				case "§8Duel Wager":
-				case "§8Inventory view":
-					if (d.isActive()) return;
+			if (title.equals(plugin.getText("kit-menu")) || title.equals(plugin.getText("duel-menu"))) {
+				e.getPlayer().sendMessage(plugin.getText("close-settings"));
+				e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
+				plugin.removeDuel(d);
+			} else if (title.equals(plugin.getText("map-menu"))) {
+				if (plugin.getDuel((Player) e.getPlayer()) != null) return;
 
-					e.getPlayer().sendMessage(plugin.getText("close-wager"));
-					d.getDueler1().sendMessage(plugin.getText("cancel-duel"));
-					d.getDueler2().sendMessage(plugin.getText("cancel-duel"));
+				e.getPlayer().sendMessage(plugin.getText("close-arena"));
+				e.getPlayer().sendMessage(plugin.getText("cancel-duel"));
+				plugin.removeDuel(d);
+			} else if (title.equals(plugin.getText("wager-menu")) || title.equals(plugin.getText("inventory-menu"))) {
+				if (d.isActive()) return;
 
-					d.getDueler1().closeInventory();
-					d.getDueler2().closeInventory();
+				e.getPlayer().sendMessage(plugin.getText("close-wager"));
+				d.getDueler1().sendMessage(plugin.getText("cancel-duel"));
+				d.getDueler2().sendMessage(plugin.getText("cancel-duel"));
 
-					for (ItemStack b : d.getWager1()) d.getDueler1().getInventory().addItem(b);
-					for (ItemStack b : d.getWager2()) d.getDueler2().getInventory().addItem(b);
-					plugin.removeDuel(d);
-					break;
+				d.getDueler1().closeInventory();
+				d.getDueler2().closeInventory();
+
+				for (ItemStack b : d.getWager1()) d.getDueler1().getInventory().addItem(b);
+				for (ItemStack b : d.getWager2()) d.getDueler2().getInventory().addItem(b);
+				plugin.removeDuel(d);
 			}
 		}, 1L);
 	}
