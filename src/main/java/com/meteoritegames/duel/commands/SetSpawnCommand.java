@@ -28,54 +28,24 @@ public class SetSpawnCommand implements CommandClass {
 		this.plugin = plugin;
 	}
 
-	@Command(name="setspawn",
+	@Command(name="duel",
+			args="setspawn",
 			description="Set an arena's spawnpoint",
-			params="@num")
+			params="@map @spawnNumber")
 	public void setSpawn(Player p, String[] params) {
 		if (p.isOp()) {
-			ArrayList<DuelMap> maps = plugin.getMaps();
+			String config = "maps." + params[0];
 
-			MeteoriteInventory inventory = new MeteoriteInventory(plugin, "§8Map Selection", 9, 1, true);
-			BasicInventory page = new BasicInventory(9, 1);
-			page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
-
-			for (DuelMap map : plugin.getMaps()) {
-				ItemStack item = new ItemStack(map.getIcon());
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(map.getName());
-
-				item.setItemMeta(meta);
-
-				page.setItem(map.getInvPos(), item);
+			if (plugin.getConfig().get(config + ".name") == null) {
+				p.sendMessage(plugin.getText("map-invalid"));
+				return;
 			}
 
-			page.setOnSlotClickListener(e -> {
-				if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
-				Optional<DuelMap> m = maps.stream().filter(n -> n.getInvPos() == e.getEvent().getRawSlot()).findAny();
+			plugin.getConfig().set(config + "." + params[1], p.getLocation());
+			plugin.saveConfig();
+			plugin.initMaps();
 
-				if (!m.isPresent()) {
-					p.sendMessage(plugin.getText("map-invalid"));
-					return;
-				}
-
-				for (String key : plugin.getConfig().getConfigurationSection("maps").getKeys(false)) {
-					String mapkey = "maps." + key + ".";
-
-					if (plugin.getConfig().getInt(mapkey + "guiPos") == m.get().getInvPos()) {
-						plugin.getConfig().set(mapkey + "spawn" + params[0], p.getLocation());
-						plugin.saveConfig();
-						plugin.initMaps();
-					}
-				}
-
-				plugin.getConfig().get("maps");
-
-				p.closeInventory();
-				e.getEvent().getWhoClicked().sendMessage(plugin.getText("spawn-updated"));
-			});
-
-			inventory.applyPage(page);
-			inventory.show(p);
+			p.sendMessage(plugin.getText("spawn-updated"));
 		} else {
 			p.sendMessage(plugin.getText("no-permission"));
 		}
