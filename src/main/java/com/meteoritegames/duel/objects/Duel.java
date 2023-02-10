@@ -32,8 +32,8 @@ public class Duel {
 	private ArrayList<ItemStack> wager2;
 	private ArrayList<Kit> kits;
 	private Kit kit;
-	private PlayerInventory inventory1;
-	private PlayerInventory inventory2;
+	private ItemStack[] inventory1;
+	private ItemStack[] inventory2;
 	private ItemStack[] armor1;
 	private ItemStack[] armor2;
 	private int timer = 0;
@@ -182,19 +182,19 @@ public class Duel {
 
 	}
 
-	public PlayerInventory getInventory1() {
+	public ItemStack[] getInventory1() {
 		return inventory1;
 	}
 
-	public void setInventory1(PlayerInventory inventory1) {
+	public void setInventory1(ItemStack[] inventory1) {
 		this.inventory1 = inventory1;
 	}
 
-	public PlayerInventory getInventory2() {
+	public ItemStack[] getInventory2() {
 		return inventory2;
 	}
 
-	public void setInventory2(PlayerInventory inventory2) {
+	public void setInventory2(ItemStack[] inventory2) {
 		this.inventory2 = inventory2;
 	}
 
@@ -236,22 +236,16 @@ public class Duel {
 			}
 		}.runTaskTimer(plugin, 0L, 20);
 
-		this.inventory1 = dueler1.getInventory();
-		this.inventory2 = dueler2.getInventory();
-		this.armor1 = dueler1.getInventory().getArmorContents();
-		this.armor2 = dueler2.getInventory().getArmorContents();
+		this.inventory1 = dueler1.getInventory().getContents().clone();
+		this.inventory2 = dueler2.getInventory().getContents().clone();
+		this.armor1 = dueler1.getInventory().getArmorContents().clone();
+		this.armor2 = dueler2.getInventory().getArmorContents().clone();
 
 		if (!kit.getName().equals(plugin.getText("kit-none"))) {
 			dueler1.getInventory().clear();
 			dueler2.getInventory().clear();
-			dueler1.getInventory().getArmorContents()[0] = new ItemStack(Material.AIR);
-			dueler1.getInventory().getArmorContents()[1] = new ItemStack(Material.AIR);
-			dueler1.getInventory().getArmorContents()[2] = new ItemStack(Material.AIR);
-			dueler1.getInventory().getArmorContents()[3] = new ItemStack(Material.AIR);
-			dueler2.getInventory().getArmorContents()[0] = new ItemStack(Material.AIR);
-			dueler2.getInventory().getArmorContents()[1] = new ItemStack(Material.AIR);
-			dueler2.getInventory().getArmorContents()[2] = new ItemStack(Material.AIR);
-			dueler2.getInventory().getArmorContents()[3] = new ItemStack(Material.AIR);
+			dueler1.getInventory().setArmorContents(new ItemStack[dueler1.getInventory().getArmorContents().length]);
+			dueler2.getInventory().setArmorContents(new ItemStack[dueler2.getInventory().getArmorContents().length]);
 
 			dueler1.getInventory().setContents(kit.getItems());
 			dueler2.getInventory().setContents(kit.getItems());
@@ -278,8 +272,8 @@ public class Duel {
 		}
 
 		if (!this.getDuelArgs().get(7).isEnabled()) { //Armor
-			dueler1.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
-			dueler2.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
+			dueler1.getInventory().setArmorContents(new ItemStack[dueler1.getInventory().getArmorContents().length]);
+			dueler2.getInventory().setArmorContents(new ItemStack[dueler2.getInventory().getArmorContents().length]);
 			ARMORTYPES.forEach(e -> {
 				dueler1.getInventory().remove(e);
 				dueler2.getInventory().remove(e);
@@ -333,12 +327,14 @@ public class Duel {
 
 		dueler1.getInventory().clear();
 		dueler2.getInventory().clear();
-		dueler1.getInventory().setContents(inventory1.getContents());
-		dueler2.getInventory().setContents(inventory2.getContents());
+		dueler1.getInventory().setContents(inventory1);
+		dueler2.getInventory().setContents(inventory2);
 		dueler1.getInventory().setArmorContents(armor1);
 		dueler2.getInventory().setArmorContents(armor2);
 		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
-		dueler2.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
+		dueler2.getActivePotionEffects().forEach(e -> dueler2.removePotionEffect(e.getType()));
+		dueler1.updateInventory();
+		dueler2.updateInventory();
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
@@ -347,15 +343,20 @@ public class Duel {
 
 			if (duelArgs.get(6).isEnabled()) { //Risk Inventory
 				for (int i = 0; i < loser.getInventory().getSize(); i++) {
+					if (loser.getInventory().getItem(i) == null) continue;
+					if (loser.getInventory().getItem(i).getType() == Material.AIR) continue;
 					rewards.add(loser.getInventory().getItem(i));
 					loser.getInventory().setItem(i, new ItemStack(Material.AIR));
 				}
 
 				for (int i = 0; i < loser.getInventory().getArmorContents().length; i++) {
-					rewards.add(loser.getInventory().getArmorContents()[i]);
-					rewards.add(loser.getInventory().getArmorContents()[i]);
-					loser.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
+					if (loser.getInventory().getArmorContents()[i] == null) continue;
+					if (loser.getInventory().getArmorContents()[i].getType() == Material.AIR) continue;
+					rewards.add(loser.getInventory().getItem(i));
+					loser.getInventory().getArmorContents()[i] = new ItemStack(Material.AIR);
 				}
+
+				loser.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
 			}
 
 			if (duelArgs.get(12).isEnabled()) { //Death Certificate

@@ -75,9 +75,11 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		if (plugin.duelRewards.get(p) != null || plugin.duelRewards.get(p).size() != 0) {
-			p.sendMessage(plugin.getText("rewards-waiting"));
-			return;
+		if (plugin.duelRewards.get(p) != null) {
+			if (plugin.duelRewards.get(p).size() != 0) {
+				p.sendMessage(plugin.getText("rewards-waiting"));
+				return;
+			}
 		}
 
 		Duel duel = new Duel(plugin, p,d);
@@ -603,7 +605,8 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getRawSlot() >= 54) {
 				if (p.equals(duel.getDueler1())) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
-					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
+					if (wagerItem == null) return;
+					if (wagerItem.getType() == Material.AIR) return;
 
 					duel.getWager1().add(wagerItem);
 					p.getInventory().removeItem(wagerItem);
@@ -612,7 +615,8 @@ public class DuelCommand implements CommandClass {
 					createDuelGui(player2, duel, false, 0);
 				} else if (p.equals(duel.getDueler2())) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
-					if (wagerItem == null || wagerItem.isSimilar(new ItemStack(Material.AIR))) return;
+					if (wagerItem == null) return;
+					if (wagerItem.getType() == Material.AIR) return;
 
 					duel.getWager2().add(p.getInventory().getItem(e.getSlot()));
 					p.getInventory().removeItem(wagerItem);

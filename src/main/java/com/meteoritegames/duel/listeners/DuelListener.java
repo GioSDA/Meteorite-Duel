@@ -3,6 +3,7 @@ package com.meteoritegames.duel.listeners;
 import com.meteoritegames.duel.Main;
 import com.meteoritegames.duel.objects.Duel;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,11 +13,15 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
 
 public class DuelListener implements Listener {
 	private final Main plugin;
+//	private HashMap<Player, ItemStack> skulls = new HashMap<>();
 
 	public DuelListener(Main plugin) {
 		this.plugin = plugin;
@@ -66,6 +71,15 @@ public class DuelListener implements Listener {
 
 		d.endDuel(e.getPlayer(), false);
 	}
+
+//	@EventHandler
+//	public void onPlayerJoin(PlayerJoinEvent e) {
+//		ItemStack s = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+//		SkullMeta meta = (SkullMeta) s.getItemMeta();
+//		meta.setOwner(e.getPlayer().getName());
+//		s.setItemMeta(meta);
+////		skulls.put(e.getPlayer(), CraftItemStack.asNMSCopy(s));
+//	}
 
 	@EventHandler
 	public void onPlayerHit(EntityDamageByEntityEvent e) {
