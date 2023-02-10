@@ -42,6 +42,8 @@ public class DuelCommand implements CommandClass {
 			description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
+		if (params[0].length() == 0) p.sendMessage(plugin.getText("help"));
+
 		Player d = p.getServer().getPlayer(params[0]);
 
 		if (p.equals(d)) {
@@ -73,7 +75,7 @@ public class DuelCommand implements CommandClass {
 			return;
 		}
 
-		if (plugin.duelRewards.get(p) != null) {
+		if (plugin.duelRewards.get(p) != null || plugin.duelRewards.get(p).size() != 0) {
 			p.sendMessage(plugin.getText("rewards-waiting"));
 			return;
 		}
@@ -127,13 +129,19 @@ public class DuelCommand implements CommandClass {
 					}
 
 					sender.closeInventory();
-				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 <= rewards.size()) {
+				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 < rewards.size()) {
 					ItemStack reward = rewards.get(e.getEvent().getRawSlot() - 9);
 
 					if (sender.getInventory().addItem(reward).size() == 0) {
 						plugin.duelRewards.get(sender).remove(reward);
-						duelCollect(sender);
 
+						if (plugin.duelRewards.get(sender).size() == 0) {
+							plugin.duelRewards.remove(sender);
+							sender.sendMessage(plugin.getText("winnings-collected"));
+							sender.closeInventory();
+						} else {
+							duelCollect(sender);
+						}
 					} else {
 						sender.sendMessage(plugin.getText("item-not-collected"));
 						sender.closeInventory();
