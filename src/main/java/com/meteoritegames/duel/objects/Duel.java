@@ -4,7 +4,6 @@ import com.meteoritegames.duel.Main;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,12 +17,10 @@ import java.util.*;
 public class Duel {
 	private final Main plugin;
 	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
-	BukkitTask duelTask;
+	public BukkitTask duelTask;
 
 	private Player dueler1;
 	private Player dueler2;
-	private Location start1;
-	private Location start2;
 	private DuelMap map;
 	private boolean active;
 	private boolean accepted1;
@@ -80,8 +77,6 @@ public class Duel {
 		this.wager2 = new ArrayList<>();
 		this.accepted1 = false;
 		this.accepted2 = false;
-		this.start1 = dueler1.getLocation();
-		this.start2 = dueler2.getLocation();
 
 		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
 //		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
@@ -325,16 +320,19 @@ public class Duel {
 		if (loser.equals(dueler1)) winner = dueler2;
 		else winner = dueler1;
 
-		dueler1.getInventory().clear();
-		dueler2.getInventory().clear();
-		dueler1.getInventory().setContents(inventory1);
-		dueler2.getInventory().setContents(inventory2);
-		dueler1.getInventory().setArmorContents(armor1);
-		dueler2.getInventory().setArmorContents(armor2);
 		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
 		dueler2.getActivePotionEffects().forEach(e -> dueler2.removePotionEffect(e.getType()));
-		dueler1.updateInventory();
-		dueler2.updateInventory();
+
+		if (!duelArgs.get(6).isEnabled()) {
+			dueler1.getInventory().clear();
+			dueler2.getInventory().clear();
+			dueler1.getInventory().setContents(inventory1);
+			dueler2.getInventory().setContents(inventory2);
+			dueler1.getInventory().setArmorContents(armor1);
+			dueler2.getInventory().setArmorContents(armor2);
+			dueler1.updateInventory();
+			dueler2.updateInventory();
+		}
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
@@ -342,21 +340,25 @@ public class Duel {
 			rewards.addAll(getWager2());
 
 			if (duelArgs.get(6).isEnabled()) { //Risk Inventory
-				for (int i = 0; i < loser.getInventory().getSize(); i++) {
-					if (loser.getInventory().getItem(i) == null) continue;
-					if (loser.getInventory().getItem(i).getType() == Material.AIR) continue;
-					rewards.add(loser.getInventory().getItem(i));
-					loser.getInventory().setItem(i, new ItemStack(Material.AIR));
+				ItemStack[] loserInv;
+				if (loser.equals(dueler2)) loserInv = inventory2;
+				else loserInv = inventory1;
+
+				for (ItemStack itemStack : loserInv) {
+					if (itemStack == null) continue;
+					if (itemStack.getType() == Material.AIR) continue;
+					rewards.add(itemStack);
 				}
 
-				for (int i = 0; i < loser.getInventory().getArmorContents().length; i++) {
-					if (loser.getInventory().getArmorContents()[i] == null) continue;
-					if (loser.getInventory().getArmorContents()[i].getType() == Material.AIR) continue;
-					rewards.add(loser.getInventory().getItem(i));
-					loser.getInventory().getArmorContents()[i] = new ItemStack(Material.AIR);
-				}
+				ItemStack[] loserArmor;
+				if (loser.equals(dueler2)) loserArmor = armor2;
+				else loserArmor = armor1;
 
-				loser.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)});
+				for (ItemStack itemStack : loserArmor) {
+					if (itemStack == null) continue;
+					if (itemStack.getType() == Material.AIR) continue;
+					rewards.add(itemStack);
+				}
 			}
 
 			if (duelArgs.get(12).isEnabled()) { //Death Certificate
@@ -392,8 +394,8 @@ public class Duel {
 			winner.sendMessage(plugin.getText("duel-cancelled"));
 		}
 
-		dueler1.teleport(start1);
-		dueler2.teleport(start2);
+		dueler1.teleport(dueler1.getWorld().getSpawnLocation());
+		dueler2.teleport(dueler2.getWorld().getSpawnLocation());
 
 		duelTask.cancel();
 

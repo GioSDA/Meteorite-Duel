@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
@@ -131,5 +132,22 @@ public class Main extends MeteoritePlugin {
 
 	public String getText(String id) {
 		return text.getOrDefault(id, "TEXT COULD NOT BE LOADED");
+	}
+
+	public void reload() {
+		text.clear();
+		duelRewards.clear();
+		spectators.clear();
+		noDuel.clear();
+
+		for (Duel d : duels) {
+			d.duelTask.cancel();
+		}
+
+		duels.clear();
+		maps.clear();
+
+		initText();
+		initMaps();
 	}
 }

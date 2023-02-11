@@ -231,6 +231,47 @@ public class DuelCommand implements CommandClass {
 		createDuelGui(duel.getDueler2(), duel, true, 0);
 	}
 
+	@Command(name="duel",
+			description="Reload the plugin",
+			args="reload")
+	public void duelReload(Player sender) {
+		if (sender.isOp()) {
+			plugin.reload();
+		} else {
+			sender.sendMessage(plugin.getText("no-permission"));
+		}
+	}
+
+	@Command(name="duel",
+			description="Reload the plugin",
+			args="leave")
+	public void duelLeave(Player sender) {
+		if (plugin.getDuel(sender) == null) {
+			sender.sendMessage(plugin.getText("not-in-duel"));
+			return;
+		}
+
+		if (plugin.playerIsInDuel(sender) != null) {
+			Duel d = plugin.playerIsInDuel(sender);
+			d.endDuel(sender, false);
+		}
+
+		if (plugin.getDuel(sender) != null) {
+			Duel d = plugin.getDuel(sender);
+
+			d.getDueler1().sendMessage(plugin.getText("cancel-duel"));
+			d.getDueler2().sendMessage(plugin.getText("cancel-duel"));
+
+			d.getDueler1().closeInventory();
+			d.getDueler2().closeInventory();
+
+			for (ItemStack b : d.getWager1()) d.getDueler1().getInventory().addItem(b);
+			for (ItemStack b : d.getWager2()) d.getDueler2().getInventory().addItem(b);
+
+			plugin.removeDuel(d);
+		}
+	}
+
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
 		ItemStack item = new ItemStack(duelArgs.get(slot).getMaterial());
 		ItemMeta meta = item.getItemMeta();
@@ -313,12 +354,12 @@ public class DuelCommand implements CommandClass {
 		List<String> continueLore = new ArrayList<>();
 		continueLore.add("");
 		for (DuelArg arg : d.getDuelArgs()) {
-			continueLore.add("§e" + arg.getName() + ": " + (arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+			continueLore.add(plugin.getText("duel-args").replace("%arg%", arg.getName()).replace("%enabled%", arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
 		}
-		continueLore.add("§eKit: " + d.getKit().getName());
+		continueLore.add(plugin.getText("duel-kit").replace("%kit%", d.getKit().getName()));
 
 		continueLore.add("");
-		continueLore.add("§7Click to go to the Arena Selection.");
+		continueLore.add(plugin.getText("duel-select"));
 
 		continueMeta.setLore(continueLore);
 
