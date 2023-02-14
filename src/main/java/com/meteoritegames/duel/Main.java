@@ -1,7 +1,5 @@
 package com.meteoritegames.duel;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.commands.FixFlyCommand;
 import com.meteoritegames.duel.commands.SetSpawnCommand;
@@ -14,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
@@ -72,7 +69,18 @@ public class Main extends MeteoritePlugin {
 		text.clear();
 
 		for (String key : getConfig().getConfigurationSection("text").getKeys(false)) {
-			text.put(key, getConfig().getString("text." + key).replaceAll("&", "§"));
+			if (key.equals("help") || key.equals("duel-info")) {
+				StringBuilder sText = new StringBuilder();
+
+				for (String line : (ArrayList<String>) getConfig().getList("text." + key)) {
+					line = line.replaceAll("&", "§");
+					sText.append(line).append("\n");
+				}
+
+				text.put(key, sText.toString());
+			} else {
+				text.put(key, getConfig().getString("text." + key).replaceAll("&", "§"));
+			}
 		}
 	}
 

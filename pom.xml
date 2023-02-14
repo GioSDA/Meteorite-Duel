@@ -91,6 +91,13 @@
             <systemPath>${project.basedir}/src/main/resources/MeteoriteAPI.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>net.advancedplugins</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/AdvancedEnchantments-8.7.4.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.11.1</version>

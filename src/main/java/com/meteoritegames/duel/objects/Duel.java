@@ -1,7 +1,9 @@
 package com.meteoritegames.duel.objects;
 
 import com.meteoritegames.duel.Main;
+import net.advancedplugins.ae.api.AEAPI;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -93,6 +95,7 @@ public class Duel {
 		duelArgs.add(new DuelArg(Material.FEATHER, "/fly", false));
 		duelArgs.add(new DuelArg(Material.PAPER, "Death Certificates", true));
 		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
+		duelArgs.add(new DuelArg(Material.BOOK, "Soul Enchantments", true));
 
 		KitItems kitItemGen = new KitItems();
 		kits = new ArrayList<>();
@@ -289,6 +292,18 @@ public class Duel {
 
 		if (!this.getDuelArgs().get(13).isEnabled()) { //Pets
 			dueler1.getInventory().remove(Material.SKULL_ITEM);
+			dueler2.getInventory().remove(Material.SKULL_ITEM);
+		}
+
+		if (!this.getDuelArgs().get(14).isEnabled()) { //Soul Enchantments
+			dueler1.getInventory().forEach(e -> {
+				if (AEAPI.getEnchantmentsOnItem(e).containsKey("Soul Enchantment"))
+					e.removeEnchantment(Enchantment.getByName("Soul Enchantment"));
+			});
+			dueler2.getInventory().forEach(e -> {
+				if (AEAPI.getEnchantmentsOnItem(e).containsKey("Soul Enchantment"))
+					e.removeEnchantment(Enchantment.getByName("Soul Enchantment"));
+			});
 		}
 
 		dueler1.setHealth(20.0);

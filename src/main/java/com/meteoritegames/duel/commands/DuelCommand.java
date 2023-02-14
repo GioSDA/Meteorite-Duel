@@ -286,6 +286,9 @@ public class DuelCommand implements CommandClass {
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
 
+		if (slot > 9) slot++;
+		if (slot > 13) slot++;
+
 		page.setItem(slot, item);
 	}
 

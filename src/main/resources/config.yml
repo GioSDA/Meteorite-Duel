@@ -22,15 +22,16 @@ maps:
     #The position in the map GUI that the map will have (0-8)
     guiPos: 4 #4 is the center
 text:
-  help: "&e&l&nDuel Commands&r\n
-  &e/duel <name>\n
-  &7Invite a player to a settings specific duel\n
-  &e/duel toggle\n
-  &7Toggle duel invites from other players.\n
-  &e/duel spectate\n
-  &7Access the duel spectate menu.\n
-  &e/duel collect\n
-  &7Access your Stake Collection Bin."
+  help:
+  - "&e&l&nDuel Commands&r"
+  - "&e/duel <name>"
+  - "&7Invite a player to a settings specific duel"
+  - "&e/duel toggle"
+  - "&7Toggle duel invites from other players."
+  - "&e/duel spectate"
+  - "&7Access the duel spectate menu."
+  - "&e/duel collect"
+  - "&7Access your Stake Collection Bin."
   no-permission: "&eYou do not have permission to use that command!"
   invalid-map: "&cPlease choose a valid map!"
   set-spawn: "&eSpawn position updated!"
@@ -57,8 +58,15 @@ text:
   hit-60: "&e&l[/duel] &eHit the opponent in 60 seconds otherwise it will be a draw."
   duel-draw: "&eDuel cancelled."
   duel-win: "&eYou have won the duel! use &6/duel collect &eto claim your winnings."
-  #Had to be formatted in one line to preserve indentation
-  duel-info: "&b&m&l====================&6&m&l=====================&r\n&r\n           &8[ &6&lDUEL STARTED - FIGHT! &8]&r\n                      &b&l%dueler1%&r\n                 &c&l&m----&r&c&l VS &c&l&m----&r\n                      &b&l%dueler2%\n&r\n&b&m&l====================&6&m&l=====================&r\n"
+  duel-info:
+    - "&b&m&l====================&6&m&l=====================&r"
+    - "&r"
+    - "           &8[ &6&lDUEL STARTED - FIGHT! &8]&r"
+    - "                      &b&l%dueler1%&r"
+    - "                 &c&l&m----&r&c&l VS &c&l&m----&r"
+    - "                      &b&l%dueler2%"
+    - "&r"
+    - "&b&m&l====================&6&m&l=====================&r"
   close-settings: "&e&l(!) &eYou closed the &nSETTINGS&e selection."
   close-arena: "&e&l(!) &eYou closed the &nARENA&e selection."
   close-wager: "&e&l(!) &eYou closed the &nRISK INVENTORY&e selection."
