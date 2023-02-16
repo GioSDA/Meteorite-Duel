@@ -42,8 +42,6 @@ public class DuelCommand implements CommandClass {
 			description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
-		if (params[0].length() == 0) p.sendMessage(plugin.getText("help"));
-
 		Player d = p.getServer().getPlayer(params[0]);
 
 		if (p.equals(d)) {
@@ -285,9 +283,6 @@ public class DuelCommand implements CommandClass {
 		meta.setDisplayName("§e§l" + duelArgs.get(slot).getName());
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
-
-		if (slot > 9) slot++;
-		if (slot > 13) slot++;
 
 		page.setItem(slot, item);
 	}
@@ -556,15 +551,28 @@ public class DuelCommand implements CommandClass {
 
 		page.setItem(49, skull2);
 
-		for (int i = 0; i < 24; i++) {
-			if (i >= duel.getWager1().size()) break;
-			page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+		if (player1 == duel.getDueler1()) {
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager1().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9), duel.getWager1().get(i));
+			}
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager2().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager2().get(i));
+			}
+		} else {
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager2().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9), duel.getWager2().get(i));
+			}
+
+			for (int i = 0; i < 24; i++) {
+				if (i >= duel.getWager1().size()) break;
+				page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager1().get(i));
+			}
 		}
 
-		for (int i = 0; i < 24; i++) {
-			if (i >= duel.getWager2().size()) break;
-			page.setItem(i % 4 + ((i / 4)*9+5), duel.getWager2().get(i));
-		}
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
@@ -581,7 +589,7 @@ public class DuelCommand implements CommandClass {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager1().size()) return;
 
-					player1.getInventory().addItem(duel.getWager1().get(index));
+					duel.getDueler1().getInventory().addItem(duel.getWager1().get(index));
 					duel.getWager1().remove(index);
 
 					createDuelGui(player1, duel, false, 0);
@@ -592,7 +600,7 @@ public class DuelCommand implements CommandClass {
 					int index = e.getEvent().getRawSlot() + (e.getSlotY()*9);
 					if (index >= duel.getWager2().size()) return;
 
-					player2.getInventory().addItem(duel.getWager2().get(index));
+					duel.getDueler2().getInventory().addItem(duel.getWager2().get(index));
 					duel.getWager2().remove(index);
 
 					createDuelGui(player1, duel, false, 0);
