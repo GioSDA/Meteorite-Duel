@@ -24,7 +24,7 @@ maps:
 text:
   help:
   - "&e&l&nDuel Commands&r"
-  - "&e/duel <name>"
+  - "&e/duel send <name>"
   - "&7Invite a player to a settings specific duel"
   - "&e/duel toggle"
   - "&7Toggle duel invites from other players."

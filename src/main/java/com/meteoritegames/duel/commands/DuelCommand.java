@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.sql.Array;
 import java.util.*;
 
+@DefaultCommand
 public class DuelCommand implements CommandClass {
 	private final Main plugin;
 	
@@ -38,7 +40,12 @@ public class DuelCommand implements CommandClass {
 		this.plugin = plugin;
 	}
 
-	@Command(name="duel",
+	@Command(description="Duel Help")
+	public void mainCommand(CommandSender sender) {
+		sender.sendMessage(plugin.getText("help"));
+	}
+
+	@Command(args="send",
 			description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
@@ -85,8 +92,7 @@ public class DuelCommand implements CommandClass {
 		createArgsGui(duel);
 	}
 
-	@Command(name="duel",
-			description="Toggle duel invites from other players",
+	@Command(description="Toggle duel invites from other players",
 			args="toggle")
 	public void duelToggle(Player sender) {
 		if (!plugin.noDuel.contains(sender)) {
@@ -98,8 +104,7 @@ public class DuelCommand implements CommandClass {
 		}
 	}
 
-	@Command(name="duel",
-			description="Collect your duel winnings",
+	@Command(description="Collect your duel winnings",
 			args="collect")
 	public void duelCollect(Player sender) {
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
@@ -163,8 +168,29 @@ public class DuelCommand implements CommandClass {
 
 	}
 
-	@Command(name="duel",
-			description="Spectate a player",
+	@Command(args="setspawn",
+			description="Set an arena's spawnpoint",
+			params="@map @spawnNumber")
+	public void setSpawn(Player p, String[] params) {
+		if (p.isOp()) {
+			String config = "maps." + params[0];
+
+			if (plugin.getConfig().get(config + ".name") == null) {
+				p.sendMessage(plugin.getText("map-invalid"));
+				return;
+			}
+
+			plugin.getConfig().set(config + "." + params[1], p.getLocation());
+			plugin.saveConfig();
+			plugin.initMaps();
+
+			p.sendMessage(plugin.getText("spawn-updated"));
+		} else {
+			p.sendMessage(plugin.getText("no-permission"));
+		}
+	}
+
+	@Command(description="Spectate a player",
 			args="spectate",
 			params="@player")
 	public void duelSpectate(Player sender, String[] params) {
@@ -199,15 +225,7 @@ public class DuelCommand implements CommandClass {
 		sender.sendMessage(plugin.getText("spectate-info"));
 	}
 
-	@Command(name="duel",
-			description="Help menu",
-			args="help")
-	public void duelHelp(Player sender) {
-		sender.sendMessage(plugin.getText("help"));
-	}
-
-	@Command(name="duel",
-			description="Accept a duel invitation",
+	@Command(description="Accept a duel invitation",
 			args="accept",
 			params="@player")
 	public void duelAccept(Player sender, String[] params) {
@@ -229,19 +247,7 @@ public class DuelCommand implements CommandClass {
 		createDuelGui(duel.getDueler2(), duel, true, 0);
 	}
 
-	@Command(name="duel",
-			description="Reload the plugin",
-			args="reload")
-	public void duelReload(Player sender) {
-		if (sender.isOp()) {
-			plugin.reload();
-		} else {
-			sender.sendMessage(plugin.getText("no-permission"));
-		}
-	}
-
-	@Command(name="duel",
-			description="Reload the plugin",
+	@Command(description="Leave the duel",
 			args="leave")
 	public void duelLeave(Player sender) {
 		if (plugin.getDuel(sender) == null) {
@@ -283,6 +289,9 @@ public class DuelCommand implements CommandClass {
 		meta.setDisplayName("§e§l" + duelArgs.get(slot).getName());
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
+
+		if (slot >= 9) slot++;
+		if (slot >= 13) slot++;
 
 		page.setItem(slot, item);
 	}

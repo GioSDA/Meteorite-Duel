@@ -2,7 +2,6 @@ package com.meteoritegames.duel;
 
 import com.meteoritegames.duel.commands.DuelCommand;
 import com.meteoritegames.duel.commands.FixFlyCommand;
-import com.meteoritegames.duel.commands.SetSpawnCommand;
 import com.meteoritegames.duel.listeners.DuelListener;
 import com.meteoritegames.duel.objects.DuelMap;
 import com.meteoritegames.duel.objects.Duel;
@@ -23,6 +22,7 @@ public class Main extends MeteoritePlugin {
 	public Set<Duel> duels = new HashSet<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
 
+
 	@Override
 	protected void onInit() {
 		super.onInit();
@@ -40,7 +40,6 @@ public class Main extends MeteoritePlugin {
 
 			registerCommandObject(new DuelCommand(this));
 			registerCommandObject(new FixFlyCommand(this));
-			registerCommandObject(new SetSpawnCommand(this));
 
 			registerEventListener(new DuelListener(this));
 		} catch (Exception e) {
@@ -158,4 +157,7 @@ public class Main extends MeteoritePlugin {
 		initText();
 		initMaps();
 	}
+
+	@Override
+	protected void onRegisterMainCommand(String description) {}
 }
