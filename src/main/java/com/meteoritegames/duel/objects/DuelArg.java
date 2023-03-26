@@ -36,4 +36,5 @@ public class DuelArg {
 		this.name = name;
 		this.enabled = enabled;
 	}
+
 }

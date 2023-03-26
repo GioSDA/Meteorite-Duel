@@ -1,3 +1,16 @@
+commands:
+  help: true
+  player: true
+  toggle: true
+  collect: true
+  spectate: true
+  accept: true
+  leave: true
+  reload: true
+  setSpawn: true
+  fix: true
+  fixAll: true
+  fly: true
 maps:
   default:
     name: "&e&lupdate the config.yml"

@@ -18,10 +18,10 @@ public class Main extends MeteoritePlugin {
 	public HashMap<String, String> text = new HashMap<>();
 	public HashMap<Player, ArrayList<ItemStack>> duelRewards = new HashMap<>();
 	public HashMap<Player, Location> spectators = new HashMap<>();
+	public HashMap<String, Boolean> commandAllowed = new HashMap<>();
 	public Set<Player> noDuel = new HashSet<>();
 	public Set<Duel> duels = new HashSet<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
-
 
 	@Override
 	protected void onInit() {
@@ -32,6 +32,7 @@ public class Main extends MeteoritePlugin {
 
 			initText();
 			initMaps();
+			initCommands();
 			print("Duel plugin enabled.");
 
 			registerPlaceholderParameter("player", (sender -> getNames()));
@@ -61,6 +62,14 @@ public class Main extends MeteoritePlugin {
 			int guiPos = getConfig().getInt(mapkey + "guiPos");
 
 			maps.add(new DuelMap(name, material, spawn1, spawn2, guiPos));
+		}
+	}
+
+	private void initCommands() {
+		commandAllowed.clear();
+
+		for (String key : getConfig().getConfigurationSection("commands").getKeys(false)) {
+			commandAllowed.put(key, getConfig().getBoolean("commands." + key));
 		}
 	}
 
@@ -139,23 +148,6 @@ public class Main extends MeteoritePlugin {
 
 	public String getText(String id) {
 		return text.getOrDefault(id, "TEXT COULD NOT BE LOADED");
-	}
-
-	public void reload() {
-		text.clear();
-		duelRewards.clear();
-		spectators.clear();
-		noDuel.clear();
-
-		for (Duel d : duels) {
-			d.duelTask.cancel();
-		}
-
-		duels.clear();
-		maps.clear();
-
-		initText();
-		initMaps();
 	}
 
 	@Override

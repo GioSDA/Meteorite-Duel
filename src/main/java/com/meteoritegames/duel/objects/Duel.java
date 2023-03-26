@@ -197,6 +197,7 @@ public class Duel {
 	}
 
 	public void startDuel() {
+
 		if (active) return;
 		active = true;
 
@@ -249,27 +250,27 @@ public class Duel {
 			dueler2.getInventory().setContents(kit.getItems());
 		}
 
-		if (!this.getDuelArgs().get(0).isEnabled()) { //Golden Apples
+		if (!isArgEnabled("Golden Apples")) {
 			dueler1.getInventory().remove(Material.GOLDEN_APPLE);
 			dueler2.getInventory().remove(Material.GOLDEN_APPLE);
 		}
 
-		if (!this.getDuelArgs().get(1).isEnabled()) { //Potions
+		if (!isArgEnabled("Potions")) {
 			dueler1.getInventory().remove(Material.POTION);
 			dueler2.getInventory().remove(Material.POTION);
 		}
 
-		if (!this.getDuelArgs().get(2).isEnabled()) { //Bows
+		if (!isArgEnabled("Bows")) {
 			dueler1.getInventory().remove(Material.BOW);
 			dueler2.getInventory().remove(Material.BOW);
 		}
 
-		if (!this.getDuelArgs().get(5).isEnabled()) { //Ender Pearls
+		if (!isArgEnabled("Ender Pearls")) {
 			dueler1.getInventory().remove(Material.ENDER_PEARL);
 			dueler2.getInventory().remove(Material.ENDER_PEARL);
 		}
 
-		if (!this.getDuelArgs().get(7).isEnabled()) { //Armor
+		if (!isArgEnabled("Armor")) {
 			dueler1.getInventory().setArmorContents(new ItemStack[dueler1.getInventory().getArmorContents().length]);
 			dueler2.getInventory().setArmorContents(new ItemStack[dueler2.getInventory().getArmorContents().length]);
 			ARMORTYPES.forEach(e -> {
@@ -278,24 +279,24 @@ public class Duel {
 			});
 		}
 
-		if (!this.getDuelArgs().get(8).isEnabled()) { //Swords
+		if (!isArgEnabled("Weapons")) {
 			SWORDTYPES.forEach(e -> {
 				dueler1.getInventory().remove(e);
 				dueler2.getInventory().remove(e);
 			});
 		}
 
-		if (this.getDuelArgs().get(12).isEnabled()) { //Flight
+		if (isArgEnabled("/fly")) {
 			dueler1.setAllowFlight(true);
 			dueler2.setAllowFlight(true);
 		}
 
-		if (!this.getDuelArgs().get(13).isEnabled()) { //Pets
+		if (!isArgEnabled("Inventory Pets")) {
 			dueler1.getInventory().remove(Material.SKULL_ITEM);
 			dueler2.getInventory().remove(Material.SKULL_ITEM);
 		}
 
-		if (!this.getDuelArgs().get(14).isEnabled()) { //Soul Enchantments
+		if (!isArgEnabled("Soul Enchantments")) {
 			dueler1.getInventory().forEach(e -> {
 				if (AEAPI.getEnchantmentsOnItem(e).containsKey("Soul Enchantment"))
 					e.removeEnchantment(Enchantment.getByName("Soul Enchantment"));
@@ -354,7 +355,7 @@ public class Duel {
 			rewards.addAll(getWager1());
 			rewards.addAll(getWager2());
 
-			if (duelArgs.get(6).isEnabled()) { //Risk Inventory
+			if (isArgEnabled("Golden Apples")) { //Risk Inventory
 				ItemStack[] loserInv;
 				if (loser.equals(dueler2)) loserInv = inventory2;
 				else loserInv = inventory1;
@@ -374,9 +375,12 @@ public class Duel {
 					if (itemStack.getType() == Material.AIR) continue;
 					rewards.add(itemStack);
 				}
+
+				loser.getInventory().clear();
+				loser.getInventory().setArmorContents(new ItemStack[4]);
 			}
 
-			if (duelArgs.get(12).isEnabled()) { //Death Certificate
+			if (isArgEnabled("Golden Apples")) { //Death Certificate
 				ItemStack cert = new ItemStack(Material.PAPER);
 				ItemMeta meta = cert.getItemMeta();
 				meta.setDisplayName(plugin.getText("certificate-title").replace("%player%", loser.getName()));
@@ -451,6 +455,14 @@ public class Duel {
 		s11.setScore(-3);
 
 		p.setScoreboard(b);
+	}
+
+	public boolean isArgEnabled(String title) {
+		for (DuelArg arg : duelArgs) {
+			if (arg.getName().equals(title)) return arg.isEnabled();
+		}
+
+		return false;
 	}
 
 	public void registerHit() {

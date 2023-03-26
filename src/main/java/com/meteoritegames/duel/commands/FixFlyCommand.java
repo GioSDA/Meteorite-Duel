@@ -19,12 +19,14 @@ public class FixFlyCommand implements CommandClass {
 	@Command(name="fix",
 			description="Fix items")
 	public void fix(CommandSender sender) {
+		if (!plugin.commandAllowed.get("fix")) return;
+
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d != null) {
-			if (!d.getDuelArgs().get(9).isEnabled()) {
+			if (!d.isArgEnabled("/fix")) {
 				p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fix"));
 				return;
 			}
@@ -41,12 +43,14 @@ public class FixFlyCommand implements CommandClass {
 			description="Fix all items",
 			args="all")
 	public void fixAll(CommandSender sender) {
+		if (!plugin.commandAllowed.get("fixAll")) return;
+
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d != null) {
-			if (!d.getDuelArgs().get(9).isEnabled()) {
+			if (!d.isArgEnabled("/fix all")) {
 				p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fix all"));
 				return;
 			}
@@ -66,12 +70,14 @@ public class FixFlyCommand implements CommandClass {
 	@Command(name="fly",
 			description="Fly")
 	public void fly(CommandSender sender) {
+		if (!plugin.commandAllowed.get("fly")) return;
+
 		if (!(sender instanceof Player)) return;
 		Player p = (Player) sender;
 
 		Duel d = plugin.playerIsInDuel(p);
 		if (d != null) {
-			if (!d.getDuelArgs().get(9).isEnabled()) {
+			if (!d.isArgEnabled("/fly")) {
 				p.sendMessage(plugin.getText("not-enabled").replace("%command%", "/fly"));
 				return;
 			}

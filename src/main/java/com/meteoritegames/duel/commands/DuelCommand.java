@@ -17,19 +17,15 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.IOException;
-import java.sql.Array;
 import java.util.*;
 
 @DefaultCommand
@@ -42,6 +38,8 @@ public class DuelCommand implements CommandClass {
 
 	@Command(description="Duel Help")
 	public void mainCommand(CommandSender sender) {
+		if (!plugin.commandAllowed.get("help")) return;
+
 		sender.sendMessage(plugin.getText("help"));
 	}
 
@@ -49,6 +47,8 @@ public class DuelCommand implements CommandClass {
 			description="Invite another player to a duel",
 			params="@player")
 	public void duelPlayer(Player p, String[] params) {
+		if (!plugin.commandAllowed.get("player")) return;
+
 		Player d = p.getServer().getPlayer(params[0]);
 
 		if (p.equals(d)) {
@@ -95,6 +95,8 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Toggle duel invites from other players",
 			args="toggle")
 	public void duelToggle(Player sender) {
+		if (!plugin.commandAllowed.get("toggle")) return;
+
 		if (!plugin.noDuel.contains(sender)) {
 			plugin.noDuel.add(sender);
 			sender.sendMessage(plugin.getText("disable-requests"));
@@ -107,6 +109,8 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Collect your duel winnings",
 			args="collect")
 	public void duelCollect(Player sender) {
+		if (!plugin.commandAllowed.get("collect")) return;
+
 		ArrayList<ItemStack> rewards = plugin.duelRewards.get(sender);
 
 		if (rewards != null && rewards.size() != 0) {
@@ -172,6 +176,8 @@ public class DuelCommand implements CommandClass {
 			description="Set an arena's spawnpoint",
 			params="@map @spawnNumber")
 	public void setSpawn(Player p, String[] params) {
+		if (!plugin.commandAllowed.get("setSpawn")) return;
+
 		if (p.isOp()) {
 			String config = "maps." + params[0];
 
@@ -229,6 +235,8 @@ public class DuelCommand implements CommandClass {
 			args="accept",
 			params="@player")
 	public void duelAccept(Player sender, String[] params) {
+		if (!plugin.commandAllowed.get("accept")) return;
+
 		Player p = sender.getServer().getPlayer(params[0]);
 
 		if (p == null) {
@@ -250,6 +258,8 @@ public class DuelCommand implements CommandClass {
 	@Command(description="Leave the duel",
 			args="leave")
 	public void duelLeave(Player sender) {
+		if (!plugin.commandAllowed.get("leave")) return;
+
 		if (plugin.getDuel(sender) == null) {
 			sender.sendMessage(plugin.getText("not-in-duel"));
 			return;
@@ -366,7 +376,6 @@ public class DuelCommand implements CommandClass {
 		continueLore.add(plugin.getText("duel-kit").replace("%kit%", d.getKit().getName()));
 
 		continueLore.add("");
-		continueLore.add(plugin.getText("duel-select"));
 
 		continueMeta.setLore(continueLore);
 
