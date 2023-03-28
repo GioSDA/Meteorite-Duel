@@ -90,9 +90,11 @@ public class Duel {
 		duelArgs.add(new DuelArg(Material.BONE, "Risk Inventory", false));
 		duelArgs.add(new DuelArg(Material.DIAMOND_CHESTPLATE, "Armor", true));
 		duelArgs.add(new DuelArg(Material.DIAMOND_SWORD, "Weapons", true));
+		duelArgs.add(new DuelArg(Material.DAYLIGHT_DETECTOR_INVERTED, "NONE", false));
 		duelArgs.add(new DuelArg(Material.ANVIL, "/fix", true));
 		duelArgs.add(new DuelArg(Material.ANVIL, "/fix all", true));
 		duelArgs.add(new DuelArg(Material.FEATHER, "/fly", false));
+		duelArgs.add(new DuelArg(Material.DAYLIGHT_DETECTOR_INVERTED, "NONE", false));
 		duelArgs.add(new DuelArg(Material.PAPER, "Death Certificates", true));
 		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
 		duelArgs.add(new DuelArg(Material.BOOK, "Soul Enchantments", true));
@@ -339,7 +341,7 @@ public class Duel {
 		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
 		dueler2.getActivePotionEffects().forEach(e -> dueler2.removePotionEffect(e.getType()));
 
-		if (!duelArgs.get(6).isEnabled()) {
+		if (isArgEnabled("Risk Inventory")) {
 			dueler1.getInventory().clear();
 			dueler2.getInventory().clear();
 			dueler1.getInventory().setContents(inventory1);
@@ -355,7 +357,7 @@ public class Duel {
 			rewards.addAll(getWager1());
 			rewards.addAll(getWager2());
 
-			if (isArgEnabled("Golden Apples")) { //Risk Inventory
+			if (isArgEnabled("Risk Inventory")) { //Risk Inventory
 				ItemStack[] loserInv;
 				if (loser.equals(dueler2)) loserInv = inventory2;
 				else loserInv = inventory1;

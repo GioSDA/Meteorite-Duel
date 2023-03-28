@@ -289,9 +289,11 @@ public class DuelCommand implements CommandClass {
 	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
 		ItemStack item = new ItemStack(duelArgs.get(slot).getMaterial());
 		ItemMeta meta = item.getItemMeta();
+		if (duelArgs.get(slot).getMaterial().equals(Material.DAYLIGHT_DETECTOR_INVERTED)) return;
+
 		if (duelArgs.get(slot).isEnabled()) {
 			meta.addEnchant(Enchantment.DIG_SPEED, 1,true);
-			if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1); //Replace with notch apple for glowing effect
+			if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1);
 			meta.setLore(Arrays.asList("§a§lENABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
 		} else {
 			meta.setLore(Arrays.asList("§c§lDISABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
@@ -299,9 +301,6 @@ public class DuelCommand implements CommandClass {
 		meta.setDisplayName("§e§l" + duelArgs.get(slot).getName());
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
-
-		if (slot >= 9) slot++;
-		if (slot >= 13) slot++;
 
 		page.setItem(slot, item);
 	}
@@ -317,7 +316,7 @@ public class DuelCommand implements CommandClass {
 			setGuiElement(i, page, duelArgs);
 		}
 
-		page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+		page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 		page.setItem(26, generateKitItem(duel));
 		page.setItem(18, generateKitItem(duel));
 
@@ -335,11 +334,12 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duelArgs.size() <= e.getEvent().getRawSlot()) return;
+
 			duelArgs.get(e.getEvent().getRawSlot()).setEnabled(!duelArgs.get(e.getEvent().getRawSlot()).isEnabled());
 
 			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
 
-			page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+			page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 			page.setItem(26, generateKitItem(duel));
 			page.setItem(18, generateKitItem(duel));
 
@@ -364,18 +364,26 @@ public class DuelCommand implements CommandClass {
 		return item;
 	}
 
-	private ItemStack generateRulesItem(Duel d, String title, ItemStack item) {
+	private ItemStack generateRulesItem(Duel d, String title, String footer, ItemStack item) {
 		ItemMeta continueMeta = item.getItemMeta();
 		continueMeta.setDisplayName(title);
 
 		List<String> continueLore = new ArrayList<>();
 		continueLore.add("");
 		for (DuelArg arg : d.getDuelArgs()) {
-			continueLore.add(plugin.getText("duel-args").replace("%arg%", arg.getName()).replace("%enabled%", arg.isEnabled() ? "§aENABLED" : "§cDISABLED"));
+			if (arg.getMaterial().equals(Material.DAYLIGHT_DETECTOR_INVERTED)) continue;
+
+			if (arg.isEnabled()) continueLore.add(plugin.getText("duel-arg-enabled").replace("%arg%", arg.getName()));
+			else continueLore.add(plugin.getText("duel-arg-disabled").replace("%arg%", arg.getName()));
+
 		}
 		continueLore.add(plugin.getText("duel-kit").replace("%kit%", d.getKit().getName()));
 
-		continueLore.add("");
+		if (footer.length() > 1) {
+			continueLore.add("");
+
+			continueLore.add(footer);
+		}
 
 		continueMeta.setLore(continueLore);
 
@@ -525,7 +533,7 @@ public class DuelCommand implements CommandClass {
 
 		page.setItem(13, item2);
 
-		page.setItem(22, generateRulesItem(duel, "§e§lSettings", new ItemStack(Material.BOOK)));
+		page.setItem(22, generateRulesItem(duel, "§e§lSettings", "", new ItemStack(Material.BOOK)));
 
 		ItemStack anvil = new ItemStack(Material.ANVIL);
 		ItemMeta anvilMeta = anvil.getItemMeta();
@@ -591,7 +599,6 @@ public class DuelCommand implements CommandClass {
 			}
 		}
 
-
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
@@ -643,7 +650,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (duel.isAccepted1() && duel.isAccepted2()) {
-				BukkitTask task = new BukkitRunnable() {
+				new BukkitRunnable() {
 					final Player p1 = player1;
 					final Player p2 = player2;
 
@@ -675,6 +682,7 @@ public class DuelCommand implements CommandClass {
 			if (e.getEvent().getRawSlot() >= 54) {
 				if (p.equals(duel.getDueler1())) {
 					ItemStack wagerItem = p.getInventory().getItem(e.getSlot());
+
 					if (wagerItem == null) return;
 					if (wagerItem.getType() == Material.AIR) return;
 
