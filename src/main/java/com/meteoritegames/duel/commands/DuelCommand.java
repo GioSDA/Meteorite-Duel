@@ -10,10 +10,13 @@ import com.meteoritepvp.api.command.CommandClass;
 import com.meteoritepvp.api.command.DefaultCommand;
 import com.meteoritepvp.api.inventory.MeteoriteInventory;
 import com.meteoritepvp.api.inventory.presets.BasicInventory;
+import com.meteoritepvp.api.inventory.presets.ListenerType;
+import net.advancedplugins.ae.api.AEAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -24,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -286,62 +288,90 @@ public class DuelCommand implements CommandClass {
 		}
 	}
 
-	private void setGuiElement(int slot, BasicInventory page, ArrayList<DuelArg> duelArgs) {
-		ItemStack item = new ItemStack(duelArgs.get(slot).getMaterial());
-		ItemMeta meta = item.getItemMeta();
-		if (duelArgs.get(slot).getMaterial().equals(Material.DAYLIGHT_DETECTOR_INVERTED)) return;
-
-		if (duelArgs.get(slot).isEnabled()) {
-			meta.addEnchant(Enchantment.DIG_SPEED, 1,true);
-			if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1);
-			meta.setLore(Arrays.asList("§a§lENABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
-		} else {
-			meta.setLore(Arrays.asList("§c§lDISABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
-		}
-		meta.setDisplayName("§e§l" + duelArgs.get(slot).getName());
-		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		item.setItemMeta(meta);
-
-		page.setItem(slot, item);
-	}
-
 	private void createArgsGui(Duel duel) {
 		ArrayList<DuelArg> duelArgs = duel.getDuelArgs();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("duel-menu"), 9, 3, true);
-		BasicInventory page = new BasicInventory(9, 3);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("duel-menu"), 9, 4, true);
+		BasicInventory page = new BasicInventory(9, 4);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
 
-		for (int i = 0; i < duelArgs.size(); i++) {
-			setGuiElement(i, page, duelArgs);
+		for (DuelArg arg : duelArgs) {
+			ItemStack item = arg.getIcon();
+			ItemMeta meta = item.getItemMeta();
+
+			if (arg.isEnabled()) {
+				meta.addEnchant(Enchantment.DIG_SPEED, 1,true);
+				if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1);
+				meta.setLore(Arrays.asList("§a§lENABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
+			} else {
+				meta.setLore(Arrays.asList("§c§lDISABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
+			}
+
+			meta.setDisplayName("§e§l" + arg.getName());
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			item.setItemMeta(meta);
+
+			page.setItem(arg.getSlot(), item);
 		}
 
-		page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
-		page.setItem(26, generateKitItem(duel));
-		page.setItem(18, generateKitItem(duel));
+		page.setItem(31, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
+		page.setItem(2, generateKitItem(duel));
+		page.setItem(6, generateKitItem(duel));
+		page.setItem(3, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lGear Enchantments",
+				Arrays.asList("§d§l" + duel.getArmorEnchant().toString(), "§r", "§7Click to §7§nchange§7 the enchantment level.")));
+		page.setItem(5, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lWeapon Enchantments",
+				Arrays.asList("§d§l" + duel.getWeaponEnchant().toString(), "§r", "§7Click to §7§nchange§7 the enchantment level.")));
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
 
-			if (e.getEvent().getRawSlot() == 18 || e.getEvent().getRawSlot() == 26) {
+			if (e.getEvent().getRawSlot() == 2 || e.getEvent().getRawSlot() == 6) {
 				duel.getDueler1().closeInventory();
 				createKitGui(duel);
+				return;
 			}
 
-			if (e.getEvent().getRawSlot() == 22) {
+			if (e.getEvent().getRawSlot() == 31) {
 				duel.getDueler1().closeInventory();
 				createMapGui(duel);
+				return;
 			}
 
-			if (duelArgs.size() <= e.getEvent().getRawSlot()) return;
+			if (e.getEvent().getRawSlot() == 3) {
+				page.setItem(3, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lGear Enchantments",
+						Arrays.asList("§d§l" + duel.changeEnchantLevel(duel.getArmorEnchant()).toString(), "§r", "§7Click to §7§ntoggle§7 this setting.")));
+				duel.setArmorEnchant(duel.changeEnchantLevel(duel.getArmorEnchant()));
+			}
 
-			duelArgs.get(e.getEvent().getRawSlot()).setEnabled(!duelArgs.get(e.getEvent().getRawSlot()).isEnabled());
+			if (e.getEvent().getRawSlot() == 5) {
+				page.setItem(5, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lGear Enchantments",
+						Arrays.asList("§d§l" + duel.changeEnchantLevel(duel.getWeaponEnchant()).toString(), "§r", "§7Click to §7§ntoggle§7 this setting.")));
+				duel.setWeaponEnchant(duel.changeEnchantLevel(duel.getWeaponEnchant()));
+			}
 
-			setGuiElement(e.getEvent().getRawSlot(), page, duelArgs);
+			if (duel.getArgBySlot(e.getSlot()) != null) {
+				DuelArg arg = duel.getArgBySlot(e.getSlot());
+				arg.setEnabled(!arg.isEnabled());
 
-			page.setItem(22, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
-			page.setItem(26, generateKitItem(duel));
-			page.setItem(18, generateKitItem(duel));
+				ItemStack item = arg.getIcon();
+				ItemMeta meta = item.getItemMeta();
+
+				if (arg.isEnabled()) {
+					meta.addEnchant(Enchantment.DIG_SPEED, 1,true);
+					if (item.getType().equals(Material.GOLDEN_APPLE)) item = new ItemStack(Material.GOLDEN_APPLE, 1, (short)1);
+					meta.setLore(Arrays.asList("§a§lENABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
+				} else {
+					meta.setLore(Arrays.asList("§c§lDISABLED", "§r", "§7Click to §7§ntoggle§7 this setting."));
+				}
+
+				meta.setDisplayName("§e§l" + arg.getName());
+				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				item.setItemMeta(meta);
+
+				page.setItem(arg.getSlot(), item);
+			}
+
+			page.setItem(31, generateRulesItem(duel, plugin.getText("duel-settings"), plugin.getText("duel-select"), new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13)));
 
 			inventory.applyPage(page);
 			inventory.show(duel.getDueler1());
@@ -371,13 +401,15 @@ public class DuelCommand implements CommandClass {
 		List<String> continueLore = new ArrayList<>();
 		continueLore.add("");
 		for (DuelArg arg : d.getDuelArgs()) {
-			if (arg.getMaterial().equals(Material.DAYLIGHT_DETECTOR_INVERTED)) continue;
+			if (arg.getIcon().getType().equals(Material.DAYLIGHT_DETECTOR_INVERTED)) continue;
 
 			if (arg.isEnabled()) continueLore.add(plugin.getText("duel-arg-enabled").replace("%arg%", arg.getName()));
 			else continueLore.add(plugin.getText("duel-arg-disabled").replace("%arg%", arg.getName()));
 
 		}
 		continueLore.add(plugin.getText("duel-kit").replace("%kit%", d.getKit().getName()));
+		continueLore.add("§eGear Level: " + "§d§l" + d.getArmorEnchant().toString());
+		continueLore.add("§eWeapon Level: " + "§d§l" + d.getWeaponEnchant().toString());
 
 		if (footer.length() > 1) {
 			continueLore.add("");
@@ -449,8 +481,6 @@ public class DuelCommand implements CommandClass {
 			DuelMap map;
 			if (m.isPresent()) map = m.get();
 			else return;
-
-
 
 			if (plugin.mapIsActive(map) != null) {
 				e.getEvent().getWhoClicked().sendMessage(plugin.getText("map-unavailable"));
@@ -705,7 +735,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			p.updateInventory();
-		});
+		}, ListenerType.ANY_INVENTORY);
 
 		inventory.setPage(page);
 		inventory.show(p);
@@ -752,4 +782,12 @@ public class DuelCommand implements CommandClass {
 		inventory.show(p);
 	}
 
+	private ItemStack buildItem(ItemStack item, String title, List<String> lore) {
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(title);
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+
+		return item;
+	}
 }

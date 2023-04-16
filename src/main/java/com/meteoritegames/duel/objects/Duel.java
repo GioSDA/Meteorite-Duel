@@ -3,7 +3,6 @@ package com.meteoritegames.duel.objects;
 import com.meteoritegames.duel.Main;
 import net.advancedplugins.ae.api.AEAPI;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,7 +17,9 @@ import java.util.*;
 
 public class Duel {
 	private final Main plugin;
-	private ArrayList<DuelArg> duelArgs = new ArrayList<>();
+	private final ArrayList<DuelArg> duelArgs = new ArrayList<>();
+	private EnchantLevel weaponEnchant = EnchantLevel.ALL;
+	private EnchantLevel armorEnchant = EnchantLevel.ALL;
 	public BukkitTask duelTask;
 
 	private Player dueler1;
@@ -80,24 +81,21 @@ public class Duel {
 		this.accepted1 = false;
 		this.accepted2 = false;
 
-		duelArgs.add(new DuelArg(Material.GOLDEN_APPLE, "Golden Apples", true));
-//		duelArgs.add(new DuelArg(Material.DIAMOND_AXE, "MCMMO", true));
-		duelArgs.add(new DuelArg(Material.BREWING_STAND_ITEM, "Potions", true));
-		duelArgs.add(new DuelArg(Material.BOW, "Bows", true));
-		duelArgs.add(new DuelArg(Material.GHAST_TEAR, "Healing", true));
-		duelArgs.add(new DuelArg(Material.COOKED_BEEF, "Food Loss", true));
-		duelArgs.add(new DuelArg(Material.ENDER_PEARL, "Ender Pearls", true));
-		duelArgs.add(new DuelArg(Material.BONE, "Risk Inventory", false));
-		duelArgs.add(new DuelArg(Material.DIAMOND_CHESTPLATE, "Armor", true));
-		duelArgs.add(new DuelArg(Material.DIAMOND_SWORD, "Weapons", true));
-		duelArgs.add(new DuelArg(Material.DAYLIGHT_DETECTOR_INVERTED, "NONE", false));
-		duelArgs.add(new DuelArg(Material.ANVIL, "/fix", true));
-		duelArgs.add(new DuelArg(Material.ANVIL, "/fix all", true));
-		duelArgs.add(new DuelArg(Material.FEATHER, "/fly", false));
-		duelArgs.add(new DuelArg(Material.DAYLIGHT_DETECTOR_INVERTED, "NONE", false));
-		duelArgs.add(new DuelArg(Material.PAPER, "Death Certificates", true));
-		duelArgs.add(new DuelArg(Material.MONSTER_EGG, "Inventory Pets", false));
-		duelArgs.add(new DuelArg(Material.BOOK, "Soul Enchantments", true));
+		duelArgs.add(new DuelArg(new ItemStack(Material.INK_SACK, 1, (short)15), "Meteorite Energy", true, 4));
+		duelArgs.add(new DuelArg(new ItemStack(Material.GOLDEN_APPLE), "Golden Apples", true, 9));
+		duelArgs.add(new DuelArg(new ItemStack(Material.BREWING_STAND_ITEM), "Potions", true, 10));
+		duelArgs.add(new DuelArg(new ItemStack(Material.BOW), "Bows", true, 11));
+		duelArgs.add(new DuelArg(new ItemStack(Material.GHAST_TEAR), "Healing", true, 12));
+		duelArgs.add(new DuelArg(new ItemStack(Material.COOKED_BEEF), "Food Loss", true, 13));
+		duelArgs.add(new DuelArg(new ItemStack(Material.ENDER_PEARL), "Ender Pearls", true, 14));
+		duelArgs.add(new DuelArg(new ItemStack(Material.BONE), "Risk Inventory", false, 15));
+		duelArgs.add(new DuelArg(new ItemStack(Material.DIAMOND_CHESTPLATE), "Armor", true, 16));
+		duelArgs.add(new DuelArg(new ItemStack(Material.DIAMOND_SWORD), "Weapons", true, 17));
+		duelArgs.add(new DuelArg(new ItemStack(Material.ANVIL), "/fix", true, 20));
+		duelArgs.add(new DuelArg(new ItemStack(Material.ANVIL), "/fix all", true, 21));
+		duelArgs.add(new DuelArg(new ItemStack(Material.FEATHER), "/fly", false, 22));
+		duelArgs.add(new DuelArg(new ItemStack(Material.PAPER), "Death Certificates", true, 23));
+		duelArgs.add(new DuelArg(new ItemStack(Material.MONSTER_EGG), "Inventory Pets", false, 24));
 
 		KitItems kitItemGen = new KitItems();
 		kits = new ArrayList<>();
@@ -180,6 +178,22 @@ public class Duel {
 
 	public void setId(int id) {
 
+	}
+
+	public EnchantLevel getWeaponEnchant() {
+		return weaponEnchant;
+	}
+
+	public EnchantLevel getArmorEnchant() {
+		return armorEnchant;
+	}
+
+	public void setWeaponEnchant(EnchantLevel weaponEnchant) {
+		this.weaponEnchant = weaponEnchant;
+	}
+
+	public void setArmorEnchant(EnchantLevel armorEnchant) {
+		this.armorEnchant = armorEnchant;
 	}
 
 	public ItemStack[] getInventory1() {
@@ -298,15 +312,9 @@ public class Duel {
 			dueler2.getInventory().remove(Material.SKULL_ITEM);
 		}
 
-		if (!isArgEnabled("Soul Enchantments")) {
-			dueler1.getInventory().forEach(e -> {
-				if (AEAPI.getEnchantmentsOnItem(e).containsKey("Soul Enchantment"))
-					e.removeEnchantment(Enchantment.getByName("Soul Enchantment"));
-			});
-			dueler2.getInventory().forEach(e -> {
-				if (AEAPI.getEnchantmentsOnItem(e).containsKey("Soul Enchantment"))
-					e.removeEnchantment(Enchantment.getByName("Soul Enchantment"));
-			});
+
+		if (isArgEnabled("Meteorite Energy")) { //TODO
+
 		}
 
 		dueler1.setHealth(20.0);
@@ -459,6 +467,14 @@ public class Duel {
 		p.setScoreboard(b);
 	}
 
+	public DuelArg getArgBySlot(int slot) {
+		for (DuelArg arg : duelArgs) {
+			if (arg.getSlot() == slot) return arg;
+		}
+
+		return null;
+	}
+
 	public boolean isArgEnabled(String title) {
 		for (DuelArg arg : duelArgs) {
 			if (arg.getName().equals(title)) return arg.isEnabled();
@@ -492,4 +508,59 @@ public class Duel {
 		this.kit = kit;
 	}
 
+	public EnchantLevel changeEnchantLevel(EnchantLevel enchant) {
+		if (enchant == EnchantLevel.ALL) return EnchantLevel.SOUL;
+		if (enchant == EnchantLevel.SOUL) return EnchantLevel.LEGENDARY;
+		if (enchant == EnchantLevel.LEGENDARY) return EnchantLevel.ULTIMATE;
+		if (enchant == EnchantLevel.ULTIMATE) return EnchantLevel.ELITE;
+		if (enchant == EnchantLevel.ELITE) return EnchantLevel.UNIQUE;
+		if (enchant == EnchantLevel.UNIQUE) return EnchantLevel.SIMPLE;
+
+		return EnchantLevel.ALL;
+	}
+
+	public ItemStack removeEnchants(ItemStack item) {
+		if (item == null) return null;
+		Set<String> enchantments = AEAPI.getEnchantmentsOnItem(item).keySet();
+
+		if (ARMORTYPES.contains(item.getType())) {
+			switch (armorEnchant) { //TODO: if simple, all above simple should be removed instead of other way around dumass
+				case SOUL:
+					AEAPI.getEnchantmentsByGroup("Soul").forEach(enchantments::remove);
+				case LEGENDARY:
+					AEAPI.getEnchantmentsByGroup("Legendary").forEach(enchantments::remove);
+				case ULTIMATE:
+					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(enchantments::remove);
+				case ELITE:
+					AEAPI.getEnchantmentsByGroup("Elite").forEach(enchantments::remove);
+				case UNIQUE:
+					AEAPI.getEnchantmentsByGroup("Unique").forEach(enchantments::remove);
+				case SIMPLE:
+					AEAPI.getEnchantmentsByGroup("Simple").forEach(enchantments::remove);
+				default:
+					break;
+			}
+		}
+
+		if (item.getType() == Material.BOW || SWORDTYPES.contains(item.getType())) {
+			switch (weaponEnchant) {
+				case SOUL:
+					AEAPI.getEnchantmentsByGroup("Soul").forEach(enchantments::remove);
+				case LEGENDARY:
+					AEAPI.getEnchantmentsByGroup("Legendary").forEach(enchantments::remove);
+				case ULTIMATE:
+					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(enchantments::remove);
+				case ELITE:
+					AEAPI.getEnchantmentsByGroup("Elite").forEach(enchantments::remove);
+				case UNIQUE:
+					AEAPI.getEnchantmentsByGroup("Unique").forEach(enchantments::remove);
+				case SIMPLE:
+					AEAPI.getEnchantmentsByGroup("Simple").forEach(enchantments::remove);
+				default:
+					break;
+			}
+		}
+
+		return item;
+	}
 }

@@ -22,7 +22,6 @@ public class Main extends MeteoritePlugin {
 	public Set<Player> noDuel = new HashSet<>();
 	public Set<Duel> duels = new HashSet<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
-
 	@Override
 	protected void onInit() {
 		super.onInit();

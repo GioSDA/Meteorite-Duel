@@ -1,18 +1,19 @@
 package com.meteoritegames.duel.objects;
 
-import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class DuelArg {
-	private Material material;
+	private ItemStack icon;
 	private String name;
 	private boolean enabled;
+	private int slot;
 
-	public Material getMaterial() {
-		return material;
+	public ItemStack getIcon() {
+		return icon;
 	}
 
-	public void setMaterial(Material material) {
-		this.material = material;
+	public void setIcon(ItemStack icon) {
+		this.icon = icon;
 	}
 
 	public String getName() {
@@ -31,10 +32,15 @@ public class DuelArg {
 		this.enabled = enabled;
 	}
 
-	public DuelArg(Material material, String name, boolean enabled) {
-		this.material = material;
+	public int getSlot() {
+		return slot;
+	}
+
+	public DuelArg(ItemStack icon, String name, boolean enabled, int slot) {
+		this.icon = icon;
 		this.name = name;
 		this.enabled = enabled;
+		this.slot = slot;
 	}
 
 }
