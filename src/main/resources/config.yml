@@ -70,7 +70,8 @@ text:
   hit-30: "&e&l[/duel] &eHit the opponent in 30 seconds otherwise it will be a draw."
   hit-60: "&e&l[/duel] &eHit the opponent in 60 seconds otherwise it will be a draw."
   duel-draw: "&eDuel cancelled."
-  duel-win: "&eYou have won the duel! use &6/duel collect &eto claim your winnings."
+  duel-collect: "&eYou have won the duel! use &6/duel collect &eto claim your winnings."
+  duel-win: "&eYou have won the duel!"
   duel-info:
     - "&b&m&l====================&6&m&l=====================&r"
     - "&r"

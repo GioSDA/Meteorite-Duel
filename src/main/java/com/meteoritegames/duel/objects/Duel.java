@@ -3,6 +3,7 @@ package com.meteoritegames.duel.objects;
 import com.meteoritegames.duel.Main;
 import net.advancedplugins.ae.api.AEAPI;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -317,6 +318,22 @@ public class Duel {
 
 		}
 
+		for (ItemStack item : dueler1.getInventory()) {
+			removeEnchants(item);
+		}
+
+		for (ItemStack item : dueler2.getInventory()) {
+			removeEnchants(item);
+		}
+
+		for (ItemStack item : dueler1.getInventory().getArmorContents()) {
+			removeEnchants(item);
+		}
+
+		for (ItemStack item : dueler2.getInventory().getArmorContents()) {
+			removeEnchants(item);
+		}
+
 		dueler1.setHealth(20.0);
 		dueler2.setHealth(20.0);
 
@@ -367,7 +384,9 @@ public class Duel {
 
 			if (isArgEnabled("Risk Inventory")) { //Risk Inventory
 				ItemStack[] loserInv;
-				if (loser.equals(dueler2)) loserInv = inventory2;
+				if (loser.equals(dueler2)) {
+					loserInv = inventory2;
+				}
 				else loserInv = inventory1;
 
 				for (ItemStack itemStack : loserInv) {
@@ -390,7 +409,7 @@ public class Duel {
 				loser.getInventory().setArmorContents(new ItemStack[4]);
 			}
 
-			if (isArgEnabled("Golden Apples")) { //Death Certificate
+			if (isArgEnabled("Death Certificates")) { //Death Certificate
 				ItemStack cert = new ItemStack(Material.PAPER);
 				ItemMeta meta = cert.getItemMeta();
 				meta.setDisplayName(plugin.getText("certificate-title").replace("%player%", loser.getName()));
@@ -408,9 +427,13 @@ public class Duel {
 				rewards.add(cert);
 			}
 
-			winner.sendMessage(plugin.getText("duel-win"));
-			if (rewards.size() != 0) winner.sendTitle(plugin.getText("duel-title"), plugin.getText("collect-def"));
-			else winner.sendTitle(plugin.getText("duel-title"), plugin.getText("won-def").replace("%player%", winner.getName()));
+			if (rewards.size() != 0) {
+				winner.sendMessage(plugin.getText("duel-collect"));
+				winner.sendTitle(plugin.getText("duel-title"), plugin.getText("collect-def"));
+			} else {
+				winner.sendMessage(plugin.getText("duel-win"));
+				winner.sendTitle(plugin.getText("duel-title"), plugin.getText("won-def").replace("%player%", winner.getName()));
+			}
 			plugin.addDuelRewards(winner, rewards);
 		} else {
 			for (ItemStack item : wager1) winner.getInventory().addItem(item);
@@ -515,52 +538,63 @@ public class Duel {
 		if (enchant == EnchantLevel.ULTIMATE) return EnchantLevel.ELITE;
 		if (enchant == EnchantLevel.ELITE) return EnchantLevel.UNIQUE;
 		if (enchant == EnchantLevel.UNIQUE) return EnchantLevel.SIMPLE;
+		if (enchant == EnchantLevel.SIMPLE) return EnchantLevel.NONE;
 
 		return EnchantLevel.ALL;
 	}
 
-	public ItemStack removeEnchants(ItemStack item) {
-		if (item == null) return null;
+	public void removeEnchants(ItemStack item) {
+		if (item == null) return;
 		Set<String> enchantments = AEAPI.getEnchantmentsOnItem(item).keySet();
 
 		if (ARMORTYPES.contains(item.getType())) {
-			switch (armorEnchant) { //TODO: if simple, all above simple should be removed instead of other way around dumass
-				case SOUL:
-					AEAPI.getEnchantmentsByGroup("Soul").forEach(enchantments::remove);
-				case LEGENDARY:
-					AEAPI.getEnchantmentsByGroup("Legendary").forEach(enchantments::remove);
-				case ULTIMATE:
-					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(enchantments::remove);
-				case ELITE:
-					AEAPI.getEnchantmentsByGroup("Elite").forEach(enchantments::remove);
-				case UNIQUE:
-					AEAPI.getEnchantmentsByGroup("Unique").forEach(enchantments::remove);
+			switch (armorEnchant) {
+				case NONE:
+					AEAPI.getEnchantmentsByGroup("Simple").forEach(e -> AEAPI.removeEnchantment(item, e));
+					for(Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()){
+						item.removeEnchantment(e.getKey());
+					}
 				case SIMPLE:
-					AEAPI.getEnchantmentsByGroup("Simple").forEach(enchantments::remove);
+					AEAPI.getEnchantmentsByGroup("Unique").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case UNIQUE:
+					AEAPI.getEnchantmentsByGroup("Elite").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case ELITE:
+					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case ULTIMATE:
+					AEAPI.getEnchantmentsByGroup("Legendary").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case LEGENDARY:
+					AEAPI.getEnchantmentsByGroup("Soul").forEach(e -> AEAPI.removeEnchantment(item, e));
 				default:
 					break;
 			}
 		}
 
 		if (item.getType() == Material.BOW || SWORDTYPES.contains(item.getType())) {
+			System.out.println("weapon :)");
+			System.out.println(AEAPI.getEnchantmentsOnItem(item).keySet());
+			System.out.println(weaponEnchant);
+
 			switch (weaponEnchant) {
-				case SOUL:
-					AEAPI.getEnchantmentsByGroup("Soul").forEach(enchantments::remove);
-				case LEGENDARY:
-					AEAPI.getEnchantmentsByGroup("Legendary").forEach(enchantments::remove);
-				case ULTIMATE:
-					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(enchantments::remove);
-				case ELITE:
-					AEAPI.getEnchantmentsByGroup("Elite").forEach(enchantments::remove);
-				case UNIQUE:
-					AEAPI.getEnchantmentsByGroup("Unique").forEach(enchantments::remove);
+				case NONE:
+					AEAPI.getEnchantmentsByGroup("Simple").forEach(e -> AEAPI.removeEnchantment(item, e));
+					for(Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()){
+						item.removeEnchantment(e.getKey());
+					}
 				case SIMPLE:
-					AEAPI.getEnchantmentsByGroup("Simple").forEach(enchantments::remove);
+					AEAPI.getEnchantmentsByGroup("Unique").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case UNIQUE:
+					AEAPI.getEnchantmentsByGroup("Elite").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case ELITE:
+					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case ULTIMATE:
+					AEAPI.getEnchantmentsByGroup("Legendary").forEach(e -> AEAPI.removeEnchantment(item, e));
+				case LEGENDARY:
+					AEAPI.getEnchantmentsByGroup("Soul").forEach(e -> AEAPI.removeEnchantment(item, e));
 				default:
 					break;
 			}
 		}
 
-		return item;
+
 	}
 }

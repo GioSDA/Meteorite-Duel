@@ -16,7 +16,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -124,7 +123,7 @@ public class DuelCommand implements CommandClass {
 			hopperMeta.setDisplayName(plugin.getText("collect-item"));
 			hopperMeta.setLore(Collections.singletonList(plugin.getText("collect-desc")));
 			hopper.setItemMeta(hopperMeta);
-			page.setItem(4, Material.HOPPER);
+			page.setItem(4, hopper);
 
 			for (int i = 0; i < 45 && i < rewards.size(); i++) {
 				page.setItem(9+i, rewards.get(i));
@@ -135,9 +134,8 @@ public class DuelCommand implements CommandClass {
 
 					plugin.duelRewards.get(sender).removeIf(reward -> sender.getInventory().addItem(reward).size() == 0);
 
-					if (plugin.duelRewards.get(sender).size() != 0) {
-						sender.sendMessage(plugin.getText("not-collected"));
-					}
+					if (plugin.duelRewards.get(sender).size() != 0) sender.sendMessage(plugin.getText("not-collected"));
+					else sender.sendMessage(plugin.getText("winnings-collected"));
 
 					sender.closeInventory();
 				} else if (e.getEvent().getRawSlot() > 8 && e.getEvent().getRawSlot() - 9 < rewards.size()) {

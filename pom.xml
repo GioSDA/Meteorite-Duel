@@ -84,6 +84,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.meteoritepvp.meteoritelevels</groupId>
+            <artifactId>meteoritelevels</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/MeteoriteLevels.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.meteoritepvp</groupId>
             <artifactId>api</artifactId>
             <version>1.0</version>

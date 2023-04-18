@@ -82,6 +82,16 @@ public class DuelListener implements Listener {
 	}
 
 	@EventHandler
+	void onMeteoriteLevel(com.meteoritepvp.levels.event.MeteoriteLevelEvent e) {
+		Duel d = plugin.playerIsInDuel(e.getPlayer());
+
+		if (d == null) return;
+		if (!d.isActive()) return;
+		e.setCancelled(d.isArgEnabled("Meteorite Energy"));
+
+	}
+
+	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			if (e.getPlayer().getOpenInventory().getTitle().startsWith("§8")) return;
