@@ -287,11 +287,11 @@ public class Duel {
 		}
 
 		for (int i = 0; i < dueler1.getInventory().getArmorContents().length; i++) {
-			dueler1.getInventory().getArmorContents()[i] = parseItem(dueler1.getInventory().getItem(i), armorEnchant);
+			dueler1.getInventory().getArmorContents()[i] = parseItem(dueler1.getInventory().getArmorContents()[i], armorEnchant);
 		}
 
 		for (int i = 0; i < dueler2.getInventory().getArmorContents().length; i++) {
-			dueler2.getInventory().getArmorContents()[i] = parseItem(dueler2.getInventory().getItem(i), armorEnchant);
+			dueler2.getInventory().getArmorContents()[i] = parseItem(dueler2.getInventory().getArmorContents()[i], armorEnchant);
 		}
 
 		dueler1.setHealth(20.0);
@@ -520,8 +520,8 @@ public class Duel {
 					newItem = AEAPI.removeEnchantment(newItem, enchantment);
 				}
 
-				for (Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()) {
-					item.removeEnchantment(e.getKey());
+				for (Map.Entry<Enchantment, Integer> e : newItem.getEnchantments().entrySet()) {
+					newItem.removeEnchantment(e.getKey());
 				}
 			case SIMPLE:
 				for (String enchantment : AEAPI.getEnchantmentsByGroup("Unique")) {
