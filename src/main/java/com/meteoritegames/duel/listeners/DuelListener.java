@@ -87,8 +87,7 @@ public class DuelListener implements Listener {
 
 		if (d == null) return;
 		if (!d.isActive()) return;
-		e.setCancelled(d.isArgEnabled("Meteorite Energy"));
-
+		e.setCancelled(!d.isArgEnabled("Meteorite Energy"));
 	}
 
 	@EventHandler

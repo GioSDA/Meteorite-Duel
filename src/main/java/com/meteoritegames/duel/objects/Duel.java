@@ -64,12 +64,18 @@ public class Duel {
 			Material.DIAMOND_BOOTS
 	);
 
-	private static final Set<Material> SWORDTYPES = EnumSet.of(
+	private static final Set<Material> WEAPONTYPES = EnumSet.of(
 			Material.DIAMOND_SWORD,
 			Material.GOLD_SWORD,
 			Material.STONE_SWORD,
 			Material.WOOD_SWORD,
-			Material.IRON_SWORD
+			Material.IRON_SWORD,
+			Material.DIAMOND_AXE,
+			Material.GOLD_AXE,
+			Material.IRON_AXE,
+			Material.STONE_AXE,
+			Material.WOOD_AXE,
+			Material.BOW
 	);
 
 	public Duel(Main plugin, Player dueler1, Player dueler2) {
@@ -267,71 +273,25 @@ public class Duel {
 			dueler2.getInventory().setContents(kit.getItems());
 		}
 
-		if (!isArgEnabled("Golden Apples")) {
-			dueler1.getInventory().remove(Material.GOLDEN_APPLE);
-			dueler2.getInventory().remove(Material.GOLDEN_APPLE);
-		}
-
-		if (!isArgEnabled("Potions")) {
-			dueler1.getInventory().remove(Material.POTION);
-			dueler2.getInventory().remove(Material.POTION);
-		}
-
-		if (!isArgEnabled("Bows")) {
-			dueler1.getInventory().remove(Material.BOW);
-			dueler2.getInventory().remove(Material.BOW);
-		}
-
-		if (!isArgEnabled("Ender Pearls")) {
-			dueler1.getInventory().remove(Material.ENDER_PEARL);
-			dueler2.getInventory().remove(Material.ENDER_PEARL);
-		}
-
-		if (!isArgEnabled("Armor")) {
-			dueler1.getInventory().setArmorContents(new ItemStack[dueler1.getInventory().getArmorContents().length]);
-			dueler2.getInventory().setArmorContents(new ItemStack[dueler2.getInventory().getArmorContents().length]);
-			ARMORTYPES.forEach(e -> {
-				dueler1.getInventory().remove(e);
-				dueler2.getInventory().remove(e);
-			});
-		}
-
-		if (!isArgEnabled("Weapons")) {
-			SWORDTYPES.forEach(e -> {
-				dueler1.getInventory().remove(e);
-				dueler2.getInventory().remove(e);
-			});
-		}
-
 		if (isArgEnabled("/fly")) {
 			dueler1.setAllowFlight(true);
 			dueler2.setAllowFlight(true);
 		}
 
-		if (!isArgEnabled("Inventory Pets")) {
-			dueler1.getInventory().remove(Material.SKULL_ITEM);
-			dueler2.getInventory().remove(Material.SKULL_ITEM);
+		for (int i = 0; i < dueler1.getInventory().getSize(); i++) {
+			dueler1.getInventory().setItem(i, parseItem(dueler1.getInventory().getItem(i), weaponEnchant));
 		}
 
-
-		if (isArgEnabled("Meteorite Energy")) { //TODO
-
+		for (int i = 0; i < dueler2.getInventory().getSize(); i++) {
+			dueler2.getInventory().setItem(i, parseItem(dueler2.getInventory().getItem(i), weaponEnchant));
 		}
 
-		for (ItemStack item : dueler1.getInventory()) {
-			removeEnchants(item);
+		for (int i = 0; i < dueler1.getInventory().getArmorContents().length; i++) {
+			dueler1.getInventory().getArmorContents()[i] = parseItem(dueler1.getInventory().getItem(i), armorEnchant);
 		}
 
-		for (ItemStack item : dueler2.getInventory()) {
-			removeEnchants(item);
-		}
-
-		for (ItemStack item : dueler1.getInventory().getArmorContents()) {
-			removeEnchants(item);
-		}
-
-		for (ItemStack item : dueler2.getInventory().getArmorContents()) {
-			removeEnchants(item);
+		for (int i = 0; i < dueler2.getInventory().getArmorContents().length; i++) {
+			dueler2.getInventory().getArmorContents()[i] = parseItem(dueler2.getInventory().getItem(i), armorEnchant);
 		}
 
 		dueler1.setHealth(20.0);
@@ -358,7 +318,7 @@ public class Duel {
 		dueler2.setGameMode(GameMode.SURVIVAL);
 		dueler1.setAllowFlight(false);
 		dueler2.setAllowFlight(false);
-		
+
 		Player winner;
 		if (loser.equals(dueler1)) winner = dueler2;
 		else winner = dueler1;
@@ -366,16 +326,14 @@ public class Duel {
 		dueler1.getActivePotionEffects().forEach(e -> dueler1.removePotionEffect(e.getType()));
 		dueler2.getActivePotionEffects().forEach(e -> dueler2.removePotionEffect(e.getType()));
 
-		if (isArgEnabled("Risk Inventory")) {
-			dueler1.getInventory().clear();
-			dueler2.getInventory().clear();
-			dueler1.getInventory().setContents(inventory1);
-			dueler2.getInventory().setContents(inventory2);
-			dueler1.getInventory().setArmorContents(armor1);
-			dueler2.getInventory().setArmorContents(armor2);
-			dueler1.updateInventory();
-			dueler2.updateInventory();
-		}
+		dueler1.getInventory().clear();
+		dueler2.getInventory().clear();
+		dueler1.getInventory().setContents(inventory1);
+		dueler2.getInventory().setContents(inventory2);
+		dueler1.getInventory().setArmorContents(armor1);
+		dueler2.getInventory().setArmorContents(armor2);
+		dueler1.updateInventory();
+		dueler2.updateInventory();
 
 		if (!stalemate) {
 			ArrayList<ItemStack> rewards = new ArrayList<>();
@@ -543,58 +501,52 @@ public class Duel {
 		return EnchantLevel.ALL;
 	}
 
-	public void removeEnchants(ItemStack item) {
-		if (item == null) return;
-		Set<String> enchantments = AEAPI.getEnchantmentsOnItem(item).keySet();
+	public ItemStack parseItem(ItemStack item, EnchantLevel level) {
+		if (item == null) return null;
 
-		if (ARMORTYPES.contains(item.getType())) {
-			switch (armorEnchant) {
-				case NONE:
-					AEAPI.getEnchantmentsByGroup("Simple").forEach(e -> AEAPI.removeEnchantment(item, e));
-					for(Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()){
-						item.removeEnchantment(e.getKey());
-					}
-				case SIMPLE:
-					AEAPI.getEnchantmentsByGroup("Unique").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case UNIQUE:
-					AEAPI.getEnchantmentsByGroup("Elite").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case ELITE:
-					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case ULTIMATE:
-					AEAPI.getEnchantmentsByGroup("Legendary").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case LEGENDARY:
-					AEAPI.getEnchantmentsByGroup("Soul").forEach(e -> AEAPI.removeEnchantment(item, e));
-				default:
-					break;
-			}
+		ItemStack newItem = item.clone();
+		if (newItem.getType() == Material.GOLDEN_APPLE && !isArgEnabled("Golden Apples")) return null;
+		else if (newItem.getType() == Material.POTION && !isArgEnabled("Potions")) return null;
+		else if (newItem.getType() == Material.BOW && !isArgEnabled("Bows")) return null;
+		else if (newItem.getType() == Material.ENDER_PEARL && !isArgEnabled("Ender Pearls")) return null;
+		else if (ARMORTYPES.contains(newItem.getType()) && !isArgEnabled("Armor")) return null;
+		else if (WEAPONTYPES.contains(newItem.getType()) && !isArgEnabled("Weapons")) return null;
+		else if (newItem.getType() == Material.SKULL_ITEM && !isArgEnabled("Inventory Pets")) return null;
+
+		if (!item.hasItemMeta()) return newItem;
+		switch (level) {
+			case NONE:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Simple")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+
+				for (Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()) {
+					item.removeEnchantment(e.getKey());
+				}
+			case SIMPLE:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Unique")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+			case UNIQUE:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Elite")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+			case ELITE:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Ultimate")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+			case ULTIMATE:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Legendary")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+			case LEGENDARY:
+				for (String enchantment : AEAPI.getEnchantmentsByGroup("Soul")) {
+					newItem = AEAPI.removeEnchantment(newItem, enchantment);
+				}
+			default:
+				break;
 		}
 
-		if (item.getType() == Material.BOW || SWORDTYPES.contains(item.getType())) {
-			System.out.println("weapon :)");
-			System.out.println(AEAPI.getEnchantmentsOnItem(item).keySet());
-			System.out.println(weaponEnchant);
-
-			switch (weaponEnchant) {
-				case NONE:
-					AEAPI.getEnchantmentsByGroup("Simple").forEach(e -> AEAPI.removeEnchantment(item, e));
-					for(Map.Entry<Enchantment, Integer> e : item.getEnchantments().entrySet()){
-						item.removeEnchantment(e.getKey());
-					}
-				case SIMPLE:
-					AEAPI.getEnchantmentsByGroup("Unique").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case UNIQUE:
-					AEAPI.getEnchantmentsByGroup("Elite").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case ELITE:
-					AEAPI.getEnchantmentsByGroup("Ultimate").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case ULTIMATE:
-					AEAPI.getEnchantmentsByGroup("Legendary").forEach(e -> AEAPI.removeEnchantment(item, e));
-				case LEGENDARY:
-					AEAPI.getEnchantmentsByGroup("Soul").forEach(e -> AEAPI.removeEnchantment(item, e));
-				default:
-					break;
-			}
-		}
-
-
+		return newItem;
 	}
 }

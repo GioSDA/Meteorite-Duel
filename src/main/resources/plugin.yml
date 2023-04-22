@@ -4,4 +4,4 @@ main: com.meteoritegames.duel.Main
 api-version: 1.8
 authors: [ GioSDA ]
 description: A duel plugin for MeteoritePVP
-depend: [MeteoriteAPI, AdvancedEnchantments]
+depend: [MeteoriteAPI, AdvancedEnchantments, MeteoriteLevels]

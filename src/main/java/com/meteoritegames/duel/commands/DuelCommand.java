@@ -342,7 +342,7 @@ public class DuelCommand implements CommandClass {
 			}
 
 			if (e.getEvent().getRawSlot() == 5) {
-				page.setItem(5, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lGear Enchantments",
+				page.setItem(5, buildItem(new ItemStack(Material.ENCHANTED_BOOK), "§e§lWeapon Enchantments",
 						Arrays.asList("§d§l" + duel.changeEnchantLevel(duel.getWeaponEnchant()).toString(), "§r", "§7Click to §7§ntoggle§7 this setting.")));
 				duel.setWeaponEnchant(duel.changeEnchantLevel(duel.getWeaponEnchant()));
 			}
