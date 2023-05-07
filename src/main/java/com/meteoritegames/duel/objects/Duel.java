@@ -258,10 +258,10 @@ public class Duel {
 			}
 		}.runTaskTimer(plugin, 0L, 20);
 
-		this.inventory1 = dueler1.getInventory().getContents().clone();
-		this.inventory2 = dueler2.getInventory().getContents().clone();
-		this.armor1 = dueler1.getInventory().getArmorContents().clone();
-		this.armor2 = dueler2.getInventory().getArmorContents().clone();
+		this.inventory1 = cloneInventory(dueler1.getInventory().getContents());
+		this.inventory2 = cloneInventory(dueler2.getInventory().getContents());
+		this.armor1 = cloneInventory(dueler1.getInventory().getArmorContents());
+		this.armor2 = cloneInventory(dueler2.getInventory().getArmorContents());
 
 		if (!kit.getName().equals(plugin.getText("kit-none"))) {
 			dueler1.getInventory().clear();
@@ -548,5 +548,15 @@ public class Duel {
 		}
 
 		return newItem;
+	}
+
+	public ItemStack[] cloneInventory(ItemStack[] inventory) {
+		ItemStack[] cloneInventory = inventory.clone();
+		for (int i = 0; i < inventory.length; i++) {
+			if (cloneInventory[i] == null) continue;
+			cloneInventory[i] = cloneInventory[i].clone();
+		}
+
+		return cloneInventory;
 	}
 }
