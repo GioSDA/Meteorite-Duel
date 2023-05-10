@@ -455,9 +455,15 @@ public class DuelCommand implements CommandClass {
 	private void createMapGui(Duel duel) {
 		ArrayList<DuelMap> maps = plugin.getMaps();
 
-		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("map-menu"), 9, 1, true);
-		BasicInventory page = new BasicInventory(9, 1);
+		MeteoriteInventory inventory = new MeteoriteInventory(plugin, plugin.getText("map-menu"), 9, 3, true);
+		BasicInventory page = new BasicInventory(9, 3);
 		page.fill(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
+
+		ItemStack backButton = new ItemStack(Material.REDSTONE);
+		ItemMeta backMeta = backButton.getItemMeta();
+		backMeta.setDisplayName(plugin.getText("back-title"));
+		backButton.setItemMeta(backMeta);
+		page.setItem(0, backButton);
 
 		for (DuelMap map : plugin.getMaps()) {
 			ItemStack item = new ItemStack(map.getIcon());
@@ -465,17 +471,23 @@ public class DuelCommand implements CommandClass {
 			meta.setDisplayName(map.getName());
 			Duel mapDuel = plugin.mapIsActive(map);
 
-			if (mapDuel == null) meta.setLore(Collections.singletonList(plugin.getText("map-open")));
+			if (mapDuel == null) meta.setLore(Arrays.asList(plugin.getText("map-open"), plugin.getText("map-lore")));
 			else meta.setLore(Collections.singletonList(plugin.getText("map-taken").replace("%player1%", mapDuel.getDueler1().getName()).replace("%player2%", mapDuel.getDueler2().getName())));
 
 			item.setItemMeta(meta);
 
-			page.setItem(map.getInvPos(), item);
+			page.setItem(map.getInvPos()+9, item);
 		}
 
 		page.setOnSlotClickListener(e -> {
 			if (e.getEvent().getSlotType().equals(InventoryType.SlotType.OUTSIDE)) return;
-			Optional<DuelMap> m = maps.stream().filter(n -> n.getInvPos() == e.getEvent().getRawSlot()).findAny();
+
+			if (e.getSlot() == 0) {
+				e.getEvent().getWhoClicked().closeInventory();
+				createArgsGui(duel);
+			}
+
+			Optional<DuelMap> m = maps.stream().filter(n -> n.getInvPos() == e.getEvent().getRawSlot()-9).findAny();
 			DuelMap map;
 			if (m.isPresent()) map = m.get();
 			else return;
