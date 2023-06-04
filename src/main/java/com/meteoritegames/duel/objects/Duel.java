@@ -404,9 +404,14 @@ public class Duel {
 			winner.sendMessage(plugin.getText("duel-cancelled"));
 		}
 
-		dueler1.teleport(dueler1.getWorld().getSpawnLocation());
-		dueler2.teleport(dueler2.getWorld().getSpawnLocation());
+		dueler1.spigot().respawn();
+		dueler2.spigot().respawn();
 
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
+			dueler1.teleport(dueler1.getWorld().getSpawnLocation());
+			dueler2.teleport(dueler2.getWorld().getSpawnLocation());
+		}, 5L);
+		
 		duelTask.cancel();
 
 		dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
