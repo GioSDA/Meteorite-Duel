@@ -239,8 +239,10 @@ public class Duel {
 
 			@Override
 			public void run() {
-				updateScoreboard(p1);
-				updateScoreboard(p2);
+				if (plugin.isScoreboardEnabled()) {
+					updateScoreboard(p1);
+					updateScoreboard(p2);
+				}
 
 				if (hitClock == 30 && !firstHit) {
 					p1.sendMessage(plugin.getText("hit-30"));
@@ -410,12 +412,14 @@ public class Duel {
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			dueler1.teleport(dueler1.getWorld().getSpawnLocation());
 			dueler2.teleport(dueler2.getWorld().getSpawnLocation());
-		}, 5L);
+		}, 10L);
 		
 		duelTask.cancel();
 
-		dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		dueler2.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		if (plugin.isScoreboardEnabled()) {
+			dueler1.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+			dueler2.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		}
 
 		plugin.removeDuel(this);
 	}

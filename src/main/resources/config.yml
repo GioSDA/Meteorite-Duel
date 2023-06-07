@@ -34,6 +34,7 @@ maps:
       yaw: 0.0
     #The position in the map GUI that the map will have (0-8)
     guiPos: 4 #4 is the center
+duelscoreboard: true
 text:
   help:
   - "&e&l&nDuel Commands&r"

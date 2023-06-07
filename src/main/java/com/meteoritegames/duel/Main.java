@@ -22,6 +22,8 @@ public class Main extends MeteoritePlugin {
 	public Set<Player> noDuel = new HashSet<>();
 	public Set<Duel> duels = new HashSet<>();
 	private ArrayList<DuelMap> maps = new ArrayList<>();
+	boolean scoreboard = true;
+
 	@Override
 	protected void onInit() {
 		super.onInit();
@@ -29,6 +31,7 @@ public class Main extends MeteoritePlugin {
 		try {
 			saveDefaultConfig();
 
+			scoreboard = getConfig().getBoolean("duelscoreboard");
 			initText();
 			initMaps();
 			initCommands();
@@ -147,6 +150,10 @@ public class Main extends MeteoritePlugin {
 
 	public String getText(String id) {
 		return text.getOrDefault(id, "TEXT COULD NOT BE LOADED");
+	}
+
+	public boolean isScoreboardEnabled() {
+		return scoreboard;
 	}
 
 	@Override
